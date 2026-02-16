@@ -1,0 +1,964 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const pages = document.querySelectorAll('.page');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const backBtns = document.querySelectorAll('.back-btn');
+    const cards = document.querySelectorAll('.card');
+    const detailContent = document.getElementById('detail-content');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoElement = videoPlayer.querySelector('video');
+    const closeVideoBtn = document.getElementById('closeVideo');
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = imageModal.querySelector('img');
+    const closeModalBtn = document.getElementById('closeModal');
+
+    // 封面页鼠标拖尾效果
+    const coverPage = document.getElementById('page0');
+    const trailCanvas = document.getElementById('trail-canvas');
+    
+    if (coverPage && trailCanvas) {
+        const ctx = trailCanvas.getContext('2d');
+        let particles = [];
+        let animationId;
+        
+        // 设置canvas尺寸
+        function resizeCanvas() {
+            trailCanvas.width = window.innerWidth;
+            trailCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 粒子类
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.life = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+                // 白色系颜色
+                const colors = ['#ffffff', '#fff0f5', '#ffe4e1', '#fff5ee', '#ffffff'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= this.decay;
+                this.size *= 0.98;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // 鼠标移动事件
+        let lastX = 0;
+        let lastY = 0;
+        let isMoving = false;
+        
+        coverPage.addEventListener('mousemove', function(e) {
+            const rect = coverPage.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 计算鼠标移动距离
+            const distance = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+            
+            // 只有移动距离超过一定阈值才创建粒子
+            if (distance > 5) {
+                // 创建多个粒子形成拖尾效果
+                for (let i = 0; i < 3; i++) {
+                    const offsetX = (Math.random() - 0.5) * 20;
+                    const offsetY = (Math.random() - 0.5) * 20;
+                    particles.push(new Particle(x + offsetX, y + offsetY));
+                }
+                lastX = x;
+                lastY = y;
+            }
+        });
+        
+        // 触摸事件支持
+        coverPage.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const rect = coverPage.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            for (let i = 0; i < 3; i++) {
+                const offsetX = (Math.random() - 0.5) * 20;
+                const offsetY = (Math.random() - 0.5) * 20;
+                particles.push(new Particle(x + offsetX, y + offsetY));
+            }
+        });
+        
+        // 动画循环
+        function animate() {
+            ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+            
+            // 更新和绘制粒子
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.update();
+                particle.draw();
+                
+                // 移除死亡的粒子
+                if (particle.life <= 0 || particle.size <= 0.5) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 只在封面页显示时运行动画
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (coverPage.classList.contains('active')) {
+                        animate();
+                    } else {
+                        cancelAnimationFrame(animationId);
+                        ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                        particles = [];
+                    }
+                }
+            });
+        });
+        
+        observer.observe(coverPage, { attributes: true });
+        
+        // 初始启动动画
+        if (coverPage.classList.contains('active')) {
+            animate();
+        }
+    }
+
+    // 通用函数：跳转到上传页面并切换到指定类别
+    window.goToUploadPage = function(category) {
+        window.switchPage('page4');
+        // 切换到对应标签
+        setTimeout(() => {
+            // 直接调用switchUploadTab，传入false表示不重置表单
+            if (typeof window.switchUploadTab === 'function') {
+                window.switchUploadTab(category, false);
+            }
+        }, 600);
+    };
+
+    // 我的介绍页面权限控制 - 只有管理员才能编辑
+    function initAboutPagePermissions() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        // 获取所有可编辑元素
+        const editableElements = document.querySelectorAll('#page2 [contenteditable="true"]');
+        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        
+        if (!isAdminUser) {
+            // 非管理员：禁用编辑
+            editableElements.forEach(el => {
+                el.contentEditable = 'false';
+                el.style.cursor = 'default';
+                el.style.border = 'none';
+                el.style.backgroundColor = 'transparent';
+            });
+            
+            // 隐藏按钮
+            if (changeAvatarBtn) changeAvatarBtn.style.display = 'none';
+            if (saveProfileBtn) saveProfileBtn.style.display = 'none';
+        } else {
+            // 管理员：启用编辑
+            editableElements.forEach(el => {
+                el.contentEditable = 'true';
+                el.style.cursor = 'text';
+                el.style.border = '1px dashed #ff6b9d';
+                el.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+            });
+            
+            // 显示按钮
+            if (changeAvatarBtn) changeAvatarBtn.style.display = 'block';
+            if (saveProfileBtn) saveProfileBtn.style.display = 'block';
+        }
+    }
+
+    // 页面切换函数
+    window.switchPage = function(targetPageId) {
+        const currentPage = document.querySelector('.page.active');
+        const targetPage = document.getElementById(targetPageId);
+
+        if (currentPage && currentPage !== targetPage) {
+            currentPage.classList.add('transition-out');
+            currentPage.classList.remove('active');
+
+            setTimeout(() => {
+                currentPage.classList.remove('transition-out');
+                targetPage.classList.add('active');
+                // 页面切换后滚动到顶部
+                window.scrollTo(0, 0);
+                targetPage.scrollTop = 0;
+            }, 500);
+        } else if (targetPage) {
+            targetPage.classList.add('active');
+            // 页面切换后滚动到顶部
+            window.scrollTo(0, 0);
+            targetPage.scrollTop = 0;
+        }
+        
+        // 触发页面切换事件
+        if (typeof loadWorksList === 'function' && targetPageId === 'page4') {
+            loadWorksList();
+        }
+        
+        // 如果切换到我的介绍页面，检查权限
+        if (targetPageId === 'page2') {
+            setTimeout(initAboutPagePermissions, 100);
+        }
+    };
+
+    // 导航按钮点击事件
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            if (target) {
+                window.switchPage(target);
+            }
+        });
+    });
+
+    // 返回按钮点击事件
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            if (target) {
+                window.switchPage(target);
+            }
+        });
+    });
+
+    // 卡片点击事件
+    cards.forEach(card => {
+        card.addEventListener('click', function() {
+            const pageType = this.getAttribute('data-page');
+            loadDetailPage(pageType);
+            window.switchPage('page3');
+        });
+    });
+
+    // 加载详情页
+    function loadDetailPage(pageType) {
+        detailContent.innerHTML = '';
+
+        switch(pageType) {
+            case 'painting':
+                loadPaintingPage();
+                break;
+            case 'dance':
+                loadDancePage();
+                break;
+            case 'ai':
+                loadAIPage();
+                break;
+            case 'honor':
+                loadHonorPage();
+                break;
+            case 'ppt':
+                loadPPTPage();
+                break;
+        }
+    }
+
+        // 绘画作品页 - 从后端API加载
+    async function loadPaintingPage() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        try {
+            // 显示加载中
+            detailContent.innerHTML = `
+                <div class="painting-page">
+                    <div class="empty-state">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            `;
+            
+            // 从后端API获取绘画作品
+            const result = await API.getWorks('painting');
+            const paintingData = result.works || [];
+
+            if (paintingData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="painting-page">
+                        <div class="empty-state">
+                            <p>暂无绘画作品</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" data-category="painting">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                // 绑定上传按钮事件（仅管理员）
+                if (isAdminUser) {
+                    const uploadBtn = detailContent.querySelector('.go-upload-btn');
+                    if (uploadBtn) {
+                        uploadBtn.addEventListener('click', function() {
+                            window.switchPage('page4');
+                            setTimeout(() => {
+                                const tabs = document.querySelectorAll('.upload-tab');
+                                tabs.forEach(tab => {
+                                    if (tab.getAttribute('data-tab') === 'painting') {
+                                        tab.click();
+                                    }
+                                });
+                            }, 600);
+                        });
+                    }
+                }
+                return;
+            }
+
+            let html = `
+                <div class="painting-page">
+                    <div class="book-container">
+                        <div class="book">
+                            <div class="book-pages">
+                                ${paintingData.map((painting, index) => {
+                                    // 优先使用 fileUrl，如果没有则回退到拼接路径
+                                    const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
+                                    return `
+                                    <div class="book-page" data-page="${index + 1}" data-id="${painting.work_id}">
+                                        <img src="${imgSrc}" alt="${painting.title}">
+                                        <h3>${painting.title}</h3>
+                                        <p>${painting.description || ''}</p>
+                                        <p class="page-number">${index + 1} / ${paintingData.length}</p>
+                                        ${isAdminUser ? `<button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">删除</button>` : ''}
+                                    </div>
+                                `}).join('')}
+                            </div>
+                            <div class="book-controls">
+                                <button class="book-nav prev" id="prevPage">上一页</button>
+                                <button class="book-nav next" id="nextPage">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+            initBook(paintingData.length);
+
+            // 绑定删除按钮事件（仅管理员）
+            if (isAdminUser) {
+                document.querySelectorAll('.work-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        const workId = this.getAttribute('data-id');
+                        const category = this.getAttribute('data-category');
+                        if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
+                            try {
+                                await API.deleteWork(category, workId);
+                                loadPaintingPage();
+                                alert('作品已删除');
+                            } catch (error) {
+                                alert('删除失败: ' + error.message);
+                            }
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('加载绘画作品失败:', error);
+            detailContent.innerHTML = `
+                <div class="painting-page">
+                    <div class="empty-state">
+                        <p>加载失败，请刷新页面重试</p>
+                        ${isAdminUser ? '<button class="go-upload-btn" data-category="painting">去上传作品</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function initBook(totalPages) {
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        const pages = document.querySelectorAll('.book-page');
+        let currentPage = 0;
+
+        function showPage(index) {
+            pages.forEach((page, i) => {
+                page.style.display = i === index ? 'block' : 'none';
+            });
+            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = index === pages.length - 1 ? '0.5' : '1';
+        }
+
+        prevBtn.addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+                playPageTurnSound();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                showPage(currentPage);
+                playPageTurnSound();
+            }
+        });
+
+        showPage(0);
+    }
+
+    function playPageTurnSound() {
+        const audio = new Audio('assets/audio/page-turn.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+    }
+
+    // 舞蹈视频页 - 从后端API加载
+    async function loadDancePage() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        try {
+            // 显示加载中
+            detailContent.innerHTML = `
+                <div class="dance-page">
+                    <div class="empty-state">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            `;
+            
+            // 从后端API获取舞蹈视频
+            const result = await API.getWorks('dance');
+            const danceData = result.works || [];
+
+            if (danceData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="dance-page">
+                        <div class="empty-state">
+                            <p>暂无舞蹈视频</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'dance\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="dance-page">
+                    <div class="video-grid">
+                        ${danceData.map(dance => {
+                            // 优先使用 fileUrl，如果没有则回退到拼接路径
+                            const videoSrc = dance.fileUrl || ('/uploads/dance/' + dance.file_path);
+                            return `
+                            <div class="video-card" data-video="${videoSrc}" data-id="${dance.work_id}">
+                                <div class="video-thumbnail">
+                                    <video src="${videoSrc}" preload="metadata" muted></video>
+                                    <div class="play-icon">▶</div>
+                                </div>
+                                <div class="video-info">
+                                    <h3>${dance.title}</h3>
+                                    <p>${dance.description || ''}</p>
+                                </div>
+                                ${isAdminUser ? `<button class="work-delete-btn video-delete-btn" data-id="${dance.work_id}" data-category="dance">删除</button>` : ''}
+                            </div>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+            initVideoCards();
+
+            // 绑定删除按钮事件（仅管理员）
+            if (isAdminUser) {
+                document.querySelectorAll('.video-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        const workId = this.getAttribute('data-id');
+                        const category = this.getAttribute('data-category');
+                        if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
+                            try {
+                                await API.deleteWork(category, workId);
+                                loadDancePage();
+                                alert('作品已删除');
+                            } catch (error) {
+                                alert('删除失败: ' + error.message);
+                            }
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('加载舞蹈视频失败:', error);
+            detailContent.innerHTML = `
+                <div class="dance-page">
+                    <div class="empty-state">
+                        <p>加载失败，请刷新页面重试</p>
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'dance\')">去上传作品</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function initVideoCards() {
+        const videoCards = document.querySelectorAll('.video-card');
+
+        videoCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const videoSrc = this.getAttribute('data-video');
+                showVideoPlayer(videoSrc);
+            });
+        });
+    }
+
+    function showVideoPlayer(videoSrc) {
+        videoElement.src = videoSrc;
+        videoPlayer.style.display = 'flex';
+    }
+    window.showVideoPlayer = showVideoPlayer;
+
+    // AI作品页 - 从本地存储加载
+    // AI作品页 - 从后端API加载
+    async function loadAIPage() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        try {
+            // 显示加载中
+            detailContent.innerHTML = `
+                <div class="ai-page">
+                    <div class="empty-state">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            `;
+            
+            // 从后端API获取AI作品
+            const result = await API.getWorks('ai');
+            const aiData = result.works || [];
+            
+            if (aiData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="ai-page">
+                        <div class="empty-state">
+                            <p>暂无AI作品</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ai\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="ai-page">
+                    <div class="ai-grid">
+                        ${aiData.map(ai => {
+                            // 优先使用 fileUrl，如果没有则回退到拼接路径
+                            const contentSrc = ai.fileUrl || ('/uploads/ai/' + ai.file_path);
+                            return `
+                            <div class="ai-card" data-type="${ai.file_type}" data-content="${contentSrc}">
+                                <div class="ai-thumbnail">
+                                    ${ai.file_type && ai.file_type.startsWith('image') 
+                                        ? `<img src="${contentSrc}" alt="${ai.title}">`
+                                        : `<div class="ai-thumbnail-placeholder">${ai.file_type && ai.file_type.startsWith('video') ? '▶' : '📄'}</div>`
+                                    }
+                                    ${ai.file_type && ai.file_type.startsWith('video') ? '<div class="play-icon">▶</div>' : ''}
+                                </div>
+                                <div class="ai-info">
+                                    <h3>${ai.title}</h3>
+                                    <p>${ai.description || ''}</p>
+                                </div>
+                            </div>
+                        `}).join('')}
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+            initAICards();
+        } catch (error) {
+            console.error('加载AI作品失败:', error);
+            detailContent.innerHTML = `
+                <div class="ai-page">
+                    <div class="empty-state">
+                        <p>加载失败，请刷新页面重试</p>
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ai\')">去上传作品</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function initAICards() {
+        const aiCards = document.querySelectorAll('.ai-card');
+
+        aiCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                const content = this.getAttribute('data-content');
+
+                if (type === 'image') {
+                    showImageModal(content);
+                } else if (type === 'video') {
+                    showVideoPlayer(content);
+                } else {
+                    alert('该文件类型不支持预览');
+                }
+            });
+        });
+    }
+
+    function showImageModal(imageSrc) {
+        modalImage.src = imageSrc;
+        imageModal.style.display = 'flex';
+    }
+    window.showImageModal = showImageModal;
+
+    // 荣誉墙页 - 从后端API加载
+    async function loadHonorPage() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        try {
+            // 显示加载中
+            detailContent.innerHTML = `
+                <div class="honor-page">
+                    <div class="empty-state">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            `;
+            
+            // 从后端API获取荣誉墙
+            const result = await API.getWorks('honor');
+            const honorData = result.works || [];
+
+            if (honorData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="honor-page">
+                        <div class="empty-state">
+                            <p>暂无荣誉照片</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'honor\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="honor-page">
+                    <div class="honor-3d-container">
+                        <div class="honor-3d-track" id="honorTrack">
+                            ${honorData.map((honor, index) => {
+                                // 优先使用 fileUrl，如果没有则回退到拼接路径
+                                const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
+                                return `
+                                <div class="honor-3d-card" data-index="${index}">
+                                    <div class="honor-card-inner">
+                                        <img src="${imgSrc}" alt="${honor.title}">
+                                        <div class="honor-card-title">${honor.title}</div>
+                                    </div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+            initHonor3DCarousel(honorData.length);
+        } catch (error) {
+            console.error('加载荣誉墙失败:', error);
+            detailContent.innerHTML = `
+                <div class="honor-page">
+                    <div class="empty-state">
+                        <p>加载失败，请刷新页面重试</p>
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'honor\')">去上传作品</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function initHonor3DCarousel(totalCards) {
+        const track = document.getElementById('honorTrack');
+        const cards = document.querySelectorAll('.honor-3d-card');
+        
+        // 配置参数 - 紧凑排列
+        const radius = 350; // 减小半径，让奖状更紧凑
+        const angleStep = 360 / totalCards;
+        let rotation = 0;
+        let isPaused = false;
+        let animationFrameId;
+        
+        // 使用CSS will-change优化性能
+        cards.forEach(card => {
+            card.style.willChange = 'transform, opacity';
+        });
+
+        // 初始化卡片位置 - 弧形排列
+        function updateCardsPosition(rotationAngle) {
+            cards.forEach((card, index) => {
+                const angle = (index * angleStep + rotationAngle) * Math.PI / 180;
+                
+                // 计算3D位置
+                const x = Math.sin(angle) * radius;
+                const z = Math.cos(angle) * radius - radius;
+                
+                // 计算旋转角度 - 让卡片始终面向中心
+                const rotateY = -angle * 180 / Math.PI;
+                
+                // 根据Z轴位置计算透明度和缩放
+                const normalizedZ = (z + radius) / (radius * 2);
+                const opacity = 0.5 + normalizedZ * 0.5;
+                const scale = 0.7 + normalizedZ * 0.3;
+                
+                // 使用translate3d开启硬件加速
+                card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
+                card.style.opacity = opacity;
+                card.style.zIndex = Math.round(normalizedZ * 100);
+                
+                // 添加边框效果 - 前面的卡片有金色边框
+                const inner = card.querySelector('.honor-card-inner');
+                if (normalizedZ > 0.7) {
+                    inner.style.borderColor = '#FFD700';
+                    inner.style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.6)';
+                } else {
+                    inner.style.borderColor = 'transparent';
+                    inner.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.2)';
+                }
+            });
+        }
+
+        // 丝滑动画循环 - 适中的旋转速度
+        let lastTime = performance.now();
+        const rotationSpeed = 25; // 每秒钟旋转25度，速度适中
+        
+        function animate(currentTime) {
+            if (!isPaused) {
+                const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+                lastTime = currentTime;
+                
+                // 根据时间计算旋转角度，保证速度恒定
+                rotation += rotationSpeed * deltaTime;
+                
+                updateCardsPosition(rotation);
+            } else {
+                lastTime = currentTime;
+            }
+            
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        // 启动动画
+        animationFrameId = requestAnimationFrame(animate);
+
+        // 初始化点击事件
+        cards.forEach((card, index) => {
+            card.addEventListener('click', function() {
+                const imageSrc = this.querySelector('img').src;
+                showImageModal(imageSrc);
+            });
+        });
+
+        // 鼠标悬停暂停
+        const container = document.querySelector('.honor-3d-container');
+        if (container) {
+            container.addEventListener('mouseenter', function() {
+                isPaused = true;
+            });
+
+            container.addEventListener('mouseleave', function() {
+                isPaused = false;
+                lastTime = performance.now();
+            });
+        }
+        
+        // 页面不可见时暂停动画，节省资源
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                isPaused = true;
+            } else {
+                isPaused = false;
+                lastTime = performance.now();
+            }
+        });
+    }
+
+    // PPT展示页 - 从后端API加载
+    async function loadPPTPage() {
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        try {
+            // 显示加载中
+            detailContent.innerHTML = `
+                <div class="ppt-page">
+                    <div class="empty-state">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            `;
+            
+            // 从后端API获取PPT
+            const result = await API.getWorks('ppt');
+            const pptData = result.works || [];
+
+            if (pptData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="ppt-page">
+                        <div class="empty-state">
+                            <p>暂无PPT文件</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 只显示图片类型的PPT页面
+            const imagePPTs = pptData.filter(ppt => ppt.file_type && ppt.file_type.startsWith('image'));
+            
+            if (imagePPTs.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="ppt-page">
+                        <div class="empty-state">
+                            <p>已上传的PPT文件不支持预览，请上传图片格式的PPT页面</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="ppt-page">
+                    <div class="ppt-container">
+                        <div class="ppt-display">
+                            <img src="${imagePPTs[0].fileUrl || ('/uploads/ppt/' + imagePPTs[0].file_path)}" alt="PPT页面" id="pptImage">
+                            <p class="ppt-page-number">1 / ${imagePPTs.length}</p>
+                        </div>
+                        <div class="ppt-controls">
+                            <button class="ppt-nav prev" id="pptPrev">上一页</button>
+                            <div class="ppt-indicators">
+                                ${imagePPTs.map((_, index) => `
+                                    <span class="indicator ${index === 0 ? 'active' : ''}" data-page="${index}"></span>
+                                `).join('')}
+                            </div>
+                            <button class="ppt-nav next" id="pptNext">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+            initPPT(imagePPTs);
+        } catch (error) {
+            console.error('加载PPT失败:', error);
+            detailContent.innerHTML = `
+                <div class="ppt-page">
+                    <div class="empty-state">
+                        <p>加载失败，请刷新页面重试</p>
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function initPPT(pptData) {
+        const prevBtn = document.getElementById('pptPrev');
+        const nextBtn = document.getElementById('pptNext');
+        const pptImage = document.getElementById('pptImage');
+        const pageNumber = document.querySelector('.ppt-page-number');
+        const indicators = document.querySelectorAll('.indicator');
+        let currentPage = 0;
+
+        function showPage(index) {
+            // 优先使用 fileUrl，如果没有则回退到拼接路径
+            const imgSrc = pptData[index].fileUrl || ('/uploads/ppt/' + pptData[index].file_path);
+            pptImage.src = imgSrc;
+            pageNumber.textContent = `${index + 1} / ${pptData.length}`;
+
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+
+            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = index === pptData.length - 1 ? '0.5' : '1';
+        }
+
+        prevBtn.addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentPage < pptData.length - 1) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', function() {
+                currentPage = parseInt(this.getAttribute('data-page'));
+                showPage(currentPage);
+            });
+        });
+
+        showPage(0);
+    }
+
+    // 关闭视频播放器
+    closeVideoBtn.addEventListener('click', function() {
+        videoPlayer.style.display = 'none';
+        videoElement.pause();
+        videoElement.src = '';
+    });
+
+    videoPlayer.addEventListener('click', function(e) {
+        if (e.target === videoPlayer) {
+            videoPlayer.style.display = 'none';
+            videoElement.pause();
+            videoElement.src = '';
+        }
+    });
+
+    // 关闭图片查看器
+    closeModalBtn.addEventListener('click', function() {
+        imageModal.style.display = 'none';
+    });
+
+    imageModal.addEventListener('click', function(e) {
+        if (e.target === imageModal) {
+            imageModal.style.display = 'none';
+        }
+    });
+
+    // 进入空间按钮事件
+    const enterSpaceBtn = document.getElementById('enterSpaceBtn');
+    if (enterSpaceBtn) {
+        enterSpaceBtn.addEventListener('click', function() {
+            window.switchPage('page1');
+        });
+    }
+
+    // 初始化页面 - 默认显示封面页(page0)，不自动跳转
+    // 用户需要点击"进入空间"按钮才能进入主页面
+});

@@ -1,0 +1,10 @@
+﻿node_modules/
+.DS_Store
+*.log
+*.zip
+*.ps1
+*.bat
+data.json
+uploads/
+.env
+package-lock.json

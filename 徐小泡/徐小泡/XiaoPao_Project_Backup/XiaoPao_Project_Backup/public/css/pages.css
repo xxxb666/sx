@@ -1,0 +1,604 @@
+.page-title {
+    font-size: 36px;
+    color: #ff6b9d;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 600;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.painting-page,
+.dance-page,
+.ai-page,
+.honor-page,
+.about-page,
+.ppt-page {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
+}
+
+.empty-state p {
+    font-size: 18px;
+    color: #ff8fb3;
+    margin-bottom: 30px;
+}
+
+.go-upload-btn {
+    padding: 12px 40px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.go-upload-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+/* 绘画作品页 */
+.painting-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.book-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 600px;
+}
+
+.book {
+    width: 100%;
+    max-width: 800px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(255, 107, 157, 0.2);
+    overflow: hidden;
+}
+
+.book-cover {
+    display: none;
+}
+
+.book-pages {
+    position: relative;
+    min-height: 600px;
+}
+
+.book-page {
+    display: none;
+    width: 100%;
+    height: 600px;
+    padding: 20px;
+    text-align: center;
+}
+
+.book-page.active {
+    display: block;
+}
+
+.book-page img {
+    width: 100%;
+    height: 450px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.book-page h3 {
+    color: #ff6b9d;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.book-page p {
+    color: #ff8fb3;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.page-number {
+    color: #ff8fb3;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.book-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background: #fff5f8;
+}
+
+.book-nav {
+    padding: 10px 30px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.book-nav:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+}
+
+/* 舞蹈视频页 - 瀑布流布局 */
+.dance-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.video-grid {
+    column-count: 3;
+    column-gap: 20px;
+    padding: 0 20px;
+}
+
+.video-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    break-inside: avoid; /* 防止卡片被截断 */
+    margin-bottom: 20px; /* 卡片之间的垂直间距 */
+    display: inline-block; /* 确保正确渲染 */
+    width: 100%;
+}
+
+.video-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+}
+
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    /* 移除固定高度，让其自适应 */
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.video-thumbnail video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain; /* 保持宽高比 */
+}
+
+/* 移除占位符样式，因为我们将直接显示视频预览 */
+.video-thumbnail-placeholder {
+    display: none;
+}
+
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 107, 157, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    opacity: 0.8; /* 默认显示一点，方便识别是视频 */
+    transition: all 0.3s ease;
+    z-index: 2;
+    pointer-events: none; /* 让点击穿透到卡片 */
+}
+
+.video-card:hover .play-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-info {
+    padding: 15px;
+}
+
+.video-info h3 {
+    color: #ff6b9d;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.video-info p {
+    color: #ff8fb3;
+    font-size: 14px;
+}
+
+/* AI作品页 */
+.ai-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+}
+
+.ai-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ai-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+}
+
+.ai-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #ffe4ec 0%, #fff5f8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ai-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ai-thumbnail-placeholder {
+    font-size: 48px;
+    color: #ff6b9d;
+}
+
+.ai-info {
+    padding: 20px;
+}
+
+.ai-info h3 {
+    color: #ff6b9d;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.ai-info p {
+    color: #ff8fb3;
+    font-size: 14px;
+}
+
+/* 荣誉墙 */
+.honor-page {
+    min-height: 80vh;
+    margin: 0 auto;
+    padding: 20px 0;
+    background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.honor-carousel {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    perspective: 1200px;
+    margin: 40px auto;
+}
+
+.honor-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+}
+
+
+
+.honor-card {
+    position: absolute;
+    width: 200px;
+    height: 280px;
+    left: 50%;
+    top: 50%;
+    transform-origin: center;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 20px rgba(255, 107, 157, 0.2),
+        0 2px 10px rgba(255, 107, 157, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: 
+        opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 107, 157, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    opacity: 1;
+    z-index: 1;
+}
+
+.honor-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b9d, #ff8fb3, #ff6b9d);
+    border-radius: 15px 15px 0 0;
+}
+
+.honor-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.honor-card p {
+    padding: 10px;
+    text-align: center;
+    color: #ff6b9d;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+    background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.honor-card:hover {
+    transform: scale(1.1) translateZ(100px);
+    box-shadow: 
+        0 15px 45px rgba(255, 107, 157, 0.4),
+        0 8px 25px rgba(255, 107, 157, 0.3),
+        0 0 0 2px rgba(255, 107, 157, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    z-index: 100;
+}
+
+.honor-card:hover img {
+    transform: scale(1.05);
+}
+
+.honor-card:hover p {
+    color: #ff528b;
+    text-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+}
+
+/* 动画效果 */
+@keyframes rotate {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+/* 控制按钮 */
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.carousel-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    transition: all 0.3s ease;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .honor-carousel {
+        max-width: 400px;
+        height: 400px;
+    }
+    
+    .honor-card {
+        width: 150px;
+        height: 200px;
+    }
+    
+    .honor-card img {
+        height: 120px;
+    }
+    
+    .honor-card p {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* PPT展示页 */
+.ppt-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.ppt-container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
+}
+
+.ppt-display {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ppt-display img {
+    max-width: 100%;
+    max-height: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+}
+
+.ppt-page-number {
+    margin-top: 15px;
+    color: #ff8fb3;
+    font-size: 16px;
+}
+
+.ppt-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.ppt-nav {
+    padding: 10px 25px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ppt-nav:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+}
+
+.ppt-indicators {
+    display: flex;
+    gap: 10px;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffe4ec;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #ff6b9d;
+    transform: scale(1.2);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 28px;
+    }
+
+    .book-page {
+        height: auto;
+        min-height: 400px;
+    }
+
+    .book-page img {
+        height: 300px;
+    }
+
+    .video-grid,
+    .ai-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .honor-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ppt-controls {
+        flex-wrap: wrap;
+    }
+}
