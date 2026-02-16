@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('%c 当前版本: v1.0.2 (已修复无限循环和图片样式) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
+    
     const pages = document.querySelectorAll('.page');
     const navBtns = document.querySelectorAll('.nav-btn');
     const backBtns = document.querySelectorAll('.back-btn');
