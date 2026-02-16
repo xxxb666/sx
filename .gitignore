@@ -3,6 +3,19 @@ node_modules/
 dist/
 build/
 .env
+package-lock.json
+
+# Logs
+*.log
+
+# Scripts
+*.ps1
+*.bat
+*.zip
+
+# Data
+data.json
+uploads/
 
 # IDE
 .idea/
