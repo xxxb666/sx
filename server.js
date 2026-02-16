@@ -46,6 +46,11 @@ if (fs.existsSync(DATA_FILE)) {
 // 保存数据
 function saveData() {
     try {
+        // 确保数据文件所在目录存在
+        const dataDir = path.dirname(DATA_FILE);
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
         fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2), 'utf8');
     } catch (error) {
         console.error('保存数据失败:', error);
