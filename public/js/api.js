@@ -16,14 +16,37 @@ const API = {
     // 通用请求方法
     async request(url, options = {}) {
         const token = localStorage.getItem('adminToken');
+        
+        // 默认头部
+        const headers = {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        };
+
+        // 如果不是 FormData，则默认 Content-Type 为 application/json
+        if (!(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+
         const defaultOptions = {
             headers: {
-                'Content-Type': 'application/json',
-                ...(token && { 'Authorization': `Bearer ${token}` })
+                ...headers,
+                ...options.headers // 允许覆盖
             }
         };
         
         const response = await fetch(url, { ...defaultOptions, ...options });
+        
+        // 处理 401/403 错误 (Token 无效或过期)，但排除登录接口本身的 401
+        if ((response.status === 401 || response.status === 403) && !url.includes('/auth/login')) {
+            localStorage.removeItem('adminToken');
+            // 如果不在登录页，提示并跳转
+            if (!window.location.pathname.includes('login')) {
+                alert('登录已过期，请重新登录');
+                window.location.reload(); // 刷新页面以重置状态
+                throw new Error('登录已过期');
+            }
+        }
+
         const data = await response.json();
         
         if (!response.ok) {
@@ -89,22 +112,10 @@ const API = {
 
     // 上传作品
     async addWork(category, formData) {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch(API_CONFIG.getUrl(`/upload/${category}`), {
+        return this.request(API_CONFIG.getUrl(`/upload/${category}`), {
             method: 'POST',
-            headers: {
-                ...(token && { 'Authorization': `Bearer ${token}` })
-            },
             body: formData
         });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || '上传失败');
-        }
-        
-        return data;
     },
 
     // 上传头像
