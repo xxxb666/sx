@@ -11,8 +11,12 @@ const PORT = process.env.PORT || 8080;
 const JWT_SECRET = process.env.SECRET_KEY || 'xiaopao-secret-key-2025';
 
 // 数据文件路径
-const DATA_FILE = path.join(__dirname, 'data.json');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+// 支持通过环境变量配置路径，以便在容器中挂载持久化存储
+const DATA_FILE = process.env.DATA_FILE_PATH || path.join(__dirname, 'data.json');
+const UPLOADS_DIR = process.env.UPLOADS_DIR_PATH || path.join(__dirname, 'uploads');
+
+console.log('数据文件路径:', DATA_FILE);
+console.log('上传目录路径:', UPLOADS_DIR);
 
 // 初始化数据
 let db = {
