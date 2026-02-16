@@ -628,3 +628,27 @@
         flex-wrap: wrap;
     }
 }
+
+/* 删除按钮样式 */
+.work-delete-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 20px;
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+    z-index: 10;
+    position: relative;
+    pointer-events: auto;
+}
+
+.work-delete-btn:hover {
+    background-color: #ff6b81;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+}

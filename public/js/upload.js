@@ -179,7 +179,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // 显示上传中提示
-                submitUploadBtn.textContent = '上传中...';
+                if (currentFile.size > 5 * 1024 * 1024) {
+                    submitUploadBtn.textContent = '文件较大，正在努力上传中，请耐心等待...';
+                } else {
+                    submitUploadBtn.textContent = '上传中...';
+                }
                 submitUploadBtn.disabled = true;
 
                 // 创建 FormData 对象
