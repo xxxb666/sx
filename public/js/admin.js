@@ -40,6 +40,20 @@
     function init() {
         bindEvents();
         checkLoginStatus();
+        
+        // 监听认证过期事件
+        window.addEventListener('auth:expired', function() {
+            if (isAdminLoggedIn) {
+                console.log('收到认证过期事件，执行登出');
+                // 此时 token 已经被 api.js 移除了，我们只需要更新 UI
+                isAdminLoggedIn = false;
+                updateAdminUI();
+                
+                // 显示提示并弹出登录框
+                alert('登录已过期，请重新登录');
+                showLoginModal();
+            }
+        });
     }
 
     // 绑定事件

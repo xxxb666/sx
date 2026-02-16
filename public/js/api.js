@@ -38,13 +38,13 @@ const API = {
         
         // 处理 401/403 错误 (Token 无效或过期)，但排除登录接口本身的 401
         if ((response.status === 401 || response.status === 403) && !url.includes('/auth/login')) {
+            console.warn('API 认证失败，清除 Token');
             localStorage.removeItem('adminToken');
-            // 如果不在登录页，提示并跳转
-            if (!window.location.pathname.includes('login')) {
-                alert('登录已过期，请重新登录');
-                window.location.reload(); // 刷新页面以重置状态
-                throw new Error('登录已过期');
-            }
+            
+            // 触发自定义事件，让 UI 处理，而不是强制刷新页面
+            window.dispatchEvent(new Event('auth:expired'));
+            
+            throw new Error('登录已过期');
         }
 
         const data = await response.json();
