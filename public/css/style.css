@@ -106,8 +106,8 @@ body {
 }
 
 .cover-avatar {
-    font-size: 120px;
-    margin-bottom: 30px;
+    font-size: 80px;
+    margin-bottom: 20px;
 }
 
 .cover-content {
@@ -118,17 +118,17 @@ body {
 }
 
 .cover-title {
-    font-size: 48px;
+    font-size: 36px;
     color: #ff6b9d;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     text-shadow: 3px 3px 6px rgba(255, 107, 157, 0.3);
     font-weight: 600;
 }
 
 .cover-subtitle {
-    font-size: 20px;
+    font-size: 16px;
     color: #ff8fb3;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     letter-spacing: 3px;
 }
 
@@ -138,10 +138,10 @@ body {
     justify-content: center;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: #fff;
-    padding: 18px 50px;
+    padding: 12px 35px;
     border: none;
     border-radius: 50px;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
