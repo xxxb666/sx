@@ -282,14 +282,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-        // 辅助函数：按方向排序（竖屏在前，横屏在后）
-    function sortWorksByOrientation(works) {
+        // 辅助函数：通用排序（视频在前，图片在后；竖屏在前，横屏在后）
+    function sortWorks(works) {
         if (!works || works.length === 0) return [];
         
-        const portrait = works.filter(w => w.orientation === 'portrait');
-        const landscape = works.filter(w => w.orientation !== 'portrait'); // 包括 landscape 和未定义的
-        
-        return [...portrait, ...landscape];
+        return works.sort((a, b) => {
+            // 1. 类型排序：视频在前
+            // 兼容性处理：如果没有 file_type，尝试通过 file_path 判断，或者根据上下文（但这里是通用函数）
+            // 假设 dance 页面的作品即使没有 file_type 也是视频，但在混合页面（AI）必须有 file_type
+            // 这里主要针对 AI 页面和未来的混合页面
+            let isVideoA = (a.file_type && a.file_type.startsWith('video')) || (a.file_path && a.file_path.match(/\.(mp4|webm|mov)$/i));
+            let isVideoB = (b.file_type && b.file_type.startsWith('video')) || (b.file_path && b.file_path.match(/\.(mp4|webm|mov)$/i));
+            
+            // 如果是在 Dance 页面，可能没有 file_type，但我们知道它是视频。
+            // 不过这个函数是通用的。如果两个都判断不出是视频，就视为同类，进入下一轮排序。
+            
+            if (isVideoA && !isVideoB) return -1;
+            if (!isVideoA && isVideoB) return 1;
+            
+            // 2. 方向排序：竖屏在前
+            const isPortraitA = a.orientation === 'portrait';
+            const isPortraitB = b.orientation === 'portrait';
+            
+            if (isPortraitA && !isPortraitB) return -1;
+            if (!isPortraitA && isPortraitB) return 1;
+            
+            return 0;
+        });
     }
 
     // 绘画作品页 - 从后端API加载
@@ -308,7 +327,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 从后端API获取绘画作品
             const result = await API.getWorks('painting');
-            const paintingData = result.works || [];
+            let paintingData = result.works || [];
+
+            // 按方向排序（虽然绘画通常是图片，但也可能有竖屏优先的需求）
+            paintingData = sortWorks(paintingData);
 
             if (paintingData.length === 0) {
                 detailContent.innerHTML = `
@@ -402,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let danceData = result.works || [];
             
             // 按方向排序
-            danceData = sortWorksByOrientation(danceData);
+            danceData = sortWorks(danceData);
 
             if (danceData.length === 0) {
                 detailContent.innerHTML = `
@@ -526,8 +548,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await API.getWorks('ai');
             let aiData = result.works || [];
             
-            // 按方向排序
-            aiData = sortWorksByOrientation(aiData);
+            // 按类型和方向排序（视频在前，竖屏在前）
+            aiData = sortWorks(aiData);
             
             if (aiData.length === 0) {
                 detailContent.innerHTML = `
