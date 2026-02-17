@@ -341,34 +341,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let html = `
                 <div class="painting-page">
-                    <div class="book-container">
-                        <div class="book">
-                            <div class="book-pages">
-                                ${paintingData.map((painting, index) => {
-                                    // 优先使用 fileUrl，如果没有则回退到拼接路径
-                                    const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
-                                    return `
-                                    <div class="book-page" data-page="${index + 1}" data-id="${painting.work_id}">
-                                        <img src="${imgSrc}" alt="${painting.title}">
-                                        <h3>${painting.title}</h3>
-                                        <p>${painting.description || ''}</p>
-                                        <p class="page-number">${index + 1} / ${paintingData.length}</p>
-                                        ${isAdminUser ? `<button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">删除</button>` : ''}
-                                    </div>
-                                `}).join('')}
+                    <div class="ai-grid">
+                        ${paintingData.map((painting, index) => {
+                            // 优先使用 fileUrl，如果没有则回退到拼接路径
+                            const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
+                            return `
+                            <div class="ai-card" data-type="image" data-content="${imgSrc}">
+                                <div class="ai-thumbnail">
+                                    <img src="${imgSrc}" alt="${painting.title}">
+                                </div>
+                                <div class="ai-info">
+                                    <h3>${painting.title}</h3>
+                                    <p>${painting.description || ''}</p>
+                                    ${isAdminUser ? `<button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">删除</button>` : ''}
+                                </div>
                             </div>
-                            <div class="book-controls">
-                                <button class="book-nav prev" id="prevPage">上一页</button>
-                                <button class="book-nav next" id="nextPage">下一页</button>
-                            </div>
-                        </div>
+                        `}).join('')}
                     </div>
                     ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'painting\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
             detailContent.innerHTML = html;
-            initBook(paintingData.length);
+            // 使用AI卡片的初始化函数，因为结构相同
+            initAICards();
 
             // 绑定删除按钮事件（仅管理员）
             if (isAdminUser) {
@@ -497,11 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         `}).join('')}
-                        ${isAdminUser ? `
-                        <div class="add-work-card" onclick="window.goToUploadPage('dance')" title="上传新作品">
-                            <div class="add-icon">+</div>
-                            <div class="add-text">添加舞蹈视频</div>
-                        </div>` : ''}
                     </div>
                     ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'dance\')" title="上传新作品">+</button>' : ''}
                 </div>
@@ -624,14 +615,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="ai-info">
                                     <h3>${ai.title}</h3>
                                     <p>${ai.description || ''}</p>
+                                    ${isAdminUser ? `<button class="work-delete-btn" data-id="${ai.work_id}" data-category="ai">删除</button>` : ''}
                                 </div>
                             </div>
                         `}).join('')}
-                        ${isAdminUser ? `
-                        <div class="add-work-card" onclick="window.goToUploadPage('ai')" title="上传新作品">
-                            <div class="add-icon">+</div>
-                            <div class="add-text">添加AI作品</div>
-                        </div>` : ''}
                     </div>
                     ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ai\')" title="上传新作品">+</button>' : ''}
                 </div>
