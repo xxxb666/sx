@@ -315,27 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="painting-page">
                         <div class="empty-state">
                             <p>暂无绘画作品</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" data-category="painting">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'painting\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
-                // 绑定上传按钮事件（仅管理员）
-                if (isAdminUser) {
-                    const uploadBtn = detailContent.querySelector('.go-upload-btn');
-                    if (uploadBtn) {
-                        uploadBtn.addEventListener('click', function() {
-                            window.switchPage('page4');
-                            setTimeout(() => {
-                                const tabs = document.querySelectorAll('.upload-tab');
-                                tabs.forEach(tab => {
-                                    if (tab.getAttribute('data-tab') === 'painting') {
-                                        tab.click();
-                                    }
-                                });
-                            }, 600);
-                        });
-                    }
-                }
                 return;
             }
 
@@ -391,51 +374,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="painting-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" data-category="painting">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'painting\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
 
-    function initBook(totalPages) {
-        const prevBtn = document.getElementById('prevPage');
-        const nextBtn = document.getElementById('nextPage');
-        const pages = document.querySelectorAll('.book-page');
-        let currentPage = 0;
 
-        function showPage(index) {
-            pages.forEach((page, i) => {
-                page.style.display = i === index ? 'block' : 'none';
-            });
-            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
-            nextBtn.style.opacity = index === pages.length - 1 ? '0.5' : '1';
-        }
-
-        prevBtn.addEventListener('click', function() {
-            if (currentPage > 0) {
-                currentPage--;
-                showPage(currentPage);
-                playPageTurnSound();
-            }
-        });
-
-        nextBtn.addEventListener('click', function() {
-            if (currentPage < pages.length - 1) {
-                currentPage++;
-                showPage(currentPage);
-                playPageTurnSound();
-            }
-        });
-
-        showPage(0);
-    }
-
-    function playPageTurnSound() {
-        const audio = new Audio('assets/audio/page-turn.mp3');
-        audio.volume = 0.3;
-        audio.play().catch(() => {});
-    }
 
     // 舞蹈视频页 - 从后端API加载
     async function loadDancePage() {
