@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileName = document.getElementById('fileName');
     const removeFileBtn = document.getElementById('removeFileBtn');
     const submitUploadBtn = document.getElementById('submitUploadBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const progressText = document.getElementById('progressText');
     const uploadTabs = document.querySelectorAll('.upload-tab');
     const worksList = document.getElementById('worksList');
     
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentCategory = 'painting';
     let currentFile = null;
     let currentFileData = null;
+    let currentObjectUrl = null; // 用于存储当前文件的Blob URL
     let currentCoverBlob = null; // 视频封面Blob
 
     // 上传按钮点击事件已在HTML中绑定
@@ -108,7 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
         currentFile = file;
         
         try {
-            currentFileData = await FileHandler.fileToBase64(file);
+            // 优化：使用 createObjectURL 代替 FileReader，避免大文件读取卡顿
+            if (currentObjectUrl) {
+                URL.revokeObjectURL(currentObjectUrl);
+            }
+            currentObjectUrl = URL.createObjectURL(file);
+            currentFileData = currentObjectUrl; // 保持变量名兼容
+            
             showFilePreview(file, currentFileData);
 
             // 获取文件尺寸
@@ -136,8 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentCoverBlob = null;
             }
         } catch (error) {
-            console.error('文件读取失败:', error);
-            alert('文件读取失败，请重试');
+            console.error('文件预览失败:', error);
+            alert('文件预览失败，请重试');
         }
     }
 
@@ -211,6 +221,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetUploadForm() {
         currentFile = null;
         currentFileData = null;
+        if (currentObjectUrl) {
+            URL.revokeObjectURL(currentObjectUrl);
+            currentObjectUrl = null;
+        }
         workFile.value = '';
         document.getElementById('workTitle').value = '';
         document.getElementById('workDesc').value = '';
@@ -218,6 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fileUploadArea.style.display = 'block';
         previewImg.src = '';
         previewVideo.src = '';
+        
+        if (progressContainer) {
+            progressContainer.style.display = 'none';
+            progressBarFill.style.width = '0%';
+            progressText.textContent = '0%';
+        }
     }
 
     // 提交上传 - 使用后端API存储
@@ -246,11 +266,18 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // 显示上传中提示
                 if (currentFile.size > 5 * 1024 * 1024) {
-                    submitUploadBtn.textContent = '文件较大，正在努力上传中，请耐心等待...';
+                    submitUploadBtn.textContent = '文件较大，正在努力上传中...';
                 } else {
                     submitUploadBtn.textContent = '上传中...';
                 }
                 submitUploadBtn.disabled = true;
+
+                // 显示进度条
+                if (progressContainer) {
+                    progressContainer.style.display = 'block';
+                    progressBarFill.style.width = '0%';
+                    progressText.textContent = '0%';
+                }
 
                 // 创建 FormData 对象
                 const formData = new FormData();
@@ -269,10 +296,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('title', title);
                 formData.append('description', description);
 
-                // 使用后端API上传
-                const result = await API.addWork(currentCategory, formData);
+                // 使用后端API上传，带进度回调
+                const result = await API.addWork(currentCategory, formData, (percent) => {
+                    if (progressBarFill) {
+                        progressBarFill.style.width = percent + '%';
+                    }
+                    if (progressText) {
+                        progressText.textContent = percent + '%';
+                    }
+                });
                 
                 if (result.success) {
+                    // 确保进度条显示100%
+                    if (progressBarFill) progressBarFill.style.width = '100%';
+                    if (progressText) progressText.textContent = '100%';
+                    
+                    // 稍微延迟一下，让用户看到100%
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
                     alert('作品上传成功！');
                     resetUploadForm();
                     loadWorksList();
@@ -291,6 +332,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } finally {
                 submitUploadBtn.textContent = '上传作品';
                 submitUploadBtn.disabled = false;
+                // 上传完成后隐藏进度条（在 resetUploadForm 中已经处理了，但如果失败了也需要处理吗？
+                // 失败时不隐藏，让用户看到进度？或者隐藏。通常失败后应该重置或提示。
+                // 这里暂时不隐藏，除非成功调用了 resetUploadForm。
+                // 如果是失败，用户可能需要重试，保持进度条在失败位置或者隐藏都可以。
+                // 为了简单，失败后我们不自动隐藏，让用户决定下一步。
             }
         });
     }

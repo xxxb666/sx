@@ -110,11 +110,51 @@ const API = {
         });
     },
 
-    // 上传作品
-    async addWork(category, formData) {
-        return this.request(API_CONFIG.getUrl(`/upload/${category}`), {
-            method: 'POST',
-            body: formData
+    // 上传作品 (支持进度回调)
+    addWork(category, formData, onProgress) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const url = API_CONFIG.getUrl(`/upload/${category}`);
+            const token = localStorage.getItem('adminToken');
+            
+            xhr.open('POST', url);
+            
+            if (token) {
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
+            
+            if (onProgress) {
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        onProgress(percentComplete);
+                    }
+                };
+            }
+            
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } catch (e) {
+                        reject(new Error('无法解析服务器响应'));
+                    }
+                } else {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        reject(new Error(response.message || '上传失败'));
+                    } catch (e) {
+                        reject(new Error(`上传失败: ${xhr.status} ${xhr.statusText}`));
+                    }
+                }
+            };
+            
+            xhr.onerror = () => {
+                reject(new Error('网络错误'));
+            };
+            
+            xhr.send(formData);
         });
     },
 
