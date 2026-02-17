@@ -222,13 +222,13 @@ body {
 .back-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 25px;
-    font-size: 16px;
+    border-radius: 20px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
@@ -240,7 +240,7 @@ body {
 }
 
 .back-icon {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
 }
 
