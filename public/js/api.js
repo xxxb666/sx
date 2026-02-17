@@ -140,6 +140,11 @@ const API = {
                     } catch (e) {
                         reject(new Error('无法解析服务器响应'));
                     }
+                } else if (xhr.status === 401 || xhr.status === 403) {
+                    console.warn('API 认证失败 (上传)，清除 Token');
+                    localStorage.removeItem('adminToken');
+                    window.dispatchEvent(new Event('auth:expired'));
+                    reject(new Error('登录已过期，请重新登录'));
                 } else {
                     try {
                         const response = JSON.parse(xhr.responseText);
@@ -168,6 +173,14 @@ const API = {
             },
             body: formData
         });
+        
+        // 处理认证失败
+        if (response.status === 401 || response.status === 403) {
+            console.warn('API 认证失败 (头像)，清除 Token');
+            localStorage.removeItem('adminToken');
+            window.dispatchEvent(new Event('auth:expired'));
+            throw new Error('登录已过期，请重新登录');
+        }
         
         const data = await response.json();
         
