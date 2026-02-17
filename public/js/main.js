@@ -477,25 +477,31 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = `
                 <div class="dance-page">
                     <div class="video-grid">
-                        ${danceData.map(dance => {
+                        ${danceData.map(video => {
                             // 优先使用 fileUrl，如果没有则回退到拼接路径
-                            const videoSrc = dance.fileUrl || ('/uploads/dance/' + dance.file_path);
-                            // 封面处理
-                            const posterAttr = dance.coverUrl ? `poster="${dance.coverUrl}"` : '';
+                            const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
+                            // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
+                            // 注意：旧数据可能没有封面，这里给个默认值或者留空让CSS处理
+                            const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
                             
                             return `
-                            <div class="video-card" data-video="${videoSrc}" data-id="${dance.work_id}">
+                            <div class="video-card" data-video="${videoSrc}">
                                 <div class="video-thumbnail">
-                                    <video src="${videoSrc}" ${posterAttr} preload="metadata" muted></video>
+                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:cover;" alt="${video.title}">` : '<video muted><source src="' + videoSrc + '" type="video/mp4"></video>'}
                                     <div class="play-icon">▶</div>
                                 </div>
                                 <div class="video-info">
-                                    <h3>${dance.title}</h3>
-                                    <p>${dance.description || ''}</p>
+                                    <h3>${video.title}</h3>
+                                    <p>${video.description || ''}</p>
+                                    ${isAdminUser ? `<button class="video-delete-btn" data-id="${video.work_id}" data-category="dance">删除</button>` : ''}
                                 </div>
-                                ${isAdminUser ? `<button class="work-delete-btn video-delete-btn" data-id="${dance.work_id}" data-category="dance">删除</button>` : ''}
                             </div>
                         `}).join('')}
+                        ${isAdminUser ? `
+                        <div class="add-work-card" onclick="window.goToUploadPage('dance')" title="上传新作品">
+                            <div class="add-icon">+</div>
+                            <div class="add-text">添加舞蹈视频</div>
+                        </div>` : ''}
                     </div>
                     ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'dance\')" title="上传新作品">+</button>' : ''}
                 </div>
@@ -621,6 +627,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         `}).join('')}
+                        ${isAdminUser ? `
+                        <div class="add-work-card" onclick="window.goToUploadPage('ai')" title="上传新作品">
+                            <div class="add-icon">+</div>
+                            <div class="add-text">添加AI作品</div>
+                        </div>` : ''}
                     </div>
                     ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ai\')" title="上传新作品">+</button>' : ''}
                 </div>

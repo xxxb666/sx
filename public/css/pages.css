@@ -667,10 +667,11 @@
 }
 
 /* 悬浮上传按钮 */
+/* 悬浮上传按钮 - 调整位置避免遮挡管理员入口 */
 .floating-upload-btn {
     position: fixed;
-    bottom: 40px;
-    right: 40px;
+    bottom: 90px;
+    right: 20px;
     width: 60px;
     height: 60px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
@@ -694,10 +695,72 @@
 
 @media (max-width: 768px) {
     .floating-upload-btn {
-        bottom: 20px;
+        bottom: 80px;
         right: 20px;
         width: 50px;
         height: 50px;
         font-size: 24px;
     }
+}
+
+/* 列表中的添加作品卡片 */
+.add-work-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px dashed #ff6b9d;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
+    box-sizing: border-box;
+}
+
+.add-work-card:hover {
+    background: rgba(255, 245, 248, 0.9);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+    border-color: #ff4785;
+}
+
+.add-icon {
+    font-size: 48px;
+    color: #ff6b9d;
+    margin-bottom: 15px;
+    line-height: 1;
+}
+
+.add-text {
+    font-size: 18px;
+    color: #ff6b9d;
+    font-weight: 600;
+}
+
+/* 舞蹈页面瀑布流适配 */
+.video-grid .add-work-card {
+    width: 100%;
+    margin-bottom: 20px;
+    break-inside: avoid;
+    display: inline-flex;
+    height: 250px;
+}
+
+/* AI页面网格适配 */
+.ai-grid .add-work-card {
+    height: 100%;
+    min-height: 280px;
+}
+
+/* 荣誉墙页面适配 */
+.honor-grid .add-work-card {
+    height: 300px;
+}
+
+/* PPT页面适配 */
+.ppt-grid .add-work-card {
+    height: 250px;
 }
