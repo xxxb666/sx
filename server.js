@@ -328,3 +328,5 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 server.timeout = 30 * 60 * 1000;
 server.keepAliveTimeout = 30 * 60 * 1000;
 server.headersTimeout = 31 * 60 * 1000; // 必须大于 keepAliveTimeout
+
+console.log(`服务器超时设置已应用: timeout=${server.timeout}ms`);
