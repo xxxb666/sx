@@ -216,35 +216,61 @@ app.delete('/api/works/:id', authenticateToken, (req, res) => {
 });
 
 // 上传作品
-app.post('/api/upload/:category', authenticateToken, upload.single('file'), (req, res) => {
+// 支持上传文件和封面图
+const uploadFields = upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'cover', maxCount: 1 }
+]);
+
+app.post('/api/upload/:category', authenticateToken, uploadFields, (req, res) => {
     try {
         const { category } = req.params;
-        const { title, description } = req.body;
+        const { title, description, width, height } = req.body;
 
-        if (!req.file) {
+        if (!req.files || !req.files['file']) {
             return res.status(400).json({ success: false, message: '没有上传文件' });
         }
 
+        const file = req.files['file'][0];
+        const cover = req.files['cover'] ? req.files['cover'][0] : null;
+
         if (!title) {
-            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+            // 清理已上传的文件
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            if (cover && fs.existsSync(cover.path)) fs.unlinkSync(cover.path);
             return res.status(400).json({ success: false, message: '请提供作品标题' });
         }
 
         const workId = Date.now().toString();
         
         // 构建文件URL - 使用相对路径，无需域名
-        const fileUrl = `/uploads/${category}/${req.file.filename}`;
+        const fileUrl = `/uploads/${category}/${file.filename}`;
+        const coverUrl = cover ? `/uploads/${category}/${cover.filename}` : null;
+        
+        // 计算方向
+        let orientation = 'landscape'; // 默认横向
+        if (width && height) {
+            const w = parseInt(width);
+            const h = parseInt(height);
+            if (!isNaN(w) && !isNaN(h)) {
+                if (h > w) orientation = 'portrait';
+            }
+        }
         
         const newWork = {
             work_id: workId,
             title: title,
             description: description || '',
             category: category,
-            file_name: req.file.originalname,
-            file_path: req.file.filename,
-            fileUrl: fileUrl, // 明确保存 fileUrl
-            file_type: req.file.mimetype,
-            file_size: req.file.size,
+            file_name: file.originalname,
+            file_path: file.filename,
+            fileUrl: fileUrl,
+            coverUrl: coverUrl, // 保存封面URL
+            file_type: file.mimetype,
+            file_size: file.size,
+            width: width ? parseInt(width) : null,
+            height: height ? parseInt(height) : null,
+            orientation: orientation,
             created_at: new Date().toISOString()
         };
 
@@ -259,8 +285,16 @@ app.post('/api/upload/:category', authenticateToken, upload.single('file'), (req
         });
     } catch (error) {
         console.error('上传失败:', error);
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
+        // 清理可能已上传的文件
+        if (req.files) {
+            if (req.files['file'] && req.files['file'][0]) {
+                const p = req.files['file'][0].path;
+                if (fs.existsSync(p)) fs.unlinkSync(p);
+            }
+            if (req.files['cover'] && req.files['cover'][0]) {
+                const p = req.files['cover'][0].path;
+                if (fs.existsSync(p)) fs.unlinkSync(p);
+            }
         }
         res.status(500).json({ success: false, message: '上传失败' });
     }

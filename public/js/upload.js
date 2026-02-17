@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentCategory = 'painting';
     let currentFile = null;
     let currentFileData = null;
+    let currentCoverBlob = null; // 视频封面Blob
 
     // 上传按钮点击事件已在HTML中绑定
 
@@ -59,6 +60,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // 存储当前文件尺寸信息
+    let currentFileDimensions = { width: 0, height: 0 };
 
     // 拖拽上传
     if (fileUploadArea) {
@@ -106,6 +110,31 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             currentFileData = await FileHandler.fileToBase64(file);
             showFilePreview(file, currentFileData);
+
+            // 获取文件尺寸
+            if (file.type.startsWith('image/')) {
+                const img = new Image();
+                img.onload = function() {
+                    currentFileDimensions = { width: this.width, height: this.height };
+                    console.log('图片尺寸:', currentFileDimensions);
+                };
+                img.src = currentFileData;
+            } else if (file.type.startsWith('video/')) {
+                // 视频尺寸将在 generateVideoThumbnail 中获取
+            }
+
+            // 如果是视频，尝试生成封面
+            if (file.type.startsWith('video/')) {
+                generateVideoThumbnail(file).then(blob => {
+                    currentCoverBlob = blob;
+                    console.log('视频封面生成成功');
+                }).catch(err => {
+                    console.warn('视频封面生成失败:', err);
+                    currentCoverBlob = null;
+                });
+            } else {
+                currentCoverBlob = null;
+            }
         } catch (error) {
             console.error('文件读取失败:', error);
             alert('文件读取失败，请重试');
@@ -132,6 +161,43 @@ document.addEventListener('DOMContentLoaded', function() {
             previewImg.style.display = 'none';
             previewVideo.style.display = 'none';
         }
+    }
+
+    // 生成视频封面
+    function generateVideoThumbnail(file) {
+        return new Promise((resolve, reject) => {
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+            video.muted = true;
+            video.preload = 'metadata';
+            
+            video.onloadedmetadata = () => {
+                video.currentTime = 1; // 尝试截取第1秒
+            };
+            
+            video.onseeked = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                    // 存储视频尺寸
+                    currentFileDimensions = { width: video.videoWidth, height: video.videoHeight };
+                    console.log('视频尺寸:', currentFileDimensions);
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(blob => {
+                        resolve(blob);
+                        URL.revokeObjectURL(video.src);
+                    }, 'image/jpeg', 0.8);
+                } catch (e) {
+                    reject(e);
+                }
+            };
+            
+            video.onerror = (e) => reject(e);
+        });
     }
 
     // 移除文件
@@ -189,6 +255,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 创建 FormData 对象
                 const formData = new FormData();
                 formData.append('file', currentFile);
+                
+                // 添加尺寸信息
+                if (currentFileDimensions && currentFileDimensions.width > 0) {
+                    formData.append('width', currentFileDimensions.width);
+                    formData.append('height', currentFileDimensions.height);
+                }
+
+                // 如果有视频封面，一起上传
+                if (currentCoverBlob) {
+                    formData.append('cover', currentCoverBlob, 'cover.jpg');
+                }
                 formData.append('title', title);
                 formData.append('description', description);
 
@@ -276,6 +353,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (work.file_type.startsWith('image')) {
             return `<img src="${fileSrc}" alt="${work.title}">`;
         } else if (work.file_type.startsWith('video')) {
+            if (work.coverUrl) {
+                return `
+                    <div style="position: relative; width: 100%; height: 100%;">
+                        <img src="${work.coverUrl}" alt="${work.title}" style="width:100%;height:100%;object-fit:cover;">
+                        <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.5);">▶</span>
+                    </div>
+                `;
+            }
             return `<div class="video-thumbnail"><span>▶</span></div>`;
         } else {
             return `<div class="file-thumbnail"><span>📄</span></div>`;

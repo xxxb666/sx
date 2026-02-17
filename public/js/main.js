@@ -282,7 +282,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-        // 绘画作品页 - 从后端API加载
+        // 辅助函数：按方向排序（竖屏在前，横屏在后）
+    function sortWorksByOrientation(works) {
+        if (!works || works.length === 0) return [];
+        
+        const portrait = works.filter(w => w.orientation === 'portrait');
+        const landscape = works.filter(w => w.orientation !== 'portrait'); // 包括 landscape 和未定义的
+        
+        return [...portrait, ...landscape];
+    }
+
+    // 绘画作品页 - 从后端API加载
     async function loadPaintingPage() {
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
         
@@ -446,7 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 从后端API获取舞蹈视频
             const result = await API.getWorks('dance');
-            const danceData = result.works || [];
+            let danceData = result.works || [];
+            
+            // 按方向排序
+            danceData = sortWorksByOrientation(danceData);
 
             if (danceData.length === 0) {
                 detailContent.innerHTML = `
@@ -466,10 +479,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${danceData.map(dance => {
                             // 优先使用 fileUrl，如果没有则回退到拼接路径
                             const videoSrc = dance.fileUrl || ('/uploads/dance/' + dance.file_path);
+                            // 封面处理
+                            const posterAttr = dance.coverUrl ? `poster="${dance.coverUrl}"` : '';
+                            
                             return `
                             <div class="video-card" data-video="${videoSrc}" data-id="${dance.work_id}">
                                 <div class="video-thumbnail">
-                                    <video src="${videoSrc}" preload="metadata" muted></video>
+                                    <video src="${videoSrc}" ${posterAttr} preload="metadata" muted></video>
                                     <div class="play-icon">▶</div>
                                 </div>
                                 <div class="video-info">
@@ -532,6 +548,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showVideoPlayer(videoSrc) {
         videoElement.src = videoSrc;
         videoPlayer.style.display = 'flex';
+        // 自动播放
+        videoElement.play().catch(e => console.log('自动播放失败:', e));
     }
     window.showVideoPlayer = showVideoPlayer;
 
@@ -552,7 +570,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 从后端API获取AI作品
             const result = await API.getWorks('ai');
-            const aiData = result.works || [];
+            let aiData = result.works || [];
+            
+            // 按方向排序
+            aiData = sortWorksByOrientation(aiData);
             
             if (aiData.length === 0) {
                 detailContent.innerHTML = `
@@ -577,7 +598,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="ai-thumbnail">
                                     ${ai.file_type && ai.file_type.startsWith('image') 
                                         ? `<img src="${contentSrc}" alt="${ai.title}">`
-                                        : `<div class="ai-thumbnail-placeholder">${ai.file_type && ai.file_type.startsWith('video') ? '▶' : '📄'}</div>`
+                                        : (ai.coverUrl 
+                                            ? `<img src="${ai.coverUrl}" alt="${ai.title}">`
+                                            : `<div class="ai-thumbnail-placeholder">${ai.file_type && ai.file_type.startsWith('video') ? '▶' : '📄'}</div>`)
                                     }
                                     ${ai.file_type && ai.file_type.startsWith('video') ? '<div class="play-icon">▶</div>' : ''}
                                 </div>

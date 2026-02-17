@@ -187,6 +187,18 @@
     padding: 0 20px;
 }
 
+@media (max-width: 1024px) {
+    .video-grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .video-grid {
+        column-count: 1;
+    }
+}
+
 .video-card {
     background: white;
     border-radius: 15px;
@@ -615,9 +627,10 @@
         padding: 8px;
     }
 
-    .video-grid,
+    /* 移除之前的 video-grid 错误样式 */
     .ai-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 手机端允许一行两个 */
+        gap: 15px;
     }
 
     .honor-grid {
