@@ -637,9 +637,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const type = this.getAttribute('data-type');
                 const content = this.getAttribute('data-content');
 
-                if (type === 'image') {
+                if (type && type.startsWith('image')) {
                     showImageModal(content);
-                } else if (type === 'video') {
+                } else if (type && type.startsWith('video')) {
                     showVideoPlayer(content);
                 } else {
                     alert('该文件类型不支持预览');
