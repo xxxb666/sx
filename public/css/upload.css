@@ -4,58 +4,58 @@
 .action-section {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin: 40px 0;
+    gap: 10px;
+    margin: 15px 0;
     flex-wrap: wrap;
 }
 
 .upload-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
     background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
     color: white;
-    padding: 12px 30px;
-    border-radius: 25px;
+    padding: 6px 15px;
+    border-radius: 15px;
     border: none;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
 }
 
 .upload-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
 }
 
 .upload-icon {
-    font-size: 20px;
+    font-size: 14px;
 }
 
 /* 上传页面 */
 .upload-page {
-    max-width: 800px;
+    max-width: 320px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 5px;
 }
 
 .upload-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 4px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .upload-tab {
-    padding: 8px 20px;
+    padding: 4px 10px;
     background: white;
-    border: 2px solid #ffe4ec;
-    border-radius: 20px;
+    border: 1px solid #ffe4ec;
+    border-radius: 10px;
     color: #ff6b9d;
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -73,34 +73,34 @@
 
 .upload-form {
     background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
-    margin-bottom: 30px;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
+    margin-bottom: 15px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
     color: #ff6b9d;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 11px;
 }
 
-.form-group input[type="text"],
+.form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 10px 14px;
-    border: 2px solid #ffe4ec;
-    border-radius: 10px;
-    font-size: 14px;
+    padding: 6px 8px;
+    border: 1px solid #ffe4ec;
+    border-radius: 6px;
+    font-size: 11px;
     color: #666;
-    outline: none;
     transition: all 0.3s ease;
+    background: #fffafa;
 }
 
 .form-group input[type="text"]:focus,
@@ -111,9 +111,9 @@
 
 /* 文件上传区域 */
 .file-upload-area {
-    border: 2px dashed #ffe4ec;
-    border-radius: 10px;
-    padding: 30px;
+    border: 1px dashed #ffe4ec;
+    border-radius: 6px;
+    padding: 10px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -142,50 +142,51 @@
 }
 
 .upload-icon-large {
-    font-size: 40px;
-    margin-bottom: 10px;
+    font-size: 16px;
+    margin-bottom: 2px;
     display: block;
 }
 
 .upload-placeholder p {
     color: #ff8fb3;
-    font-size: 14px;
-    margin-bottom: 5px;
+    font-size: 9px;
+    margin-bottom: 2px;
 }
 
 .upload-hint {
-    font-size: 12px;
-    color: #999;
+    font-size: 8px !important;
+    color: #ffb7d2 !important;
 }
 
 /* 文件预览 */
 .file-preview {
-    margin-top: 20px;
+    margin-top: 10px;
     text-align: center;
 }
 
 .file-preview img,
 .file-preview video {
     max-width: 100%;
-    max-height: 300px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
+    max-height: 150px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
 }
 
 #fileName {
     color: #666;
-    margin-bottom: 15px;
-    font-size: 14px;
+    margin-bottom: 8px;
+    font-size: 10px;
 }
 
 .remove-file-btn {
-    padding: 8px 20px;
+    padding: 4px 10px;
     background: #ffe4ec;
     color: #ff6b9d;
     border: none;
-    border-radius: 20px;
+    border-radius: 10px;
     cursor: pointer;
+    font-size: 10px;
     transition: all 0.3s ease;
 }
 
@@ -196,16 +197,16 @@
 
 .submit-upload-btn {
     width: 100%;
-    padding: 12px;
+    padding: 4px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
     border: none;
-    border-radius: 25px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 2px 4px rgba(255, 107, 157, 0.2);
 }
 
 .submit-upload-btn:hover {
@@ -253,46 +254,49 @@
 .works-list-section h3 {
     text-align: center;
     color: #ff6b9d;
-    margin-bottom: 30px;
-    font-size: 24px;
+    margin-bottom: 15px;
+    font-size: 16px;
 }
 
 .works-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
 }
 
 .no-works {
     grid-column: 1 / -1;
     text-align: center;
     color: #999;
-    padding: 40px;
+    padding: 20px;
     background: white;
-    border-radius: 15px;
-    border: 2px dashed #ffe4ec;
+    border-radius: 10px;
+    border: 1px dashed #ffe4ec;
+    font-size: 12px;
 }
 
 .work-item {
     background: white;
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
     transition: all 0.3s ease;
+    flex-direction: column;
+    text-align: center;
 }
 
 .work-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
 }
 
 .work-thumbnail {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
     background: #ffe4ec;
@@ -309,46 +313,53 @@
 
 .video-thumbnail,
 .file-thumbnail {
-    font-size: 32px;
+    font-size: 24px;
 }
 
 .work-info {
     flex: 1;
     min-width: 0;
+    width: 100%;
 }
 
 .work-info h4 {
     color: #ff6b9d;
-    margin-bottom: 5px;
-    font-size: 16px;
+    margin-bottom: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .work-info p {
     color: #ff8fb3;
-    font-size: 14px;
-    margin-bottom: 5px;
+    font-size: 10px;
+    margin-bottom: 3px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .work-date {
-    font-size: 12px;
+    font-size: 9px;
     color: #ff8fb3;
 }
 
 .work-actions {
     display: flex;
-    gap: 10px;
+    gap: 5px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 5px;
 }
 
 .view-work-btn,
 .delete-work-btn {
-    padding: 8px 16px;
+    padding: 4px 10px;
     border: none;
-    border-radius: 20px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 10px;
     transition: all 0.3s ease;
 }
 

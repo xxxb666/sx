@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return `
                             <div class="video-card" data-video="${videoSrc}">
                                 <div class="video-thumbnail">
-                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:cover;" alt="${video.title}">` : '<video muted><source src="' + videoSrc + '" type="video/mp4"></video>'}
+                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:cover;" alt="${video.title}">` : '<video muted preload="metadata" style="width:100%; height:100%; object-fit:cover;"><source src="' + videoSrc + '" type="video/mp4"></video>'}
                                     <div class="play-icon">▶</div>
                                 </div>
                                 <div class="video-info">
@@ -515,6 +515,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showVideoPlayer(videoSrc) {
         videoElement.src = videoSrc;
         videoPlayer.style.display = 'flex';
+        // 确保显示控制条
+        videoElement.controls = true;
         // 确保有声音
         videoElement.muted = false;
         videoElement.volume = 1.0;
@@ -524,6 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
             playPromise.catch(e => {
                 console.log('自动播放失败:', e);
                 // 如果自动播放失败（可能是浏览器限制），显示播放按钮或提示用户
+                // 此时用户可以点击控制条上的播放按钮
             });
         }
     }
