@@ -548,8 +548,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function showVideoPlayer(videoSrc) {
         videoElement.src = videoSrc;
         videoPlayer.style.display = 'flex';
+        // 确保有声音
+        videoElement.muted = false;
+        videoElement.volume = 1.0;
         // 自动播放
-        videoElement.play().catch(e => console.log('自动播放失败:', e));
+        const playPromise = videoElement.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(e => {
+                console.log('自动播放失败:', e);
+                // 如果自动播放失败（可能是浏览器限制），显示播放按钮或提示用户
+            });
+        }
     }
     window.showVideoPlayer = showVideoPlayer;
 
