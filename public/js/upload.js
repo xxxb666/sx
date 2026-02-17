@@ -217,6 +217,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 图片压缩函数
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const maxWidth = 1920;
+            const maxHeight = 1080;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // 计算缩放比例
+                    if (width > maxWidth || height > maxHeight) {
+                        if (width / height > maxWidth / maxHeight) {
+                            height = Math.round(height * (maxWidth / width));
+                            width = maxWidth;
+                        } else {
+                            width = Math.round(width * (maxHeight / height));
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(blob => {
+                        if (!blob) {
+                            reject(new Error('Canvas to Blob failed'));
+                            return;
+                        }
+                        // 重建File对象
+                        const newFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(newFile);
+                    }, 'image/jpeg', 0.8); // 0.8 质量通常足够好且体积小
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+
     // 重置上传表单
     function resetUploadForm() {
         currentFile = null;
@@ -271,6 +321,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     submitUploadBtn.textContent = '上传中...';
                 }
                 submitUploadBtn.disabled = true;
+
+                // 大文件警告 (超过100MB)
+                if (currentFile.size > 100 * 1024 * 1024) {
+                    const sizeMB = (currentFile.size / (1024 * 1024)).toFixed(2);
+                    let fileTypeMsg = '文件';
+                    if (currentFile.type.startsWith('video/')) fileTypeMsg = '视频';
+                    else if (currentFile.type === 'application/pdf') fileTypeMsg = 'PDF';
+                    
+                    const proceed = confirm(`当前${fileTypeMsg}较大 (${sizeMB}MB)，上传可能需要较长时间。\n\n建议您先压缩文件到 100MB 以内再上传，可以显著提高上传速度和成功率。\n\n是否仍要继续上传原始文件？`);
+                    if (!proceed) {
+                        submitUploadBtn.disabled = false;
+                        submitUploadBtn.textContent = '上传作品';
+                        return;
+                    }
+                }
+
+                // 图片自动压缩
+                if (currentFile.type.startsWith('image/')) {
+                    try {
+                        submitUploadBtn.textContent = '正在优化图片...';
+                        const compressedFile = await compressImage(currentFile);
+                        // 如果压缩后更小，则使用压缩后的文件
+                        if (compressedFile.size < currentFile.size) {
+                            console.log(`图片已压缩: ${(currentFile.size/1024).toFixed(2)}KB -> ${(compressedFile.size/1024).toFixed(2)}KB`);
+                            currentFile = compressedFile;
+                        }
+                    } catch (e) {
+                        console.warn('图片压缩失败，将使用原图上传', e);
+                    }
+                }
 
                 // 显示进度条
                 if (progressContainer) {
