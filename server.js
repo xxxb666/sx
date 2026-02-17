@@ -315,7 +315,7 @@ app.get('*', (req, res) => {
 });
 
 // 启动服务器
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log('====================================');
     console.log(`服务器启动成功！`);
     console.log(`运行环境: ${process.env.NODE_ENV || 'development'}`);
@@ -323,3 +323,8 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`时间: ${new Date().toLocaleString()}`);
     console.log('====================================');
 });
+
+// 设置超时时间为 30 分钟，防止大文件上传中断
+server.timeout = 30 * 60 * 1000;
+server.keepAliveTimeout = 30 * 60 * 1000;
+server.headersTimeout = 31 * 60 * 1000; // 必须大于 keepAliveTimeout
