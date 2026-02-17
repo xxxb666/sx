@@ -363,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                     </div>
+                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'painting\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
@@ -496,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `}).join('')}
                     </div>
+                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'dance\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
@@ -620,6 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `}).join('')}
                     </div>
+                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ai\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
@@ -895,6 +898,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="ppt-nav next" id="pptNext">下一页</button>
                         </div>
                     </div>
+                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ppt\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
