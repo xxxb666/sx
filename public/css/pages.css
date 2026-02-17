@@ -38,11 +38,18 @@
 
 /* 空状态样式 */
 .empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
+    z-index: 10;
 }
 
 .empty-state p {
