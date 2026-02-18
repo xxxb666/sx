@@ -245,7 +245,7 @@ body {
     justify-content: center;
     gap: 25px;
     margin-bottom: 30px;
-    max-width: 800px;
+    max-width: 600px; /* 限制宽度以强制每行3个 */
     margin-left: auto;
     margin-right: auto;
     padding: 20px;
