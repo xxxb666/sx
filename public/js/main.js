@@ -317,9 +317,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // 管理员：启用编辑
             editableElements.forEach(el => {
                 el.contentEditable = 'true';
-                el.style.cursor = 'text';
-                el.style.border = '1px dashed #ff6b9d';
-                el.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                el.classList.add('admin-editable');
+                // 移除内联样式，使用CSS类控制
+                el.style.cursor = '';
+                el.style.border = '';
+                el.style.backgroundColor = '';
             });
             
             // 显示按钮
