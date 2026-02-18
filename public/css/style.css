@@ -275,8 +275,8 @@ body {
 
 /* 卡片图标 */
 .card-icon {
-    font-size: 16px;
-    margin-bottom: 3px;
+    font-size: 32px;
+    margin-bottom: 5px;
     transition: all 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(255, 107, 157, 0.2));
 }
