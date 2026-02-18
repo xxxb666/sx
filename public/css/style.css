@@ -243,19 +243,19 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    max-width: 300px;
+    gap: 25px;
+    margin-bottom: 30px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
-    padding: 4px;
+    padding: 20px;
 }
 
 /* 首页卡片 */
 .card {
-    flex: 0 0 75px;
+    flex: 0 0 160px;
     background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%);
-    border-radius: 8px;
+    border-radius: 15px;
     overflow: hidden;
     box-shadow: 
         0 4px 15px rgba(255, 107, 157, 0.15),
@@ -269,8 +269,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 6px 3px;
-    height: 75px;
+    padding: 20px;
+    height: 160px;
 }
 
 /* 卡片图标 */
@@ -284,11 +284,12 @@ body {
 /* 卡片标题 */
 .card-title {
     color: #ff6b9d;
-    font-size: 10px;
+    font-size: 16px;
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(255, 107, 157, 0.1);
     transition: all 0.3s ease;
     text-align: center;
+    margin-top: 10px;
 }
 
 
