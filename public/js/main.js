@@ -281,13 +281,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 通用函数：跳转到上传页面并切换到指定类别
-    window.goToUploadPage = function(category) {
+    window.goToUploadPage = function(category, acceptType) {
         window.switchPage('page4');
         // 切换到对应标签
         setTimeout(() => {
-            // 直接调用switchUploadTab，传入false表示不重置表单
+            // 直接调用switchUploadTab，传入true表示重置表单并应用acceptType
             if (typeof window.switchUploadTab === 'function') {
-                window.switchUploadTab(category, false);
+                window.switchUploadTab(category, true, acceptType);
             }
         }, 600);
     };
@@ -512,7 +512,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `}).join('')}
                     </div>
-                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'painting\')" title="上传新作品">+</button>' : ''}
+                    ${isAdminUser ? `
+                    <div class="section-footer-action">
+                        <button class="section-footer-add-btn" onclick="window.goToUploadPage('painting')">
+                            <span>🎨</span> 上传绘画
+                        </button>
+                    </div>` : ''}
                 </div>
             `;
 
@@ -615,7 +620,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `}).join('')}
                     </div>
-                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'dance\')" title="上传新作品">+</button>' : ''}
+                    ${isAdminUser ? `
+                    <div class="section-footer-action">
+                        <button class="section-footer-add-btn" onclick="window.goToUploadPage('dance')">
+                            <span>💃</span> 上传舞蹈
+                        </button>
+                    </div>` : ''}
                 </div>
             `;
 
@@ -815,7 +825,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 视频区域（左侧/上侧）
             html += '<div class="ai-split-section ai-videos-section">';
+            html += '<div class="section-header">';
             html += '<h3 class="section-title">🎬 AI 视频</h3>';
+            html += '</div>';
+            
             if (videos.length > 0) {
                 html += `
                     <div class="ai-grid">
@@ -825,11 +838,24 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                  html += '<div class="empty-section-hint">暂无视频作品</div>';
             }
+
+            if (isAdminUser) {
+                html += `
+                <div class="section-footer-action">
+                    <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'video/*')">
+                        <span>🎬</span> 上传视频
+                    </button>
+                </div>`;
+            }
+
             html += '</div>';
 
             // 图片区域（右侧/下侧）
             html += '<div class="ai-split-section ai-images-section">';
+            html += '<div class="section-header">';
             html += '<h3 class="section-title">🖼️ AI 图片</h3>';
+            html += '</div>';
+            
             if (images.length > 0) {
                 html += `
                     <div class="ai-grid">
@@ -839,10 +865,19 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                  html += '<div class="empty-section-hint">暂无图片作品</div>';
             }
+
+            if (isAdminUser) {
+                html += `
+                <div class="section-footer-action">
+                    <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'image/*')">
+                        <span>🖼️</span> 上传图片
+                    </button>
+                </div>`;
+            }
+
             html += '</div>';
             
             html += `
-                ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ai\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 

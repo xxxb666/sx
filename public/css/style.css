@@ -139,10 +139,10 @@ body {
     justify-content: center;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: #fff;
-    padding: 12px 35px;
+    padding: 10px 30px;
     border: none;
     border-radius: 50px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -378,10 +378,10 @@ body {
     gap: 10px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
-    padding: 15px 40px;
-    border-radius: 30px;
+    padding: 10px 30px;
+    border-radius: 25px;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
     transition: all 0.3s ease;
@@ -449,14 +449,14 @@ body {
     gap: 8px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
-    padding: 10px 24px;
+    padding: 8px 20px;
     border: none;
     border-radius: 25px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.2);
 }
 
 .nav-btn:hover {
@@ -1232,4 +1232,49 @@ body {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Section Header Styles */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(255, 107, 157, 0.2);
+}
+
+.section-header .section-title {
+    margin: 0;
+    font-size: 18px;
+    color: #ff6b9d;
+    font-weight: 600;
+}
+
+/* Add Button Styles */
+.section-add-btn {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.section-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+    background: linear-gradient(135deg, #ff5c93 0%, #ff80a8 100%);
+}
+
+.section-add-btn::before {
+    content: '+';
+    font-size: 16px;
+    font-weight: bold;
 }

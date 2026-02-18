@@ -69,12 +69,12 @@
 }
 
 .go-upload-btn {
-    padding: 10px 30px;
+    padding: 8px 24px;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
     border: none;
-    border-radius: 25px;
-    font-size: 14px;
+    border-radius: 20px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -83,6 +83,40 @@
 .go-upload-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+/* 底部居中上传按钮 */
+.section-footer-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+
+.section-footer-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    transition: all 0.3s ease;
+}
+
+.section-footer-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.section-footer-add-btn span {
+    font-size: 16px;
 }
 
 /* 绘画作品页 */
@@ -130,15 +164,22 @@
     flex-direction: column;
 }
 
-.ai-split-section .section-title {
+.ai-split-section .section-header {
     margin-top: 0;
     position: sticky;
     top: 0;
     background: rgba(255, 245, 248, 0.95);
     z-index: 10;
-    padding: 10px 0 10px 15px;
+    padding: 10px 15px;
     border-radius: 8px;
     backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+}
+
+.ai-split-section .section-title {
+    margin: 0;
+    border: none;
+    padding: 0;
 }
 
 .empty-section-hint {
@@ -163,8 +204,15 @@
         overflow: visible;
     }
     
-    .ai-split-section .section-title {
+    .ai-split-section .section-header {
         position: static;
         background: transparent;
+        padding: 0 0 10px 0;
+        border-bottom: 1px dashed rgba(255, 107, 157, 0.2);
+    }
+    
+    .ai-split-section .section-title {
+        border-left: 5px solid #ff6b9d;
+        padding-left: 10px;
     }
 }

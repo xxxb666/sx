@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 上传按钮点击事件已在HTML中绑定
 
     // 标签切换函数
-    window.switchUploadTab = function(category, resetForm = true) {
+    window.switchUploadTab = function(category, resetForm = true, acceptType = '') {
         uploadTabs.forEach(t => t.classList.remove('active'));
         uploadTabs.forEach(t => {
             if (t.getAttribute('data-tab') === category) {
@@ -41,6 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         currentCategory = category;
+        
+        // 更新文件上传类型的accept属性
+        if (workFile) {
+            if (acceptType) {
+                workFile.accept = acceptType;
+            } else {
+                // 恢复默认
+                workFile.accept = 'image/*,video/*,.pdf,.ppt,.pptx';
+            }
+        }
+
         // 只有手动点击标签时才重置表单，从其他页面跳转过来时不重置
         if (resetForm) {
             resetUploadForm();
