@@ -371,6 +371,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // 我的介绍按钮点击事件
+    const introBtn = document.getElementById('introBtn');
+    if (introBtn) {
+        introBtn.addEventListener('click', function() {
+            window.switchPage('page2');
+        });
+    }
 
     // 返回按钮点击事件
     backBtns.forEach(btn => {
@@ -386,6 +394,13 @@ document.addEventListener('DOMContentLoaded', function() {
     cards.forEach(card => {
         card.addEventListener('click', function() {
             const pageType = this.getAttribute('data-page');
+            
+            // 如果是"我的介绍"，跳转到page2 (兼容旧逻辑，虽然卡片已移除)
+            if (pageType === 'intro') {
+                window.switchPage('page2');
+                return;
+            }
+
             loadDetailPage(pageType);
             window.switchPage('page3');
         });

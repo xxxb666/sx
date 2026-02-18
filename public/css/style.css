@@ -246,6 +246,39 @@ body {
     letter-spacing: 2px;
 }
 
+.intro-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.intro-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%);
+    color: #ff6b9d;
+    padding: 8px 24px;
+    border: 1px solid rgba(255, 107, 157, 0.2);
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.1);
+}
+
+.intro-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.2);
+    border-color: rgba(255, 107, 157, 0.4);
+    background: linear-gradient(135deg, #fff5f8 0%, #ffeef4 100%);
+}
+
+.intro-icon {
+    font-size: 18px;
+}
+
 /* 导航按钮 */
 .nav-btn {
     display: flex;
@@ -270,7 +303,7 @@ body {
     justify-content: center;
     gap: 25px;
     margin-bottom: 30px;
-    max-width: 600px; /* 限制宽度以强制每行3个 */
+    max-width: 500px; /* 限制宽度以强制每行3个 */
     margin-left: auto;
     margin-right: auto;
     padding: 20px;
@@ -278,7 +311,7 @@ body {
 
 /* 首页卡片 */
 .card {
-    flex: 0 0 160px;
+    flex: 0 0 110px;
     background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%);
     border-radius: 15px;
     overflow: hidden;
@@ -294,14 +327,28 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    height: 160px;
+    padding: 15px;
+    height: 110px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 8px 25px rgba(255, 107, 157, 0.25),
+        0 4px 12px rgba(255, 107, 157, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 107, 157, 0.4);
+}
+
+.card:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
 }
 
 /* 卡片图标 */
 .card-icon {
-    font-size: 40px;
-    margin-bottom: 2px;
+    font-size: 28px;
+    margin-bottom: 8px;
     transition: all 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(255, 107, 157, 0.2));
 }
@@ -309,12 +356,12 @@ body {
 /* 卡片标题 */
 .card-title {
     color: #ff6b9d;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(255, 107, 157, 0.1);
     transition: all 0.3s ease;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 
@@ -394,20 +441,6 @@ body {
 .video-delete-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
-}
-
-.page-nav {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-}
-
-.page-nav-top {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 30px;
 }
 
 .nav-btn {
