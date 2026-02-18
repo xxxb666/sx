@@ -207,6 +207,28 @@ body {
     padding: 0 20px;
 }
 
+.back-btn {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.back-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
 /* 首页标题 */
 .header h1 {
     font-size: 28px;
@@ -540,6 +562,29 @@ body {
     max-height: 90%;
     object-fit: contain;
     border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2);
+}
+
+.pdf-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 238, 248, 0.98) 0%, rgba(255, 228, 236, 0.98) 100%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-container {
+    width: 90%;
+    height: 90%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2);
+    overflow: hidden;
 }
 
 .modal-close-btn {
@@ -734,18 +779,22 @@ body {
 /* 管理员入口按钮 */
 .admin-entry-btn {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 45px;
-    height: 45px;
+    bottom: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     border: none;
-    font-size: 20px;
+    font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.4);
     transition: all 0.3s ease;
     z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
 .admin-entry-btn:hover {
@@ -769,37 +818,37 @@ body {
 
 .admin-login-box {
     background: white;
-    padding: 40px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
+    padding: 25px;
+    border-radius: 15px;
+    width: 85%;
+    max-width: 320px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .admin-login-box h3 {
     text-align: center;
     color: #ff6b9d;
-    margin-bottom: 30px;
-    font-size: 24px;
+    margin-bottom: 20px;
+    font-size: 20px;
 }
 
 .admin-login-box .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .admin-login-box label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: #666;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .admin-login-box input {
     width: 100%;
-    padding: 12px 15px;
+    padding: 8px 12px;
     border: 2px solid #ffe4ec;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 14px;
     transition: all 0.3s ease;
 }
 
@@ -810,17 +859,17 @@ body {
 
 .admin-login-btns {
     display: flex;
-    gap: 15px;
-    margin-top: 25px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .admin-login-btn,
 .admin-cancel-btn {
     flex: 1;
-    padding: 12px;
+    padding: 8px;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
 }

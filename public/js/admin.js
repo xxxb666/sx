@@ -163,7 +163,6 @@
             }
         } catch (error) {
             showLoginError('登录失败：' + error.message);
-            console.error('登录错误:', error);
         }
     }
 

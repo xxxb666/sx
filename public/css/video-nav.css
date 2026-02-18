@@ -1,0 +1,97 @@
+
+/* 视频播放器导航按钮 - 绝对定位到视口 */
+.nav-btn {
+    position: fixed; /* 改为 fixed 以便相对于视口定位，而不是 relative 的容器 */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 107, 157, 0.4); /* 半透明背景 */
+    color: white;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1010;
+    backdrop-filter: blur(5px);
+}
+
+.nav-btn:hover {
+    background: rgba(255, 107, 157, 0.9);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+}
+
+/* 按钮位置 */
+.nav-btn.prev-btn {
+    left: 40px;
+}
+
+.nav-btn.next-btn {
+    right: 40px;
+}
+
+/* 禁用状态 */
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #ccc;
+}
+
+.nav-btn:disabled:hover {
+    transform: translateY(-50%);
+    box-shadow: none;
+}
+
+/* 视频删除按钮 */
+.video-delete-btn {
+    position: absolute;
+    top: -50px;
+    right: 60px; /* 在关闭按钮左侧 */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 71, 87, 0.8);
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-delete-btn:hover {
+    background: #ff4757;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+}
+
+/* 适配移动端 */
+@media (max-width: 768px) {
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        background: rgba(255, 107, 157, 0.6);
+    }
+    
+    .nav-btn.prev-btn {
+        left: 10px;
+    }
+
+    .nav-btn.next-btn {
+        right: 10px;
+    }
+
+    .video-delete-btn {
+        top: 10px;
+        left: 10px;
+        right: auto;
+    }
+}

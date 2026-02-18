@@ -193,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 存储视频尺寸
                     currentFileDimensions = { width: video.videoWidth, height: video.videoHeight };
-                    console.log('视频尺寸:', currentFileDimensions);
 
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -344,11 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         const compressedFile = await compressImage(currentFile);
                         // 如果压缩后更小，则使用压缩后的文件
                         if (compressedFile.size < currentFile.size) {
-                            console.log(`图片已压缩: ${(currentFile.size/1024).toFixed(2)}KB -> ${(compressedFile.size/1024).toFixed(2)}KB`);
                             currentFile = compressedFile;
                         }
                     } catch (e) {
-                        console.warn('图片压缩失败，将使用原图上传', e);
+                        // 忽略压缩失败，使用原图
                     }
                 }
 
