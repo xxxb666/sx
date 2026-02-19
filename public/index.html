@@ -232,31 +232,7 @@
         </div>
     </div>
 
-    <!-- 管理员登录弹窗 -->
-    <div class="admin-login-modal" id="adminLoginModal" style="display: none;">
-        <div class="admin-login-box">
-            <h3>管理员登录</h3>
-            <!-- 诱饵输入框：必须"可见"才能生效，使用绝对定位移出屏幕 -->
-            <input type="text" name="fakeusernameremembered" style="position:absolute; top:-1000px; left:-1000px; opacity:0; pointer-events:none;">
-            <input type="password" name="fakepasswordremembered" style="position:absolute; top:-1000px; left:-1000px; opacity:0; pointer-events:none;">
-
-            <div class="form-group">
-                <label>用户名</label>
-                <!-- 更改ID和Name以避免匹配 -->
-                <input type="text" id="ipt_u_secure" placeholder="请输入用户名" autocomplete="off" name="field_u_secure" readonly onfocus="this.removeAttribute('readonly');">
-            </div>
-            <div class="form-group">
-                <label>密码</label>
-                <!-- 更改ID和Name以避免匹配 -->
-                <input type="password" id="ipt_p_secure" placeholder="请输入密码" autocomplete="new-password" name="field_p_secure" readonly onfocus="this.removeAttribute('readonly');">
-            </div>
-            <div class="admin-login-btns">
-                <button class="admin-login-btn" id="adminLoginBtn">登录</button>
-                <button class="admin-cancel-btn" id="adminCancelBtn">取消</button>
-            </div>
-            <p class="admin-login-error" id="adminLoginError"></p>
-        </div>
-    </div>
+    <!-- 管理员登录弹窗已移除，改为独立页面 login.html -->
 
     <!-- 管理员管理面板 -->
     <div class="admin-panel" id="adminPanel" style="display: none;">

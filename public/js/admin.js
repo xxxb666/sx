@@ -184,22 +184,7 @@
 
     // 显示登录弹窗
     function showLoginModal() {
-        if (adminLoginModal) {
-            // 先清除可能存在的自动填充
-            clearLoginForm();
-            adminLoginModal.style.display = 'flex';
-            
-            // 延时聚焦，并再次清除
-            setTimeout(() => {
-                clearLoginForm();
-                if (adminUsername) adminUsername.focus();
-            }, 100);
-            
-            // 再来一次，防止浏览器在动画结束后填充
-            setTimeout(() => {
-                clearLoginForm();
-            }, 500);
-        }
+        window.location.href = 'login.html';
     }
 
     // 隐藏登录弹窗
