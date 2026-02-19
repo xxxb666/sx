@@ -1112,29 +1112,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 detailContent.innerHTML = `
                     <div class="honor-page" style="width: 100%; height: calc(100vh - 120px); display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div class="empty-state" style="text-align: center;">
-                            <div style="font-size: 64px; margin-bottom: 15px; animation: bounce 2s infinite;">🏆</div>
-                            <p style="color: #ff6b9d; font-size: 22px; font-weight: bold; margin-bottom: 30px; letter-spacing: 2px; text-shadow: 1px 1px 0 rgba(255,255,255,0.8);">暂无荣誉照片</p>
-                            <button onclick="window.goToUploadPage('honor')" 
-                                style="
-                                    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
-                                    color: white;
-                                    border: none;
-                                    border-radius: 50px;
-                                    padding: 12px 35px;
-                                    font-size: 16px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-                                    transition: all 0.3s ease;
-                                    display: inline-flex;
-                                    align-items: center;
-                                    gap: 8px;
-                                "
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'"
-                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(255, 107, 157, 0.3)'"
-                            >
-                                <span>📸</span> 去上传照片
-                            </button>
+                            <p style="color: #ff6b9d; font-size: 24px; font-weight: bold; margin-bottom: 20px;">暂无荣誉照片</p>
+                            <button class="go-upload-btn" onclick="window.goToUploadPage('honor')" style="background: #ff6b9d; color: white; border-radius: 50px; padding: 12px 30px; border: none; font-size: 16px;">去上传作品</button>
                         </div>
                     </div>
                 `;
