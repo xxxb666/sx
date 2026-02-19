@@ -15,7 +15,7 @@ const API_CONFIG = {
 const API = {
     // 通用请求方法
     async request(url, options = {}) {
-        const token = localStorage.getItem('adminToken');
+        const token = sessionStorage.getItem('adminToken');
         
         // 默认头部
         const headers = {
@@ -39,7 +39,7 @@ const API = {
         // 处理 401/403 错误 (Token 无效或过期)，但排除登录接口本身的 401
         if ((response.status === 401 || response.status === 403) && !url.includes('/auth/login')) {
             console.warn('API 认证失败，清除 Token');
-            localStorage.removeItem('adminToken');
+            sessionStorage.removeItem('adminToken');
             
             // 触发自定义事件，让 UI 处理，而不是强制刷新页面
             window.dispatchEvent(new Event('auth:expired'));
@@ -64,7 +64,7 @@ const API = {
         });
         
         if (data.token) {
-            localStorage.setItem('adminToken', data.token);
+            sessionStorage.setItem('adminToken', data.token);
         }
         
         return data;
@@ -72,12 +72,12 @@ const API = {
 
     // 检查是否已登录
     isLoggedIn() {
-        return !!localStorage.getItem('adminToken');
+        return !!sessionStorage.getItem('adminToken');
     },
 
     // 退出登录
     logout() {
-        localStorage.removeItem('adminToken');
+        sessionStorage.removeItem('adminToken');
     },
 
     // 获取个人资料
@@ -115,7 +115,7 @@ const API = {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             const url = API_CONFIG.getUrl(`/upload/${category}`);
-            const token = localStorage.getItem('adminToken');
+            const token = sessionStorage.getItem('adminToken');
             
             xhr.open('POST', url);
             
@@ -142,7 +142,7 @@ const API = {
                     }
                 } else if (xhr.status === 401 || xhr.status === 403) {
                     console.warn('API 认证失败 (上传)，清除 Token');
-                    localStorage.removeItem('adminToken');
+                    sessionStorage.removeItem('adminToken');
                     window.dispatchEvent(new Event('auth:expired'));
                     reject(new Error('登录已过期，请重新登录'));
                 } else {
@@ -165,7 +165,7 @@ const API = {
 
     // 上传头像
     async uploadAvatar(formData) {
-        const token = localStorage.getItem('adminToken');
+        const token = sessionStorage.getItem('adminToken');
         const response = await fetch(API_CONFIG.getUrl('/upload/avatar'), {
             method: 'POST',
             headers: {
@@ -177,7 +177,7 @@ const API = {
         // 处理认证失败
         if (response.status === 401 || response.status === 403) {
             console.warn('API 认证失败 (头像)，清除 Token');
-            localStorage.removeItem('adminToken');
+            sessionStorage.removeItem('adminToken');
             window.dispatchEvent(new Event('auth:expired'));
             throw new Error('登录已过期，请重新登录');
         }
