@@ -26,8 +26,9 @@
     const adminEntryBtn = document.getElementById('adminEntryBtn');
     const adminLoginModal = document.getElementById('adminLoginModal');
     const adminPanel = document.getElementById('adminPanel');
-    const adminUsername = document.getElementById('adminUsername');
-    const adminPassword = document.getElementById('adminPassword');
+    // 修改为新的ID
+    const adminUsername = document.getElementById('ipt_u_secure');
+    const adminPassword = document.getElementById('ipt_p_secure');
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     const adminCancelBtn = document.getElementById('adminCancelBtn');
     const adminLogoutBtn = document.getElementById('adminLogoutBtn');
@@ -188,8 +189,20 @@
     // 显示登录弹窗
     function showLoginModal() {
         if (adminLoginModal) {
+            // 先清除可能存在的自动填充
+            clearLoginForm();
             adminLoginModal.style.display = 'flex';
-            adminUsername.focus();
+            
+            // 延时聚焦，并再次清除
+            setTimeout(() => {
+                clearLoginForm();
+                if (adminUsername) adminUsername.focus();
+            }, 100);
+            
+            // 再来一次，防止浏览器在动画结束后填充
+            setTimeout(() => {
+                clearLoginForm();
+            }, 500);
         }
     }
 

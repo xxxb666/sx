@@ -1,4 +1,14 @@
 // API 配置 - 整合版本
+// 清理旧的 localStorage token (迁移到 sessionStorage)
+try {
+    if (localStorage.getItem('adminToken')) {
+        localStorage.removeItem('adminToken');
+        console.log('已清除旧的 localStorage token');
+    }
+} catch (e) {
+    console.warn('清理 localStorage 失败', e);
+}
+
 const API_CONFIG = {
     // 根据环境自动切换 API 基础路径
     // 如果在 Zeabur 部署，前端和后端通常在同一个域名下，使用相对路径即可

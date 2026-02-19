@@ -791,6 +791,12 @@ document.addEventListener('DOMContentLoaded', function() {
         videoElement.style.maxWidth = '100%';
         videoElement.style.maxHeight = '50vh';
         videoElement.style.objectFit = 'contain';
+
+        // 检查管理员权限显示删除按钮
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        if (deleteVideoBtn) {
+            deleteVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
+        }
         
         // 更新导航按钮状态
         updateVideoNavButtons();
@@ -1104,10 +1110,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (honorData.length === 0) {
                 detailContent.innerHTML = `
-                    <div class="honor-page">
-                        <div class="empty-state">
-                            <p>暂无荣誉照片</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'honor\')">去上传作品</button>' : ''}
+                    <div class="honor-page" style="width: 100%; height: calc(100vh - 120px); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div class="empty-state" style="text-align: center;">
+                            <div style="font-size: 64px; margin-bottom: 15px; animation: bounce 2s infinite;">🏆</div>
+                            <p style="color: #ff6b9d; font-size: 22px; font-weight: bold; margin-bottom: 30px; letter-spacing: 2px; text-shadow: 1px 1px 0 rgba(255,255,255,0.8);">暂无荣誉照片</p>
+                            <button onclick="window.goToUploadPage('honor')" 
+                                style="
+                                    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+                                    color: white;
+                                    border: none;
+                                    border-radius: 50px;
+                                    padding: 12px 35px;
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+                                    transition: all 0.3s ease;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'"
+                                onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(255, 107, 157, 0.3)'"
+                            >
+                                <span>📸</span> 去上传照片
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1399,6 +1426,96 @@ document.addEventListener('DOMContentLoaded', function() {
             window.switchPage('page1');
         });
     }
+
+    // 首页卡片滚动预览
+    async function initCardPreviews() {
+        const categories = ['painting', 'dance', 'ai'];
+        
+        for (const category of categories) {
+            const scrollContainer = document.getElementById(`scroll-${category}`);
+            if (!scrollContainer) continue;
+
+            try {
+                // 限制获取数量，提高性能
+                const result = await API.getWorks(category);
+                let works = result.works || [];
+                
+                if (works.length === 0) continue;
+                
+                // 按创建时间降序，取最新的
+                works.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                
+                // 截取前10个
+                works = works.slice(0, 10);
+                
+                // 如果数量太少，重复几次以填充，确保滚动流畅
+                if (works.length < 5) {
+                    works = [...works, ...works, ...works]; 
+                }
+
+                // 创建滚动轨道
+                const track = document.createElement('div');
+                track.className = 'card-scroll-track';
+                
+                // 生成HTML
+                const itemsHtml = works.map(work => {
+                    let src = '';
+                    let isVideo = false;
+                    
+                    // 根据不同类型获取最佳预览图
+                    if (category === 'painting') {
+                         src = work.fileUrl || ('/uploads/painting/' + work.file_path);
+                    } else if (category === 'dance') {
+                        // 舞蹈视频尝试获取封面，如果没有则直接用视频文件
+                        // 优先检查是否有 coverUrl 字段 (AI作品有，普通上传可能没有，但我们可以尝试通用逻辑)
+                        src = work.coverUrl;
+                        if (!src) {
+                            src = work.fileUrl || ('/uploads/dance/' + work.file_path);
+                            isVideo = true;
+                        }
+                    } else if (category === 'ai') {
+                         // AI作品通常有封面，如果是视频文件
+                         if (work.file_type && work.file_type.startsWith('video')) {
+                             src = work.coverUrl;
+                             // 如果没有封面，回退到视频文件
+                             if (!src) {
+                                 src = work.fileUrl || ('/uploads/ai/' + work.file_path);
+                                 isVideo = true;
+                             }
+                         } else {
+                             src = work.fileUrl || ('/uploads/ai/' + work.file_path);
+                         }
+                    }
+                    
+                    if (!src) return '';
+                    
+                    // 二次确认是否为视频文件（根据后缀）
+                    if (!isVideo && src.match(/\.(mp4|webm|mov)$/i)) {
+                        isVideo = true;
+                    }
+
+                    if (isVideo) {
+                         // 视频使用 muted preload="metadata" #t=0.1 来展示第一帧
+                         return `<video src="${src}#t=0.1" class="card-scroll-item" muted preload="metadata" playsinline></video>`;
+                    } else {
+                         return `<img src="${src}" class="card-scroll-item" loading="lazy" alt="preview">`;
+                    }
+                }).join('');
+                
+                // 复制一份内容以实现无缝滚动
+                track.innerHTML = itemsHtml + itemsHtml; 
+                
+                scrollContainer.innerHTML = ''; // 清空可能存在的旧内容
+                scrollContainer.appendChild(track);
+                
+            } catch (error) {
+                console.error(`加载${category}预览失败:`, error);
+            }
+        }
+    }
+    
+    // 初始化卡片预览
+    initCardPreviews();
 
     // 初始化页面 - 默认显示封面页(page0)，不自动跳转
     // 用户需要点击"进入空间"按钮才能进入主页面

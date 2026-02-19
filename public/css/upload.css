@@ -305,12 +305,13 @@ img, video {
 .no-works {
     grid-column: 1 / -1;
     text-align: center;
-    color: #999;
-    padding: 20px;
+    color: #ff6b9d; /* 使用粉色 */
+    padding: 30px;
     background: white;
     border-radius: 10px;
-    border: 1px dashed #ffe4ec;
-    font-size: 12px;
+    border: 2px dashed rgba(255, 107, 157, 0.3); /* 使用粉色边框 */
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .work-item {

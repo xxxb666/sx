@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>徐小泡的专属空间</title>
-    <link rel="stylesheet" href="css/style.css?v=40">
-    <link rel="stylesheet" href="css/pages.css?v=40">
-    <link rel="stylesheet" href="css/upload.css?v=40">
-    <link rel="stylesheet" href="css/video-nav.css?v=40">
+    <link rel="stylesheet" href="css/style.css?v=6">
+    <link rel="stylesheet" href="css/pages.css?v=6">
+    <link rel="stylesheet" href="css/upload.css?v=6">
+    <link rel="stylesheet" href="css/video-nav.css?v=6">
 </head>
 <body>
     <!-- 页面容器 -->
@@ -53,18 +53,27 @@
             <div class="cards-container">
 
                 <div class="card" data-page="painting">
-                    <div class="card-icon">🎨</div>
-                    <div class="card-title">绘画作品</div>
+                    <div class="card-bg-scroll" id="scroll-painting"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">绘画作品</div>
+                    </div>
                 </div>
 
                 <div class="card" data-page="dance">
-                    <div class="card-icon">💃</div>
-                    <div class="card-title">舞蹈视频</div>
+                    <div class="card-bg-scroll" id="scroll-dance"></div>
+                    <div class="card-content">
+                        <div class="card-icon">💃</div>
+                        <div class="card-title">舞蹈视频</div>
+                    </div>
                 </div>
 
                 <div class="card" data-page="ai">
-                    <div class="card-icon">🤖</div>
-                    <div class="card-title">AI作品</div>
+                    <div class="card-bg-scroll" id="scroll-ai"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-title">AI作品</div>
+                    </div>
                 </div>
 
                 <div class="card" data-page="honor">
@@ -196,6 +205,7 @@
     <div class="video-player-overlay" id="videoPlayer" style="display: none;">
         <button class="nav-btn prev-btn" id="prevVideo" title="上一个">◀</button>
         <div class="video-player-container">
+            <button class="video-delete-btn" id="deleteVideoBtn" title="删除作品" style="display: none;">🗑️</button>
             <button class="video-close-btn" id="closeVideo">&times;</button>
             <video id="mainVideoPlayer" controls playsinline preload="auto" style="max-width: 100%; max-height: 50vh; object-fit: contain; width: 100%; height: auto;">
                 <source src="" type="video/mp4">
@@ -223,13 +233,19 @@
     <div class="admin-login-modal" id="adminLoginModal" style="display: none;">
         <div class="admin-login-box">
             <h3>管理员登录</h3>
+            <!-- 诱饵输入框：必须"可见"才能生效，使用绝对定位移出屏幕 -->
+            <input type="text" name="fakeusernameremembered" style="position:absolute; top:-1000px; left:-1000px; opacity:0; pointer-events:none;">
+            <input type="password" name="fakepasswordremembered" style="position:absolute; top:-1000px; left:-1000px; opacity:0; pointer-events:none;">
+
             <div class="form-group">
                 <label>用户名</label>
-                <input type="text" id="adminUsername" placeholder="请输入用户名">
+                <!-- 更改ID和Name以避免匹配 -->
+                <input type="text" id="ipt_u_secure" placeholder="请输入用户名" autocomplete="off" name="field_u_secure" readonly onfocus="this.removeAttribute('readonly');">
             </div>
             <div class="form-group">
                 <label>密码</label>
-                <input type="password" id="adminPassword" placeholder="请输入密码">
+                <!-- 更改ID和Name以避免匹配 -->
+                <input type="password" id="ipt_p_secure" placeholder="请输入密码" autocomplete="new-password" name="field_p_secure" readonly onfocus="this.removeAttribute('readonly');">
             </div>
             <div class="admin-login-btns">
                 <button class="admin-login-btn" id="adminLoginBtn">登录</button>
@@ -274,10 +290,10 @@
     <!-- 管理员入口按钮 -->
     <button class="admin-entry-btn" id="adminEntryBtn" title="管理员登录">🔐</button>
 
-    <script src="js/api.js?v=46"></script>
-    <script src="js/utils.js?v=46"></script>
-    <script src="js/admin.js?v=46"></script>
-    <script src="js/main.js?v=46"></script>
-    <script src="js/upload.js?v=46"></script>
+    <script src="js/api.js?v=52"></script>
+    <script src="js/utils.js?v=52"></script>
+    <script src="js/admin.js?v=52"></script>
+    <script src="js/main.js?v=52"></script>
+    <script src="js/upload.js?v=52"></script>
 </body>
 </html>
