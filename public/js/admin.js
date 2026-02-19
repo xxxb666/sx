@@ -46,11 +46,10 @@
         checkLoginStatus();
         initBatchActions();
         
-        // 检查URL参数，如果是从登录页跳转回来的，自动打开管理面板
+        // 检查URL参数，如果是从登录页跳转回来的
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('login_success') === '1' && isAdminLoggedIn) {
-            showAdminPanel();
-            // 清除URL参数，保持地址栏干净
+            // 不自动打开面板，仅清除URL参数，保持地址栏干净
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
