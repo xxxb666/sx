@@ -70,12 +70,8 @@
                 e.stopPropagation();
                 
                 if (isAdminLoggedIn) {
-                    // 已登录状态下点击显示确认对话框
-                    var shouldLogout = confirm('是否退出管理员账号？');
-                    if (shouldLogout === true) {
-                        handleLogout();
-                    }
-                    // 如果点击取消，什么都不做
+                    // 已登录状态下点击直接打开管理面板
+                    showAdminPanel();
                 } else {
                     showLoginModal();
                 }
