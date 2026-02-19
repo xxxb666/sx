@@ -47,29 +47,40 @@
     box-shadow: none;
 }
 
-/* 视频删除按钮 */
-.video-delete-btn {
+/* 视频删除按钮 - 修改为右上角圆形图标 */
+.player-delete-btn {
     position: absolute;
-    top: -50px;
-    right: 60px; /* 在关闭按钮左侧 */
-    width: 40px;
-    height: 40px;
+    top: 20px;
+    right: 80px; /* 在关闭按钮左侧 */
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: rgba(255, 71, 87, 0.8);
-    color: white;
+    background: rgba(255, 255, 255, 0.9);
+    color: #ff6b9d;
     border: none;
-    font-size: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1001;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 0; /* 清除 padding */
 }
 
-.video-delete-btn:hover {
+.player-delete-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.player-delete-btn:hover {
     background: #ff4757;
-    transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+    color: white;
+    transform: scale(1.1); /* 缩放效果 */
+    box-shadow: 0 6px 15px rgba(255, 71, 87, 0.3);
 }
 
 /* 适配移动端 */
@@ -89,10 +100,8 @@
         right: 10px;
     }
 
-    .video-delete-btn {
-        top: 10px;
-        left: 10px;
-        right: auto;
+    .player-delete-btn {
+        bottom: -50px; /* 移动端可以稍微近一点 */
     }
 }
 

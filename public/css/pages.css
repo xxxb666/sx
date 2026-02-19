@@ -15,6 +15,7 @@
     width: max-content; /* 宽度由内容决定 */
     gap: 20px;
     animation: scroll-left 40s linear infinite; /* 默认40秒循环一次 */
+    align-items: flex-start; /* 让卡片高度自适应内容，不拉伸对齐 */
 }
 
 /* 视频区域稍微慢一点，因为需要看缩略图 */
@@ -48,7 +49,8 @@
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
     display: flex;
     flex-direction: column;
-    height: 320px; /* 固定高度，保持整齐 */
+    /* height: 320px; 固定高度移除，改为自适应 */
+    height: auto;
 }
 
 .ai-thumbnail {
@@ -74,10 +76,11 @@
 
 .ai-info {
     padding: 12px;
-    flex: 1;
+    /* flex: 1; 移除 flex: 1，防止在某些情况下撑开高度 */
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    justify-content: flex-start; /* 内容顶部对齐 */
 }
 
 .ai-info h3 {

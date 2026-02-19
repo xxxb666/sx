@@ -558,7 +558,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="ai-info">
                                     <h3>${painting.title}</h3>
                                     <p>${painting.description || ''}</p>
-                                    ${isAdminUser ? `<button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">删除</button>` : ''}
                                 </div>
                             </div>
                         `}).join('')}
@@ -665,8 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="video-info">
                                     <h3>${video.title}</h3>
-                                    <p>${video.description || ''}</p>
-                                    ${isAdminUser ? `<button class="video-delete-btn" data-id="${video.work_id}" data-category="dance">删除</button>` : ''}
+                                    ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
                                 </div>
                             </div>
                         `}).join('')}
@@ -751,12 +749,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateVideoNavButtons() {
-        if (!prevVideoBtn || !nextVideoBtn || !deleteVideoBtn) return;
+        if (!prevVideoBtn || !nextVideoBtn) return;
 
         if (currentVideoIndex === -1) {
             prevVideoBtn.style.display = 'none';
             nextVideoBtn.style.display = 'none';
-            deleteVideoBtn.style.display = 'none';
+            if (deleteVideoBtn) deleteVideoBtn.style.display = 'none';
             return;
         }
 
@@ -769,12 +767,14 @@ document.addEventListener('DOMContentLoaded', function() {
         nextVideoBtn.disabled = false; // 循环播放，永远可以点下一首
         
         // 删除按钮仅管理员可见
-        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
-        if (isAdminUser) {
-            deleteVideoBtn.style.display = 'block';
-            deleteVideoBtn.setAttribute('data-id', currentVideoList[currentVideoIndex].work_id);
-        } else {
-            deleteVideoBtn.style.display = 'none';
+        if (deleteVideoBtn) {
+            const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+            if (isAdminUser) {
+                deleteVideoBtn.style.display = 'block';
+                deleteVideoBtn.setAttribute('data-id', currentVideoList[currentVideoIndex].work_id);
+            } else {
+                deleteVideoBtn.style.display = 'none';
+            }
         }
     }
 
@@ -888,8 +888,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="ai-info">
                             <h3>${ai.title}</h3>
-                            <p>${ai.description || ''}</p>
-                            ${isAdminUser ? `<button class="work-delete-btn" data-id="${ai.work_id}" data-category="ai">删除</button>` : ''}
+                            ${ai.description && ai.description.trim() ? `<p>${ai.description}</p>` : ''}
                         </div>
                     </div>
                 `;
@@ -902,9 +901,8 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
-                // 判断是否需要滚动：只有当作品数量达到一定程度（例如5个）才启用滚动
-                const MIN_SCROLL_COUNT = 5;
-                const shouldScroll = videos.length >= MIN_SCROLL_COUNT;
+                // 始终启用滚动效果，无论数量多少
+                const shouldScroll = true;
                 
                 let displayVideos = [];
                 let trackStyle = '';
@@ -942,14 +940,12 @@ document.addEventListener('DOMContentLoaded', function() {
                  html += '<div class="empty-section-hint">暂无视频作品</div>';
             }
 
-            if (isAdminUser) {
-                html += `
-                <div class="section-footer-action">
-                    <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'video/*')">
-                        <span>🎬</span> 上传视频
-                    </button>
-                </div>`;
-            }
+            html += `
+            <div class="section-footer-action">
+                <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'video/*')">
+                    <span>🎬</span> 上传视频
+                </button>
+            </div>`;
 
             html += '</div>';
 
@@ -963,9 +959,8 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
-                // 判断是否需要滚动
-                const MIN_SCROLL_COUNT = 5;
-                const shouldScroll = images.length >= MIN_SCROLL_COUNT;
+                // 始终启用滚动效果
+                const shouldScroll = true;
                 
                 let displayImages = [];
                 let trackStyle = '';
@@ -1002,14 +997,12 @@ document.addEventListener('DOMContentLoaded', function() {
                  html += '<div class="empty-section-hint">暂无图片作品</div>';
             }
 
-            if (isAdminUser) {
-                html += `
-                <div class="section-footer-action">
-                    <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'image/*')">
-                        <span>🖼️</span> 上传图片
-                    </button>
-                </div>`;
-            }
+            html += `
+            <div class="section-footer-action">
+                <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'image/*')">
+                    <span>🖼️</span> 上传图片
+                </button>
+            </div>`;
 
             html += '</div>';
             
