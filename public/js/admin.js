@@ -23,7 +23,7 @@
     };
 
     // DOM 元素
-    const adminEntryBtn = document.getElementById('adminEntryBtn');
+    const adminEntryBtn = document.getElementById('secureEntryBtn') || document.getElementById('adminEntryBtn');
     const adminLoginModal = document.getElementById('adminLoginModal');
     const adminPanel = document.getElementById('adminPanel');
     // 修改为新的ID

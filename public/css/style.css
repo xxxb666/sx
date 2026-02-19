@@ -402,9 +402,10 @@ body {
     z-index: 100;
 }
 
-.admin-entry-btn {
+.admin-entry-btn,
+.secure-entry-btn {
     position: fixed;
-    bottom: 50px;
+    bottom: 80px;
     right: 20px;
     z-index: 9999;
     width: 44px;
