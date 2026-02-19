@@ -901,8 +901,8 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
-                // 始终启用滚动效果，无论数量多少
-                const shouldScroll = true;
+                // 只有当作品数量超过3个时才启用滚动效果
+                const shouldScroll = videos.length > 3;
                 
                 let displayVideos = [];
                 let trackStyle = '';
@@ -959,8 +959,8 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
-                // 始终启用滚动效果
-                const shouldScroll = true;
+                // 只有当作品数量超过3个时才启用滚动效果
+                const shouldScroll = images.length > 3;
                 
                 let displayImages = [];
                 let trackStyle = '';
