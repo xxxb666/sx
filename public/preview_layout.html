@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徐小泡的专属空间 - 本地布局预览</title>
+    <link rel="stylesheet" href="css/style.css?v=31">
+    <link rel="stylesheet" href="css/pages.css?v=31">
+    <link rel="stylesheet" href="css/upload.css?v=31">
+    <link rel="stylesheet" href="css/video-nav.css?v=31">
+    <style>
+        body { margin: 0; padding: 20px; background: #fff5f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .preview-container { max-width: 1200px; margin: 0 auto; }
+        .preview-header { text-align: center; margin-bottom: 30px; }
+        .preview-header h1 { color: #ff6b9d; }
+        .preview-section { margin-bottom: 40px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1); }
+        .preview-title { font-size: 18px; color: #ff6b9d; margin-bottom: 20px; border-left: 5px solid #ff6b9d; padding-left: 10px; }
+        
+        /* 模拟视频播放器遮罩 */
+        .video-player-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .video-player-overlay.active { display: flex; }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
+
+        /* 模拟 AI 作品页面的分区样式 */
+        .ai-split-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .ai-split-section .section-header {
+            padding-bottom: 10px;
+            border-bottom: 1px dashed rgba(255, 107, 157, 0.2);
+            margin-bottom: 15px;
+        }
+        .ai-split-section .section-title {
+            color: #ff6b9d;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-header">
+            <h1>布局调整效果预览</h1>
+            <p>无需后端服务即可查看最新的卡片尺寸和播放器大小</p>
+        </div>
+
+        <div class="preview-section">
+            <h2 class="preview-title">1. AI 视频区域 (自动横向滚动)</h2>
+            <div class="ai-split-section ai-videos-section">
+                <div class="section-header">
+                    <h3 class="section-title">🎬 AI 视频</h3>
+                </div>
+                <div class="ai-scroll-container">
+                    <div class="ai-scroll-track">
+                        <!-- 模拟竖屏视频卡片 -->
+                        <div class="video-card" onclick="openPlayer('portrait')">
+                            <div class="video-thumbnail">
+                                <div style="width:100%;height:100%;background:#333;color:white;display:flex;align-items:center;justify-content:center;">
+                                    竖屏视频预览
+                                </div>
+                                <div class="play-icon">▶</div>
+                            </div>
+                            <div class="video-info">
+                                <h3>AI生成舞蹈</h3>
+                                <p>点击查看播放器效果</p>
+                            </div>
+                        </div>
+
+                        <!-- 模拟横屏视频卡片 -->
+                        <div class="video-card" onclick="openPlayer('landscape')">
+                            <div class="video-thumbnail">
+                                 <div style="width:100%;height:100%;background:#555;color:white;display:flex;align-items:center;justify-content:center;">
+                                    横屏视频预览
+                                </div>
+                                <div class="play-icon">▶</div>
+                            </div>
+                            <div class="video-info">
+                                <h3>AI生成动画</h3>
+                                <p>点击查看播放器效果</p>
+                            </div>
+                        </div>
+
+                         <!-- 复制一份以模拟滚动效果 -->
+                         <div class="video-card" onclick="openPlayer('portrait')">
+                            <div class="video-thumbnail">
+                                <div style="width:100%;height:100%;background:#333;color:white;display:flex;align-items:center;justify-content:center;">
+                                    竖屏视频预览
+                                </div>
+                                <div class="play-icon">▶</div>
+                            </div>
+                            <div class="video-info">
+                                <h3>AI生成舞蹈 (复制)</h3>
+                                <p>点击查看播放器效果</p>
+                            </div>
+                        </div>
+
+                        <div class="video-card" onclick="openPlayer('landscape')">
+                            <div class="video-thumbnail">
+                                 <div style="width:100%;height:100%;background:#555;color:white;display:flex;align-items:center;justify-content:center;">
+                                    横屏视频预览
+                                </div>
+                                <div class="play-icon">▶</div>
+                            </div>
+                            <div class="video-info">
+                                <h3>AI生成动画 (复制)</h3>
+                                <p>点击查看播放器效果</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2 class="preview-title">2. AI 图片区域 (自动横向滚动)</h2>
+            <div class="ai-split-section ai-images-section">
+                <div class="section-header">
+                    <h3 class="section-title">🖼️ AI 图片</h3>
+                </div>
+                <div class="ai-scroll-container">
+                    <div class="ai-scroll-track">
+                        <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#666;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 1
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>梦幻森林</h3>
+                                <p>Midjourney 生成</p>
+                            </div>
+                        </div>
+                        <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#777;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 2
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>赛博朋克城市</h3>
+                                <p>Stable Diffusion 生成</p>
+                            </div>
+                        </div>
+                         <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#888;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 3
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>未来机甲</h3>
+                                <p>DALL-E 3 生成</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 复制一份以模拟滚动效果 -->
+                        <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#666;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 1
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>梦幻森林 (复制)</h3>
+                                <p>Midjourney 生成</p>
+                            </div>
+                        </div>
+                        <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#777;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 2
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>赛博朋克城市 (复制)</h3>
+                                <p>Stable Diffusion 生成</p>
+                            </div>
+                        </div>
+                        <div class="ai-card">
+                            <div class="ai-thumbnail">
+                                 <div style="width:100%;height:100%;background:#888;color:white;display:flex;align-items:center;justify-content:center;">
+                                    AI 绘画预览 3
+                                </div>
+                            </div>
+                            <div class="ai-info">
+                                <h3>未来机甲 (复制)</h3>
+                                <p>DALL-E 3 生成</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频播放器遮罩 -->
+    <div class="video-player-overlay" id="videoPlayerOverlay" onclick="closePlayer()">
+        <div class="close-btn" onclick="closePlayer()">&times;</div>
+        <div class="video-player-container" onclick="event.stopPropagation()">
+            <!-- 使用 div 模拟 video 元素以展示尺寸限制 -->
+            <div id="mockVideo" style="background:black; color:white; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
+                视频播放区域 (最大宽 640px)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPlayer(type) {
+            const overlay = document.getElementById('videoPlayerOverlay');
+            const mockVideo = document.getElementById('mockVideo');
+            
+            overlay.classList.add('active');
+            
+            if (type === 'portrait') {
+                mockVideo.style.width = '360px'; 
+                mockVideo.style.height = '640px'; 
+                mockVideo.innerHTML = '竖屏视频<br>(Max-Height: 70vh)';
+            } else {
+                mockVideo.style.width = '640px';
+                mockVideo.style.height = '360px';
+                mockVideo.innerHTML = '横屏视频<br>(Max-Width: 640px)';
+            }
+        }
+
+        function closePlayer() {
+            document.getElementById('videoPlayerOverlay').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

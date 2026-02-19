@@ -1,218 +1,133 @@
-.page-title {
-    font-size: 16px;
+
+/* AI 作品页面 - 滚动卡片效果 */
+.ai-scroll-container {
+    width: 100%;
+    overflow: hidden; /* 隐藏超出部分 */
+    position: relative;
+    padding: 10px 0;
+    /* 遮罩效果，左右淡出 */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.ai-scroll-track {
+    display: flex;
+    width: max-content; /* 宽度由内容决定 */
+    gap: 20px;
+    animation: scroll-left 40s linear infinite; /* 默认40秒循环一次 */
+}
+
+/* 视频区域稍微慢一点，因为需要看缩略图 */
+.ai-videos-section .ai-scroll-track {
+    animation-duration: 45s;
+}
+
+/* 鼠标悬停时暂停滚动 */
+.ai-scroll-track:hover {
+    animation-play-state: paused;
+}
+
+/* 滚动动画关键帧 */
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%); /* 移动一半的距离 (因为我们复制了一份内容) */
+    }
+}
+
+/* 在滚动容器中的卡片样式调整 */
+.ai-scroll-track .ai-card {
+    flex: 0 0 220px; /* 固定宽度，不再自适应 */
+    width: 220px;
+    margin: 0; /* 不需要 margin: 0 auto */
+    background: white;
+    border-radius: 12px;
+    overflow: hidden; /* 关键：防止内容溢出 */
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 320px; /* 固定高度，保持整齐 */
+}
+
+.ai-thumbnail {
+    width: 100%;
+    height: 200px; /* 固定缩略图高度，防止被大图撑开 */
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 强制覆盖可能存在的内联样式或默认样式 */
+.ai-thumbnail img, 
+.ai-thumbnail video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* 使用 cover 填满容器，比 contain 更美观 */
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.ai-info {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-info h3 {
+    font-size: 15px;
     color: #ff6b9d;
-    text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-weight: 600;
-    animation: fadeInUp 0.6s ease-out;
 }
 
-.section-title {
-    font-size: 20px;
-    color: #ff6b9d;
-    margin: 30px 0 15px;
-    padding-left: 15px;
-    border-left: 5px solid #ff6b9d;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(255, 107, 157, 0.2);
+.ai-info p {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.painting-page,
-.dance-page,
-.ai-page,
-.honor-page,
-.about-page,
-.ppt-page {
-    animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* 空状态样式 */
-.empty-state {
+/* 播放图标样式优化 */
+.play-icon {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 300px;
-    text-align: center;
-    padding: 30px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
-    z-index: 10;
-}
-
-.empty-state p {
-    font-size: 16px;
-    color: #ff8fb3;
-    margin-bottom: 20px;
-}
-
-.go-upload-btn {
-    padding: 8px 24px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
     color: white;
-    border: none;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.go-upload-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
-}
-
-/* 底部居中上传按钮 */
-.section-footer-action {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    padding-bottom: 20px;
-}
-
-.section-footer-add-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-    transition: all 0.3s ease;
-}
-
-.section-footer-add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
-}
-
-.section-footer-add-btn span {
-    font-size: 16px;
-}
-
-/* 绘画作品页 */
-.painting-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 10px;
-}
-
-.book-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: auto;
-    padding: 20px 0;
-}
-
-.book {
-    width: 100%;
-    max-width: 1000px;
-    background: transparent;
-    box-shadow: none;
-    overflow: visible;
-}
-
-/* AI 作品页 - 分屏布局 */
-.ai-split-container {
-    display: flex;
-    flex-direction: row;
-    height: calc(100vh - 120px); /* 减去顶部导航和底部留白 */
-    width: 100%;
-    gap: 20px;
-    padding: 0 20px 20px;
-    overflow: hidden; /* 防止外层滚动 */
-}
-
-.ai-split-section {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 15px;
-    padding: 20px;
-    overflow-y: auto; /* 内部独立滚动 */
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
-    display: flex;
-    flex-direction: column;
-}
-
-.ai-split-section .section-header {
-    margin-top: 0;
-    position: sticky;
-    top: 0;
-    background: rgba(255, 245, 248, 0.95);
-    z-index: 10;
-    padding: 10px 15px;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid rgba(255, 107, 157, 0.1);
-}
-
-.ai-split-section .section-title {
-    margin: 0;
-    border: none;
-    padding: 0;
-}
-
-.empty-section-hint {
-    text-align: center;
-    color: #ff8fb3;
-    padding: 40px 0;
-    font-style: italic;
+    font-size: 20px;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
-    .ai-split-container {
-        flex-direction: column;
-        height: auto;
-        overflow: visible;
-        padding: 0 10px 80px; /* 底部留白给导航栏 */
-    }
-
-    .ai-split-section {
-        height: auto;
-        min-height: 300px;
-        overflow: visible;
+    .ai-scroll-track .ai-card {
+        flex: 0 0 180px; /* 移动端稍微小一点 */
+        width: 180px;
     }
     
-    .ai-split-section .section-header {
-        position: static;
-        background: transparent;
-        padding: 0 0 10px 0;
-        border-bottom: 1px dashed rgba(255, 107, 157, 0.2);
-    }
-    
-    .ai-split-section .section-title {
-        border-left: 5px solid #ff6b9d;
-        padding-left: 10px;
+    .ai-scroll-track {
+        animation-duration: 30s; /* 移动端内容少，稍微快一点 */
     }
 }

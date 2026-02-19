@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>徐小泡的专属空间</title>
-    <link rel="stylesheet" href="css/style.css?v=23">
-    <link rel="stylesheet" href="css/pages.css?v=23">
-    <link rel="stylesheet" href="css/upload.css?v=23">
-    <link rel="stylesheet" href="css/video-nav.css?v=23">
+    <link rel="stylesheet" href="css/style.css?v=31">
+    <link rel="stylesheet" href="css/pages.css?v=31">
+    <link rel="stylesheet" href="css/upload.css?v=31">
+    <link rel="stylesheet" href="css/video-nav.css?v=31">
 </head>
 <body>
     <!-- 页面容器 -->
@@ -163,8 +163,8 @@
                                 </div>
                             </div>
                             <div class="file-preview" id="filePreview" style="display: none;">
-                                <img id="previewImg" src="" alt="预览">
-                                <video id="previewVideo" controls style="display: none;"></video>
+                                <img id="previewImg" src="" alt="预览" style="max-width: 100%; max-height: 150px; object-fit: contain;">
+                                <video id="previewVideo" controls playsinline style="display: none; max-width: 100%; max-height: 150px; object-fit: contain;"></video>
                                 <p id="fileName"></p>
                                 <button class="remove-file-btn" id="removeFileBtn">移除文件</button>
                             </div>
@@ -198,7 +198,7 @@
         <div class="video-player-container">
             <button class="video-close-btn" id="closeVideo">&times;</button>
             <button class="video-delete-btn" id="deleteVideoBtn" title="删除此作品" style="display: none;">🗑️</button>
-            <video controls playsinline preload="auto">
+            <video id="mainVideoPlayer" controls playsinline preload="auto" style="max-width: 100%; max-height: 50vh; object-fit: contain; width: 100%; height: auto;">
                 <source src="" type="video/mp4">
                 您的浏览器不支持视频播放
             </video>
@@ -209,7 +209,7 @@
     <!-- 图片查看器 -->
     <div class="image-modal" id="imageModal" style="display: none;">
         <button class="modal-close-btn" id="closeModal">&times;</button>
-        <img src="" alt="放大查看">
+        <img src="" alt="放大查看" style="max-width: 90vw; max-height: 90vh; object-fit: contain; display: block; margin: auto;">
     </div>
 
     <!-- PDF/PPT 查看器 -->
@@ -268,10 +268,10 @@
     <!-- 管理员入口按钮 -->
     <button class="admin-entry-btn" id="adminEntryBtn" title="管理员登录">🔐</button>
 
-    <script src="js/api.js?v=4"></script>
-    <script src="js/utils.js?v=4"></script>
-    <script src="js/admin.js?v=4"></script>
-    <script src="js/main.js?v=4"></script>
-    <script src="js/upload.js?v=4"></script>
+    <script src="js/api.js?v=31"></script>
+    <script src="js/utils.js?v=31"></script>
+    <script src="js/admin.js?v=31"></script>
+    <script src="js/main.js?v=31"></script>
+    <script src="js/upload.js?v=31"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('%c 当前版本: v1.0.3 (修复删除按钮样式和上传提示) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
+    console.log('%c 当前版本: v1.0.4 (修复媒体元素尺寸过大问题) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
     
     const pages = document.querySelectorAll('.page');
     const navBtns = document.querySelectorAll('.nav-btn');
@@ -23,6 +23,49 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentVideoIndex = -1;
     let currentVideoCategory = '';
 
+    // 强制限制所有媒体元素尺寸的轮询函数
+    function enforceMediaSize() {
+        const mediaElements = document.querySelectorAll('img, video');
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        mediaElements.forEach(el => {
+            // 跳过已经设置了严格限制的元素（避免重复操作）
+            if (el.dataset.sizeChecked === 'true') return;
+
+            // 检查是否溢出屏幕
+            const rect = el.getBoundingClientRect();
+            if (rect.width > screenWidth) {
+                el.style.maxWidth = '100%';
+                el.style.height = 'auto';
+                el.style.objectFit = 'contain';
+                console.log('强制调整过大元素:', el);
+            }
+            
+            // 特别针对视频播放器和模态框
+            if (el.closest('.video-player-container') || el.closest('.image-modal')) {
+                el.style.maxWidth = '100%';
+                el.style.maxHeight = '60vh'; // 稍微放松一点，但在 style.css 中有更严格的限制
+                el.style.objectFit = 'contain';
+            }
+
+            // 特别针对后台管理和作品列表的缩略图
+            if (el.closest('.admin-work-thumbnail') || el.closest('.work-thumbnail')) {
+                el.style.setProperty('width', '80px', 'important');
+                el.style.setProperty('height', '80px', 'important');
+                el.style.setProperty('max-width', '80px', 'important');
+                el.style.setProperty('max-height', '80px', 'important');
+                el.style.objectFit = 'cover';
+            }
+        });
+    }
+
+    // 启动轮询，每1秒检查一次 (加快频率)
+    setInterval(enforceMediaSize, 1000);
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', enforceMediaSize);
+
     // 视频播放器按钮
     const prevVideoBtn = document.getElementById('prevVideo');
     const nextVideoBtn = document.getElementById('nextVideo');
@@ -42,18 +85,26 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prevVideoBtn) {
         prevVideoBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (currentVideoIndex > 0) {
-                playVideoAtIndex(currentVideoIndex - 1);
+            if (currentVideoList.length === 0) return;
+            
+            let prevIndex = currentVideoIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = currentVideoList.length - 1; // 循环到最后一个
             }
+            playVideoAtIndex(prevIndex);
         });
     }
 
     if (nextVideoBtn) {
         nextVideoBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (currentVideoIndex < currentVideoList.length - 1) {
-                playVideoAtIndex(currentVideoIndex + 1);
+            if (currentVideoList.length === 0) return;
+
+            let nextIndex = currentVideoIndex + 1;
+            if (nextIndex >= currentVideoList.length) {
+                nextIndex = 0; // 循环到第一个
             }
+            playVideoAtIndex(nextIndex);
         });
     }
 
@@ -502,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return `
                             <div class="ai-card" data-type="image" data-content="${imgSrc}">
                                 <div class="ai-thumbnail">
-                                    <img src="${imgSrc}" alt="${painting.title}">
+                                    <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
                                 </div>
                                 <div class="ai-info">
                                     <h3>${painting.title}</h3>
@@ -609,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return `
                             <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}">
                                 <div class="video-thumbnail">
-                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:cover;" alt="${video.title}">` : '<video muted preload="metadata" style="width:100%; height:100%; object-fit:cover;"><source src="' + videoSrc + '" type="video/mp4"></video>'}
+                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
                                     <div class="play-icon">▶</div>
                                 </div>
                                 <div class="video-info">
@@ -714,8 +765,8 @@ document.addEventListener('DOMContentLoaded', function() {
         nextVideoBtn.style.display = 'flex';
 
         // 更新状态
-        prevVideoBtn.disabled = (currentVideoIndex === 0);
-        nextVideoBtn.disabled = (currentVideoIndex === currentVideoList.length - 1);
+        prevVideoBtn.disabled = false; // 循环播放，永远可以点上一首（如果是第一个，点上一首去最后一个）
+        nextVideoBtn.disabled = false; // 循环播放，永远可以点下一首
         
         // 删除按钮仅管理员可见
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
@@ -736,6 +787,11 @@ document.addEventListener('DOMContentLoaded', function() {
         videoElement.muted = false;
         videoElement.volume = 1.0;
         
+        // 强制设置最大尺寸，防止溢出屏幕
+        videoElement.style.maxWidth = '100%';
+        videoElement.style.maxHeight = '50vh';
+        videoElement.style.objectFit = 'contain';
+        
         // 更新导航按钮状态
         updateVideoNavButtons();
 
@@ -749,6 +805,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // 监听视频播放结束事件，实现循环播放
+    if (videoElement) {
+        videoElement.addEventListener('ended', function() {
+            // 仅当当前有播放列表且在列表中时才自动切换
+            if (currentVideoIndex !== -1 && currentVideoList.length > 0) {
+                let nextIndex = currentVideoIndex + 1;
+                // 如果已经是最后一个，则回到第一个（循环播放）
+                if (nextIndex >= currentVideoList.length) {
+                    nextIndex = 0;
+                }
+                playVideoAtIndex(nextIndex);
+            }
+        });
+    }
+
     window.showVideoPlayer = showVideoPlayer;
 
     function showPdfViewer(pdfSrc) {
@@ -807,9 +879,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="ai-card" data-id="${ai.work_id}" data-type="${ai.file_type}" data-content="${contentSrc}">
                         <div class="ai-thumbnail">
                             ${ai.file_type && ai.file_type.startsWith('image') 
-                                ? `<img src="${contentSrc}" alt="${ai.title}">`
+                                ? `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
                                 : (ai.coverUrl 
-                                    ? `<img src="${ai.coverUrl}" alt="${ai.title}">`
+                                    ? `<img src="${ai.coverUrl}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
                                     : `<div class="ai-thumbnail-placeholder">${ai.file_type && ai.file_type.startsWith('video') ? '▶' : '📄'}</div>`)
                             }
                             ${ai.file_type && ai.file_type.startsWith('video') ? '<div class="play-icon">▶</div>' : ''}
@@ -830,9 +902,27 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
+                // 为了实现无缝滚动，我们需要复制一份列表
+                // 1. 先确保基础列表足够长（至少10个元素，填满一般屏幕）
+                let baseVideos = [...videos];
+                while (baseVideos.length < 10) {
+                    baseVideos = baseVideos.concat(videos);
+                }
+                
+                // 2. 复制一份基础列表，形成 [A, A] 结构，确保无缝滚动
+                // 动画移动 -50%，即移动一个 A 的长度
+                let displayVideos = [...baseVideos, ...baseVideos];
+                
+                // 3. 计算动画时长
+                // 假设每个卡片宽度+间距约 240px，目标速度 60px/s
+                // 时长 = (基础列表长度 * 240) / 60 = 基础列表长度 * 4
+                const duration = baseVideos.length * 4;
+
                 html += `
-                    <div class="ai-grid">
-                        ${videos.map(renderCard).join('')}
+                    <div class="ai-scroll-container">
+                        <div class="ai-scroll-track" style="animation-duration: ${duration}s">
+                            ${displayVideos.map(renderCard).join('')}
+                        </div>
                     </div>
                 `;
             } else {
@@ -857,9 +947,23 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
+                // 1. 先确保基础列表足够长
+                let baseImages = [...images];
+                while (baseImages.length < 10) {
+                    baseImages = baseImages.concat(images);
+                }
+                
+                // 2. 复制一份基础列表
+                let displayImages = [...baseImages, ...baseImages];
+                
+                // 3. 计算动画时长
+                const duration = baseImages.length * 4;
+
                 html += `
-                    <div class="ai-grid">
-                        ${images.map(renderCard).join('')}
+                    <div class="ai-scroll-container">
+                        <div class="ai-scroll-track" style="animation-duration: ${duration}s">
+                            ${displayImages.map(renderCard).join('')}
+                        </div>
                     </div>
                 `;
             } else {
@@ -947,6 +1051,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function showImageModal(imageSrc) {
         modalImage.src = imageSrc;
         imageModal.style.display = 'flex';
+        modalImage.style.maxWidth = '100%';
+        modalImage.style.maxHeight = '70vh';
+        modalImage.style.objectFit = 'contain';
     }
     window.showImageModal = showImageModal;
 
@@ -990,11 +1097,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return `
                                 <div class="honor-3d-card" data-index="${index}">
                                     <div class="honor-card-inner">
-                                        <img src="${imgSrc}" alt="${honor.title}">
-                                        <div class="honor-card-title">${honor.title}</div>
-                                    </div>
+                                        <img src="${imgSrc}" alt="${honor.title}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                                    <div class="honor-card-title">${honor.title}</div>
                                 </div>
-                            `}).join('')}
+                            </div>
+                        `}).join('')}
                         </div>
                     </div>
                 </div>
@@ -1169,7 +1276,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="ppt-page">
                     <div class="ppt-container">
                         <div class="ppt-display">
-                            <img src="${imagePPTs[0].fileUrl || ('/uploads/ppt/' + imagePPTs[0].file_path)}" alt="PPT页面" id="pptImage">
+                            <img src="${imagePPTs[0].fileUrl || ('/uploads/ppt/' + imagePPTs[0].file_path)}" alt="PPT页面" id="pptImage" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">
                             <p class="ppt-page-number">1 / ${imagePPTs.length}</p>
                         </div>
                         <div class="ppt-controls">

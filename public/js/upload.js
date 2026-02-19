@@ -173,10 +173,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fileType === 'image') {
             previewImg.src = fileData;
             previewImg.style.display = 'block';
+            previewImg.style.maxHeight = '120px'; // 进一步减小
+            previewImg.style.maxWidth = '100%';
+            previewImg.style.objectFit = 'contain';
+            previewImg.width = 120; // 强制属性
             previewVideo.style.display = 'none';
         } else if (fileType === 'video') {
             previewVideo.src = fileData;
             previewVideo.style.display = 'block';
+            previewVideo.style.maxHeight = '120px'; // 进一步减小
+            previewVideo.style.maxWidth = '100%';
+            previewVideo.style.objectFit = 'contain';
+            previewVideo.width = 120; // 强制属性
             previewImg.style.display = 'none';
         } else {
             previewImg.style.display = 'none';
@@ -486,17 +494,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const fileSrc = work.fileUrl || ('/uploads/' + work.category + '/' + work.file_path);
         
         if (work.file_type.startsWith('image')) {
-            return `<img src="${fileSrc}" alt="${work.title}">`;
+            return `<img src="${fileSrc}" alt="${work.title}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
         } else if (work.file_type.startsWith('video')) {
             if (work.coverUrl) {
                 return `
-                    <div style="position: relative; width: 100%; height: 100%;">
-                        <img src="${work.coverUrl}" alt="${work.title}" style="width:100%;height:100%;object-fit:cover;">
-                        <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.5);">▶</span>
+                    <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000;">
+                        <img src="${work.coverUrl}" alt="${work.title}" style="max-width:100%; max-height:100%; object-fit:contain;">
+                        <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.5);">▶</span>
                     </div>
                 `;
             }
-            return `<div class="video-thumbnail"><span>▶</span></div>`;
+            return `<div class="video-thumbnail" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000; color:white;"><span>▶</span></div>`;
         } else {
             return `<div class="file-thumbnail"><span>📄</span></div>`;
         }
