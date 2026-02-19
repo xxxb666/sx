@@ -35,11 +35,15 @@
     const adminUploadBtn = document.getElementById('adminUploadBtn');
     const adminLoginError = document.getElementById('adminLoginError');
     const adminWorksList = document.getElementById('adminWorksList');
+    const selectAllCheckbox = document.getElementById('selectAllWorks');
+    const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
 
     // 初始化
     function init() {
         bindEvents();
         checkLoginStatus();
+        initBatchActions();
         
         // 监听认证过期事件
         window.addEventListener('auth:expired', function() {
@@ -251,6 +255,105 @@
         loadAdminWorksList();
     }
 
+    // 批量操作初始化
+    function initBatchActions() {
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = adminWorksList.querySelectorAll('.work-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                });
+                updateBatchUI();
+            });
+        }
+
+        if (batchDeleteBtn) {
+            batchDeleteBtn.addEventListener('click', batchDeleteWorks);
+        }
+        
+        // 使用事件委托处理复选框点击
+        if (adminWorksList) {
+            adminWorksList.addEventListener('change', function(e) {
+                if (e.target.classList.contains('work-checkbox')) {
+                    updateBatchUI();
+                }
+            });
+        }
+    }
+
+    // 更新批量操作UI状态
+    function updateBatchUI() {
+        if (!adminWorksList || !batchDeleteBtn || !selectedCountSpan) return;
+        
+        const checkboxes = adminWorksList.querySelectorAll('.work-checkbox:checked');
+        const count = checkboxes.length;
+        const total = adminWorksList.querySelectorAll('.work-checkbox').length;
+        
+        selectedCountSpan.textContent = `已选择 ${count} 项`;
+        
+        if (count > 0) {
+            batchDeleteBtn.disabled = false;
+            batchDeleteBtn.style.opacity = '1';
+            batchDeleteBtn.style.pointerEvents = 'auto';
+            batchDeleteBtn.textContent = `批量删除 (${count})`;
+        } else {
+            batchDeleteBtn.disabled = true;
+            batchDeleteBtn.style.opacity = '0.5';
+            batchDeleteBtn.style.pointerEvents = 'none';
+            batchDeleteBtn.textContent = '批量删除';
+        }
+        
+        // 更新全选框状态
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = total > 0 && count === total;
+            selectAllCheckbox.indeterminate = count > 0 && count < total;
+        }
+    }
+
+    // 批量删除作品
+    async function batchDeleteWorks() {
+        const checkboxes = adminWorksList.querySelectorAll('.work-checkbox:checked');
+        const count = checkboxes.length;
+        
+        if (count === 0) return;
+        
+        if (!confirm(`确定要删除选中的 ${count} 个作品吗？此操作不可恢复！`)) {
+            return;
+        }
+        
+        batchDeleteBtn.disabled = true;
+        batchDeleteBtn.textContent = '删除中...';
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        // 将 NodeList 转换为数组以便处理
+        const items = Array.from(checkboxes);
+        
+        // 并行删除，限制并发数为 3 以避免过载
+        // 或者简单地串行删除，更安全
+        for (const cb of items) {
+            const workId = cb.value;
+            const category = cb.getAttribute('data-category');
+            
+            try {
+                await API.deleteWork(category, workId);
+                successCount++;
+                // 可以在这里更新UI，移除已删除的项目，或者最后重新加载列表
+                const item = cb.closest('.admin-work-item');
+                if (item) {
+                    item.style.opacity = '0.3';
+                }
+            } catch (error) {
+                console.error(`删除作品 ${workId} 失败:`, error);
+                failCount++;
+            }
+        }
+        
+        alert(`批量删除完成\n成功: ${successCount}\n失败: ${failCount}`);
+        loadAdminWorksList();
+    }
+
     // 加载管理员作品列表
     async function loadAdminWorksList() {
         if (!adminWorksList) return;
@@ -275,6 +378,9 @@
 
             adminWorksList.innerHTML = categoryWorks.map(work => `
                 <div class="admin-work-item" data-id="${work.work_id}" data-category="${work.category}">
+                    <div class="admin-checkbox-wrapper" style="margin-right: 15px;">
+                        <input type="checkbox" class="work-checkbox" value="${work.work_id}" data-category="${work.category}" style="width: 18px; height: 18px; cursor: pointer; accent-color: #ff6b9d;">
+                    </div>
                     <div class="admin-work-thumbnail">
                         ${getAdminThumbnailHTML(work)}
                     </div>
@@ -290,6 +396,12 @@
                     </div>
                 </div>
             `).join('');
+
+            // 重置全选状态
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+                updateBatchUI();
+            }
 
             // 绑定事件 (已在 init 中处理或通过事件委托)
         } catch (error) {
