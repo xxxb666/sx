@@ -941,11 +941,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             html += `
+            ${isAdminUser ? `
             <div class="section-footer-action">
                 <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'video/*')">
                     <span>🎬</span> 上传视频
                 </button>
-            </div>`;
+            </div>` : ''}`;
 
             html += '</div>';
 
@@ -998,11 +999,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             html += `
+            ${isAdminUser ? `
             <div class="section-footer-action">
                 <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'image/*')">
                     <span>🖼️</span> 上传图片
                 </button>
-            </div>`;
+            </div>` : ''}`;
 
             html += '</div>';
             
