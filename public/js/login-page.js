@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 延迟跳转，让用户看到成功提示
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'index.html?login_success=1';
                 }, 1000);
             } else {
                 showError(result.message || '登录失败，请检查账号密码');
