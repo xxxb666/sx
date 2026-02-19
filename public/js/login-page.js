@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 延迟跳转，让用户看到成功提示
                 setTimeout(() => {
-                    window.location.href = '/';
+                    window.location.href = 'index.html';
                 }, 1000);
             } else {
                 showError(result.message || '登录失败，请检查账号密码');
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // 尝试获取一个需要权限的接口，或者简单假设 token 有效
                 // 这里我们直接跳转，因为 API.isLoggedIn 只是检查 sessionStorage
-                window.location.href = '/';
+                window.location.href = 'index.html';
             } catch (e) {
                 // token 无效，留在这里
                 API.logout();
