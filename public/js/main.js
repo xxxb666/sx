@@ -902,25 +902,38 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
-                // 为了实现无缝滚动，我们需要复制一份列表
-                // 1. 先确保基础列表足够长（至少10个元素，填满一般屏幕）
-                let baseVideos = [...videos];
-                while (baseVideos.length < 10) {
-                    baseVideos = baseVideos.concat(videos);
+                // 判断是否需要滚动：只有当作品数量达到一定程度（例如5个）才启用滚动
+                const MIN_SCROLL_COUNT = 5;
+                const shouldScroll = videos.length >= MIN_SCROLL_COUNT;
+                
+                let displayVideos = [];
+                let trackStyle = '';
+                let containerStyle = '';
+
+                if (shouldScroll) {
+                    // 滚动模式：复制列表实现无缝滚动
+                    // 1. 先确保基础列表足够长（至少10个元素，填满一般屏幕）
+                    let baseVideos = [...videos];
+                    while (baseVideos.length < 10) {
+                        baseVideos = baseVideos.concat(videos);
+                    }
+                    
+                    // 2. 复制一份基础列表，形成 [A, A] 结构，确保无缝滚动
+                    displayVideos = [...baseVideos, ...baseVideos];
+                    
+                    // 3. 计算动画时长
+                    const duration = baseVideos.length * 4;
+                    trackStyle = `animation-duration: ${duration}s`;
+                } else {
+                    // 静态模式：不滚动，网格排列
+                    displayVideos = [...videos];
+                    trackStyle = 'animation: none; width: 100%; flex-wrap: wrap; justify-content: flex-start; padding-left: 0;';
+                    containerStyle = 'overflow: visible; mask-image: none; -webkit-mask-image: none;';
                 }
-                
-                // 2. 复制一份基础列表，形成 [A, A] 结构，确保无缝滚动
-                // 动画移动 -50%，即移动一个 A 的长度
-                let displayVideos = [...baseVideos, ...baseVideos];
-                
-                // 3. 计算动画时长
-                // 假设每个卡片宽度+间距约 240px，目标速度 60px/s
-                // 时长 = (基础列表长度 * 240) / 60 = 基础列表长度 * 4
-                const duration = baseVideos.length * 4;
 
                 html += `
-                    <div class="ai-scroll-container">
-                        <div class="ai-scroll-track" style="animation-duration: ${duration}s">
+                    <div class="ai-scroll-container" style="${containerStyle}">
+                        <div class="ai-scroll-track" style="${trackStyle}">
                             ${displayVideos.map(renderCard).join('')}
                         </div>
                     </div>
@@ -947,21 +960,37 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
-                // 1. 先确保基础列表足够长
-                let baseImages = [...images];
-                while (baseImages.length < 10) {
-                    baseImages = baseImages.concat(images);
+                // 判断是否需要滚动
+                const MIN_SCROLL_COUNT = 5;
+                const shouldScroll = images.length >= MIN_SCROLL_COUNT;
+                
+                let displayImages = [];
+                let trackStyle = '';
+                let containerStyle = '';
+
+                if (shouldScroll) {
+                    // 1. 先确保基础列表足够长
+                    let baseImages = [...images];
+                    while (baseImages.length < 10) {
+                        baseImages = baseImages.concat(images);
+                    }
+                    
+                    // 2. 复制一份基础列表
+                    displayImages = [...baseImages, ...baseImages];
+                    
+                    // 3. 计算动画时长
+                    const duration = baseImages.length * 4;
+                    trackStyle = `animation-duration: ${duration}s`;
+                } else {
+                     // 静态模式
+                    displayImages = [...images];
+                    trackStyle = 'animation: none; width: 100%; flex-wrap: wrap; justify-content: flex-start; padding-left: 0;';
+                    containerStyle = 'overflow: visible; mask-image: none; -webkit-mask-image: none;';
                 }
-                
-                // 2. 复制一份基础列表
-                let displayImages = [...baseImages, ...baseImages];
-                
-                // 3. 计算动画时长
-                const duration = baseImages.length * 4;
 
                 html += `
-                    <div class="ai-scroll-container">
-                        <div class="ai-scroll-track" style="animation-duration: ${duration}s">
+                    <div class="ai-scroll-container" style="${containerStyle}">
+                        <div class="ai-scroll-track" style="${trackStyle}">
                             ${displayImages.map(renderCard).join('')}
                         </div>
                     </div>
