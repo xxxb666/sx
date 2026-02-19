@@ -953,6 +953,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             html += '</div>';
 
+            // 视频和图片区域之间的分割线
+            html += '<div class="section-divider"></div>';
+
             // 图片区域（右侧/下侧）
             html += '<div class="ai-split-section ai-images-section">';
             html += '<div class="section-header">';
