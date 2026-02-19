@@ -131,3 +131,49 @@
         animation-duration: 30s; /* 移动端内容少，稍微快一点 */
     }
 }
+
+/* 空状态提示样式 */
+.empty-section-hint {
+    color: #ff8fb3;
+    font-size: 14px;
+    padding: 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    border: 2px dashed rgba(255, 107, 157, 0.2);
+    margin: 10px 0;
+}
+
+/* 底部操作区域 */
+.section-footer-action {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-start; /* 左对齐 */
+}
+
+/* 上传按钮样式 */
+.section-footer-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.2);
+}
+
+.section-footer-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
+    background: linear-gradient(135deg, #ff5c95 0%, #ff7fa5 100%);
+}
+
+.section-footer-add-btn span {
+    font-size: 16px;
+}
