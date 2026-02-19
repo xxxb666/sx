@@ -409,7 +409,7 @@ body {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -417,13 +417,13 @@ body {
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
     z-index: 10;
 }
 
 .work-delete-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.5);
 }
 
 /* 视频卡片中的删除按钮 */
@@ -432,7 +432,7 @@ body {
     top: 10px;
     right: 10px;
     bottom: auto;
-    background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
     border: none;
     padding: 6px 12px;
@@ -440,13 +440,13 @@ body {
     font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
     z-index: 10;
 }
 
 .video-delete-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.5);
 }
 
 .nav-btn {
