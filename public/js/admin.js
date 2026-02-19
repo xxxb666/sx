@@ -380,21 +380,23 @@
 
             adminWorksList.innerHTML = categoryWorks.map(work => `
                 <div class="admin-work-item" data-id="${work.work_id}" data-category="${work.category}">
-                    <div class="admin-checkbox-wrapper" style="margin-right: 15px;">
-                        <input type="checkbox" class="work-checkbox" value="${work.work_id}" data-category="${work.category}" style="width: 18px; height: 18px; cursor: pointer; accent-color: #ff6b9d;">
+                    <div class="admin-checkbox-wrapper">
+                        <input type="checkbox" class="work-checkbox" value="${work.work_id}" data-category="${work.category}">
                     </div>
                     <div class="admin-work-thumbnail">
                         ${getAdminThumbnailHTML(work)}
                     </div>
                     <div class="admin-work-info">
-                        <h4>${work.title}</h4>
-                        <p>${work.description || '暂无描述'}</p>
-                        <span class="admin-work-date">${new Date(work.created_at).toLocaleString()}</span>
-                        <span class="admin-work-category">分类: ${getCategoryName(work.category)}</span>
+                        <h4 class="admin-work-title">${work.title}</h4>
+                        <p class="admin-work-desc">${work.description || '暂无描述'}</p>
+                        <div class="admin-work-meta">
+                            <span class="admin-work-date">${new Date(work.created_at).toLocaleDateString()}</span>
+                            <span class="admin-work-tag">${getCategoryName(work.category)}</span>
+                        </div>
                     </div>
                     <div class="admin-work-actions">
-                        <button class="admin-view-btn" data-id="${work.work_id}" data-category="${work.category}">查看</button>
-                        <button class="admin-delete-btn" data-id="${work.work_id}" data-category="${work.category}">删除</button>
+                        <button class="admin-btn admin-view-btn" data-id="${work.work_id}" data-category="${work.category}">查看</button>
+                        <button class="admin-btn admin-delete-btn" data-id="${work.work_id}" data-category="${work.category}">删除</button>
                     </div>
                 </div>
             `).join('');

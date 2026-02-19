@@ -778,30 +778,60 @@ body {
     display: none;
 }
 
-/* 管理员面板 */
+/* 管理员面板 - 全新粉色主题 */
 .admin-panel {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #ffeef8 0%, #fff5f8 50%, #ffe8f0 100%);
+    background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 100%);
     z-index: 1500;
     overflow-y: auto;
+    font-family: "Microsoft YaHei", sans-serif;
 }
 
 .admin-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
+    padding: 15px 40px;
     background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .admin-panel-header h2 {
     color: #ff6b9d;
-    font-size: 28px;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.admin-back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #fff0f5;
+    color: #ff6b9d;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-back-btn:hover {
+    background: #ff6b9d;
+    color: white;
+    transform: translateX(-3px);
 }
 
 .admin-header-actions {
@@ -810,64 +840,201 @@ body {
     align-items: center;
 }
 
+/* 绿色上传按钮 */
 .admin-upload-btn {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    padding: 8px 24px;
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
     color: white;
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 600;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .admin-upload-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
 }
 
-/* 管理员作品列表样式 */
+.admin-logout-btn {
+    padding: 8px 18px;
+    background: white;
+    color: #ff6b9d;
+    border: 1px solid #ffb7c5;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.admin-logout-btn:hover {
+    background: #fff0f5;
+    border-color: #ff6b9d;
+}
+
+/* 内容区域 */
+.admin-panel-content {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* 标签页导航 */
+.admin-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    padding: 8px 24px;
+    background: white;
+    border: 1px solid #fff0f5;
+    border-radius: 20px;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(255, 107, 157, 0.05);
+}
+
+.admin-tab:hover {
+    color: #ff6b9d;
+    transform: translateY(-2px);
+}
+
+.admin-tab.active {
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+}
+
+/* 批量操作栏 */
+.admin-batch-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.08);
+    margin-bottom: 25px;
+}
+
+.select-all-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #ff6b9d;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.select-all-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff6b9d;
+    cursor: pointer;
+}
+
+/* 红色批量删除按钮 */
+.batch-delete-btn {
+    padding: 8px 24px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(238, 82, 83, 0.2);
+}
+
+.batch-delete-btn:disabled {
+    background: #eee;
+    color: #bbb;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.batch-delete-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(238, 82, 83, 0.3);
+}
+
+#selectedCount {
+    color: #aaa;
+    font-size: 14px;
+    margin-left: auto;
+}
+
+/* 作品列表 */
 .admin-works-list {
-    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 40px;
 }
 
 .admin-empty, .admin-error {
     text-align: center;
-    padding: 60px;
-    color: #ff6b9d; /* 使用粉色 */
+    padding: 80px 0;
+    color: #ff8fb3;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
 }
 
 .admin-work-item {
+    background: white;
+    border-radius: 15px;
+    padding: 15px 25px;
     display: flex;
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    background: white;
     gap: 20px;
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    border: 1px solid white;
+    transition: all 0.3s ease;
 }
 
 .admin-work-item:hover {
-    background-color: #fcfcfc;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.1);
+    border-color: #fff0f5;
 }
 
-.admin-work-item:last-child {
-    border-bottom: none;
+.admin-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.work-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff6b9d;
+    cursor: pointer;
 }
 
 .admin-work-thumbnail {
     width: 80px;
     height: 80px;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    flex-shrink: 0;
     background: #f8f8f8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #eee;
+    flex-shrink: 0;
+    border: 1px solid #f0f0f0;
 }
 
 .admin-work-thumbnail img {
@@ -883,31 +1050,50 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f0f0f0;
-    color: #999;
-    font-size: 24px;
+    background: #f9f9f9;
+    color: #ffb7c5;
+    font-size: 28px;
 }
 
 .admin-work-info {
     flex: 1;
+    min-width: 0; /* 防止文本溢出 */
 }
 
 .admin-work-title {
-    font-weight: 600;
     font-size: 16px;
+    font-weight: 600;
     color: #333;
-    margin-bottom: 5px;
+    margin: 0 0 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .admin-work-desc {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 5px;
+    color: #888;
+    font-size: 13px;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-work-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
 }
 
 .admin-work-date {
-    color: #999;
-    font-size: 12px;
+    color: #bbb;
+}
+
+.admin-work-tag {
+    color: #ff6b9d;
+    background: #fff0f5;
+    padding: 2px 8px;
+    border-radius: 10px;
 }
 
 .admin-work-actions {
@@ -916,23 +1102,33 @@ body {
 }
 
 .admin-btn {
-    padding: 6px 12px;
+    padding: 6px 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     transition: all 0.2s;
 }
 
-.admin-btn-delete {
-    background: #fff0f0;
+.admin-view-btn {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.admin-view-btn:hover {
+    background: #e0e0e0;
+}
+
+.admin-delete-btn {
+    background: #fff5f5;
     color: #ff4d4f;
     border: 1px solid #ffccc7;
 }
 
-.admin-btn-delete:hover {
+.admin-delete-btn:hover {
     background: #ff4d4f;
     color: white;
+    border-color: #ff4d4f;
 }
 
 /* 响应式调整 */
