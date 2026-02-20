@@ -241,6 +241,15 @@ app.post('/api/upload/:category', authenticateToken, uploadFields, (req, res) =>
             return res.status(400).json({ success: false, message: '请提供作品标题' });
         }
 
+        // 检查同分类下是否有重名作品
+        const isDuplicate = db.works.some(w => w.category === category && w.title === title);
+        if (isDuplicate) {
+            // 清理已上传的文件
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            if (cover && fs.existsSync(cover.path)) fs.unlinkSync(cover.path);
+            return res.status(400).json({ success: false, message: '该作品名称已存在，请使用其他名称' });
+        }
+
         const workId = Date.now().toString();
         
         // 构建文件URL - 使用相对路径，无需域名
