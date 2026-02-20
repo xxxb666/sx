@@ -1159,64 +1159,86 @@ document.addEventListener('DOMContentLoaded', function() {
         const track = document.getElementById('honorTrack');
         const cards = document.querySelectorAll('.honor-3d-card');
         
-        // 配置参数 - 紧凑排列
-        const radius = 350; // 减小半径，让奖状更紧凑
+        if (!track || cards.length === 0) return;
+
+        // 配置参数 - 优化半径和视觉效果
+        const radius = 400; // 增大半径，减少拥挤
         const angleStep = 360 / totalCards;
         let rotation = 0;
         let isPaused = false;
         let animationFrameId;
+        let lastActiveIndex = -1;
         
-        // 使用CSS will-change优化性能
+        // 性能优化：使用 will-change 并清除旧的内联样式
         cards.forEach(card => {
-            card.style.willChange = 'transform, opacity';
+            card.style.willChange = 'transform, opacity, z-index';
+            // 清除可能存在的旧内联样式
+            const inner = card.querySelector('.honor-card-inner');
+            if(inner) {
+                inner.style.borderColor = '';
+                inner.style.boxShadow = '';
+                inner.style.transition = 'all 0.3s ease';
+            }
         });
 
-        // 初始化卡片位置 - 弧形排列
+        // 初始化卡片位置 - 优化的3D排列
         function updateCardsPosition(rotationAngle) {
+            let maxZIndex = -Infinity;
+            let currentActiveIndex = -1;
+
             cards.forEach((card, index) => {
-                const angle = (index * angleStep + rotationAngle) * Math.PI / 180;
+                const angleDeg = (index * angleStep + rotationAngle) % 360;
+                const angleRad = angleDeg * Math.PI / 180;
                 
                 // 计算3D位置
-                const x = Math.sin(angle) * radius;
-                const z = Math.cos(angle) * radius - radius;
+                const x = Math.sin(angleRad) * radius;
+                const z = Math.cos(angleRad) * radius - radius; // z范围: 0 到 -2R
                 
-                // 计算旋转角度 - 让卡片始终面向中心
-                const rotateY = -angle * 180 / Math.PI;
+                // 计算缩放和透明度
+                // cos(angle) 从 1 (前) 到 -1 (后)
+                const cosVal = Math.cos(angleRad);
+                const scale = 0.6 + (1 + cosVal) * 0.25; // 范围 0.6 - 1.1
+                const opacity = 0.3 + (1 + cosVal) * 0.35; // 范围 0.3 - 1.0
+                const zIndex = Math.round((1 + cosVal) * 100);
                 
-                // 根据Z轴位置计算透明度和缩放
-                const normalizedZ = (z + radius) / (radius * 2);
-                const opacity = 0.5 + normalizedZ * 0.5;
-                const scale = 0.7 + normalizedZ * 0.3;
-                
-                // 使用translate3d开启硬件加速
-                card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${rotateY}deg) scale(${scale})`;
-                card.style.opacity = opacity;
-                card.style.zIndex = Math.round(normalizedZ * 100);
-                
-                // 添加边框效果 - 前面的卡片有金色边框
-                const inner = card.querySelector('.honor-card-inner');
-                if (normalizedZ > 0.7) {
-                    inner.style.borderColor = '#FFD700';
-                    inner.style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.6)';
-                } else {
-                    inner.style.borderColor = 'transparent';
-                    inner.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.2)';
+                // 找出最前面的卡片
+                if (zIndex > maxZIndex) {
+                    maxZIndex = zIndex;
+                    currentActiveIndex = index;
                 }
+                
+                // 核心修改：移除 rotateY，保持卡片始终正面朝向观众（Billboard效果）
+                // 这样看起来更整洁，不会有"转圈圈"的眩晕感
+                card.style.transform = `translate3d(${x}px, 0, ${z}px) scale(${scale})`;
+                card.style.opacity = opacity;
+                card.style.zIndex = zIndex;
             });
+
+            // 只在状态改变时更新 active 类，减少DOM操作
+            if (currentActiveIndex !== lastActiveIndex) {
+                if (lastActiveIndex !== -1 && cards[lastActiveIndex]) {
+                    cards[lastActiveIndex].classList.remove('active');
+                }
+                if (currentActiveIndex !== -1 && cards[currentActiveIndex]) {
+                    cards[currentActiveIndex].classList.add('active');
+                }
+                lastActiveIndex = currentActiveIndex;
+            }
         }
 
-        // 丝滑动画循环 - 适中的旋转速度
+        // 丝滑动画循环
         let lastTime = performance.now();
-        const rotationSpeed = 25; // 每秒钟旋转25度，速度适中
+        const rotationSpeed = 15; // 降低速度，更优雅 (度/秒)
         
         function animate(currentTime) {
             if (!isPaused) {
-                const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+                const deltaTime = (currentTime - lastTime) / 1000;
                 lastTime = currentTime;
                 
-                // 根据时间计算旋转角度，保证速度恒定
-                rotation += rotationSpeed * deltaTime;
+                // 限制最大帧时间，防止切换标签后飞转
+                const dt = Math.min(deltaTime, 0.1);
                 
+                rotation -= rotationSpeed * dt; // 逆时针旋转
                 updateCardsPosition(rotation);
             } else {
                 lastTime = currentTime;
@@ -1231,6 +1253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 初始化点击事件
         cards.forEach((card, index) => {
             card.addEventListener('click', function() {
+                // 如果是点击两侧的卡片，可以自动旋转到中间（可选功能，这里暂时只保留查看大图）
                 const imageSrc = this.querySelector('img').src;
                 showImageModal(imageSrc);
             });
@@ -1249,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // 页面不可见时暂停动画，节省资源
+        // 页面不可见时暂停动画
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
                 isPaused = true;
