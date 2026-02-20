@@ -215,6 +215,38 @@ app.delete('/api/works/:id', authenticateToken, (req, res) => {
     res.json({ success: true, message: '作品删除成功' });
 });
 
+// 头像上传配置
+const avatarUpload = upload.single('avatar');
+
+// 上传头像
+app.post('/api/upload/avatar', authenticateToken, avatarUpload, (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: '没有上传文件' });
+        }
+        
+        // 文件默认上传到了 uploads/misc/ (因为 req.params.category 未定义)
+        const fileUrl = `/uploads/misc/${req.file.filename}`;
+        
+        // 更新个人资料
+        db.profile.avatar = fileUrl;
+        saveData();
+        
+        res.json({
+            success: true,
+            message: '头像上传成功',
+            url: fileUrl,
+            avatar: fileUrl
+        });
+    } catch (error) {
+        console.error('头像上传失败:', error);
+        if (req.file && fs.existsSync(req.file.path)) {
+            try { fs.unlinkSync(req.file.path); } catch(e) {}
+        }
+        res.status(500).json({ success: false, message: '上传失败' });
+    }
+});
+
 // 上传作品
 // 支持上传文件和封面图
 const uploadFields = upload.fields([

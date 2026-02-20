@@ -546,6 +546,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 更换头像
     if (changeAvatarBtn) {
         changeAvatarBtn.addEventListener('click', function() {
+            // 检查登录
+            if (!API.isLoggedIn()) {
+                alert('请先登录管理员账号');
+                return;
+            }
+
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
@@ -553,10 +559,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 const file = e.target.files[0];
                 if (file) {
                     try {
-                        const fileData = await FileHandler.fileToBase64(file);
-                        avatarImg.src = fileData;
+                        changeAvatarBtn.textContent = '上传中...';
+                        changeAvatarBtn.disabled = true;
+
+                        // 尝试压缩图片
+                        let uploadFile = file;
+                        try {
+                            // 简单的压缩逻辑，复用已有的 compressImage 函数
+                            if (typeof compressImage === 'function') {
+                                uploadFile = await compressImage(file);
+                            }
+                        } catch (e) {
+                            console.warn('图片压缩失败，使用原图', e);
+                        }
+
+                        const formData = new FormData();
+                        formData.append('avatar', uploadFile);
+
+                        const result = await API.uploadAvatar(formData);
+                        
+                        if (result.success) {
+                            alert('头像更换成功！');
+                            // 重新加载个人资料以更新头像
+                            loadProfile();
+                        } else {
+                            alert('头像上传失败: ' + (result.message || '未知错误'));
+                        }
                     } catch (error) {
-                        alert('头像上传失败');
+                        console.error('头像上传异常:', error);
+                        alert('头像上传失败: ' + error.message);
+                    } finally {
+                        changeAvatarBtn.textContent = '更换头像';
+                        changeAvatarBtn.disabled = false;
                     }
                 }
             };
@@ -593,7 +627,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nickname) nickname.textContent = profile.nickname;
                 if (selfIntro) selfIntro.textContent = profile.selfIntro;
                 if (motto) motto.textContent = profile.motto;
-                if (avatarImg && profile.avatar) avatarImg.src = profile.avatar;
+                
+                // 处理头像显示
+                const avatarImg = document.getElementById('avatarImg');
+                const avatarPlaceholder = document.querySelector('.avatar-placeholder');
+                
+                if (profile.avatar && avatarImg) {
+                    // 添加时间戳防止缓存
+                    const timestamp = new Date().getTime();
+                    avatarImg.src = profile.avatar.includes('?') ? 
+                        `${profile.avatar}&t=${timestamp}` : 
+                        `${profile.avatar}?t=${timestamp}`;
+                    avatarImg.style.display = 'block';
+                    if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
+                } else {
+                    if (avatarImg) avatarImg.style.display = 'none';
+                    if (avatarPlaceholder) avatarPlaceholder.style.display = 'flex';
+                }
             }
         } catch (error) {
             console.error('加载个人资料失败:', error);
