@@ -1163,11 +1163,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 配置参数 - 优化半径和视觉效果
         // 响应式半径：手机端使用较小半径，PC端使用标准半径
-        let radius = window.innerWidth < 768 ? 180 : 320; 
+        let radius = window.innerWidth < 768 ? 160 : 280; 
         
         // 监听窗口大小改变，动态调整半径
         window.addEventListener('resize', () => {
-            radius = window.innerWidth < 768 ? 180 : 320;
+            radius = window.innerWidth < 768 ? 160 : 280;
         });
 
         const angleStep = 360 / totalCards;

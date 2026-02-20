@@ -1304,29 +1304,30 @@ body {
 
 .honor-3d-card {
     position: absolute;
-    width: 220px; /* Reduced from 280px */
-    height: 300px; /* Reduced from 380px */
-    border-radius: 15px; /* Slightly smaller radius */
+    width: 200px; /* Further reduced from 220px */
+    height: 280px; /* Further reduced from 300px */
+    border-radius: 12px;
     background: white;
     box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2);
     overflow: hidden;
-    transition: transform 0.1s linear, opacity 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease; /* Fast transform for JS animation */
+    /* Removed transform transition to fix stuttering - JS drives transform directly */
+    transition: opacity 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     backface-visibility: hidden;
     display: flex;
     flex-direction: column;
-    border: 3px solid transparent; /* Reduced border width */
+    border: 2px solid transparent; /* Subtle border */
 }
 
 .honor-3d-card.active {
-    /* Active state styling */
-    border-color: #FFD700;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    /* Active state styling - Removed Golden Border */
+    border-color: #ff6b9d; /* Theme pink color */
+    box-shadow: 0 10px 40px rgba(255, 107, 157, 0.3); /* Softer glow */
 }
 
 .honor-img-wrapper {
     width: 100%;
-    height: 210px; /* Reduced from 280px */
+    height: 160px; /* Reduced from 210px to fix "image too big" */
     overflow: hidden;
     position: relative;
 }
@@ -1338,7 +1339,7 @@ body {
 }
 
 .honor-info {
-    padding: 15px;
+    padding: 12px;
     text-align: center;
     background: linear-gradient(to bottom, white, #fff5f8);
     flex: 1;
@@ -1349,7 +1350,7 @@ body {
 
 .honor-info h3 {
     color: #ff6b9d;
-    font-size: 18px;
+    font-size: 15px; /* Reduced font size */
     margin-bottom: 5px;
 }
 
