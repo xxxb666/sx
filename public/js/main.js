@@ -1162,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!track || cards.length === 0) return;
 
         // 配置参数 - 优化半径和视觉效果
-        const radius = 400; // 增大半径，减少拥挤
+        const radius = 320; // 适配更小的卡片尺寸
         const angleStep = 360 / totalCards;
         let rotation = 0;
         let isPaused = false;
