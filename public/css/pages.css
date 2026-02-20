@@ -114,6 +114,150 @@
     object-fit: contain !important;
 }
 
+/* AI页面分节新样式 */
+.ai-split-section {
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+    margin: 30px auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.15);
+    border: 1px solid #fff0f5;
+    position: relative;
+    z-index: 1;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+/* 标题样式 */
+.section-title {
+    font-size: 24px;
+    color: #ff6b9d; /* 粉色标题 */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    padding: 0 20px;
+    background: #fff;
+    z-index: 2;
+}
+
+/* 装饰性标题线 */
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: #ffb7c5;
+    border-radius: 2px;
+}
+
+/* 明显的分割线 */
+.section-divider {
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #ffb7c5, transparent);
+    margin: 40px auto;
+    width: 80%;
+    opacity: 0.5;
+    border-radius: 2px;
+}
+
+/* 滚动容器 */
+.ai-scroll-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+}
+
+.ai-scroll-track {
+    display: flex;
+    gap: 20px;
+    animation: scroll linear infinite;
+}
+
+/* 动画定义 */
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* 滚动卡片样式 */
+.ai-scroll-track .ai-card {
+    flex: 0 0 280px; /* 固定宽度 */
+    min-width: 280px;
+}
+
+/* 静态布局时的网格样式 */
+.ai-scroll-track[style*="animation: none"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* 空状态提示 */
+.empty-section-hint {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+    background: #fff0f5; /* 浅粉背景 */
+    border-radius: 15px;
+    border: 2px dashed #ffb7c5;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.empty-section-hint::before {
+    content: '🌸';
+    font-size: 32px;
+    opacity: 0.5;
+    margin-bottom: 10px;
+}
+
+/* 上传按钮区域 */
+.section-footer-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.section-footer-add-btn {
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.section-footer-add-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
     .video-grid {
@@ -142,5 +286,15 @@
     
     .ai-grid .ai-thumbnail {
         height: 150px;
+    }
+
+    .ai-split-section {
+        padding: 15px;
+        margin: 15px auto;
+    }
+
+    .ai-scroll-track .ai-card {
+        flex: 0 0 220px;
+        min-width: 220px;
     }
 }
