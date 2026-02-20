@@ -205,6 +205,21 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             width = form.getvalue('width', 0)
             height = form.getvalue('height', 0)
             
+            # Check for duplicate
+            if title:
+                try:
+                    with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    works = data.get('works', [])
+                    if any(w.get('category') == category and w.get('title') == title for w in works):
+                        self.send_response(400)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"success": False, "message": "该作品名称已存在，请使用其他名称"}).encode('utf-8'))
+                        return
+                except Exception as e:
+                    print(f"Error checking duplicate: {e}")
+            
             file_item = form['file']
             
             if file_item.filename:
