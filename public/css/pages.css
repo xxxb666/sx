@@ -1,61 +1,104 @@
 
-/* AI 作品页面 - 滚动卡片效果 */
-.ai-scroll-container {
-    width: 100%;
-    overflow: hidden; /* 隐藏超出部分 */
-    position: relative;
-    padding: 10px 0;
-    /* 遮罩效果，左右淡出 */
-    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-}
-
-.ai-scroll-track {
-    display: flex;
-    width: max-content; /* 宽度由内容决定 */
+/* 舞蹈视频页面样式 */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
-    animation: scroll-left 40s linear infinite; /* 默认40秒循环一次 */
-    align-items: flex-start; /* 让卡片高度自适应内容，不拉伸对齐 */
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* 视频区域稍微慢一点，因为需要看缩略图 */
-.ai-videos-section .ai-scroll-track {
-    animation-duration: 45s;
-}
-
-/* 鼠标悬停时暂停滚动 */
-.ai-scroll-track:hover {
-    animation-play-state: paused;
-}
-
-/* 滚动动画关键帧 */
-@keyframes scroll-left {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%); /* 移动一半的距离 (因为我们复制了一份内容) */
-    }
-}
-
-/* 在滚动容器中的卡片样式调整 */
-.ai-scroll-track .ai-card {
-    flex: 0 0 220px; /* 固定宽度，不再自适应 */
-    width: 220px;
-    margin: 0; /* 不需要 margin: 0 auto */
+.video-card {
     background: white;
     border-radius: 12px;
-    overflow: hidden; /* 关键：防止内容溢出 */
+    overflow: hidden;
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    /* height: 320px; 固定高度移除，改为自适应 */
-    height: auto;
 }
 
-.ai-thumbnail {
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+}
+
+.video-thumbnail {
     width: 100%;
-    height: 200px; /* 固定缩略图高度，防止被大图撑开 */
+    height: 200px; /* 固定高度 */
+    background: #000;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.video-thumbnail video,
+.video-thumbnail img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important; /* 确保完整显示 */
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.video-info {
+    padding: 15px;
+}
+
+.video-info h3 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-info p {
+    font-size: 13px;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* AI作品页面样式（补充） */
+.ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ai-grid .ai-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-grid .ai-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+}
+
+.ai-grid .ai-thumbnail {
+    width: 100%;
+    height: 200px;
     background: #f0f0f0;
     position: relative;
     overflow: hidden;
@@ -64,129 +107,40 @@
     justify-content: center;
 }
 
-/* 强制覆盖可能存在的内联样式或默认样式 */
-.ai-thumbnail img, 
-.ai-thumbnail video {
+.ai-grid .ai-thumbnail img,
+.ai-grid .ai-thumbnail video {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important; /* 改为 contain 以显示完整内容 */
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.ai-info {
-    padding: 12px;
-    /* flex: 1; 移除 flex: 1，防止在某些情况下撑开高度 */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    justify-content: flex-start; /* 内容顶部对齐 */
-}
-
-.ai-info h3 {
-    font-size: 15px;
-    color: #ff6b9d;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 600;
-}
-
-.ai-info p {
-    font-size: 12px;
-    color: #888;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* 播放图标样式优化 */
-.play-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    pointer-events: none;
-    backdrop-filter: blur(2px);
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    object-fit: contain !important;
 }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
-    .ai-scroll-track .ai-card {
-        flex: 0 0 180px; /* 移动端稍微小一点 */
-        width: 180px;
+    .video-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+        padding: 10px;
     }
     
-    .ai-scroll-track {
-        animation-duration: 30s; /* 移动端内容少，稍微快一点 */
+    .video-thumbnail {
+        height: 120px; /* 移动端高度减小 */
     }
-}
-
-/* 空状态提示样式 */
-.empty-section-hint {
-    color: #ff6b9d; /* 使用更鲜艳的粉色 */
-    font-size: 16px; /* 稍微加大 */
-    font-weight: 600; /* 加粗 */
-    padding: 30px; /* 增加内边距 */
-    text-align: center;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 12px;
-    border: 2px dashed rgba(255, 107, 157, 0.3); /* 加深边框颜色 */
-    margin: 10px 0;
-}
-
-/* 底部操作区域 */
-.section-footer-action {
-    margin-top: 15px;
-    display: flex;
-    justify-content: flex-start; /* 左对齐 */
-}
-
-/* 区域分割线 */
-.section-divider {
-    height: 2px;
-    background: none;
-    border-bottom: 2px dashed rgba(255, 107, 157, 0.3);
-    margin: 30px 0;
-    width: 100%;
-}
-
-/* 上传按钮样式 */
-.section-footer-add-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
-    color: white;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.2);
-}
-
-.section-footer-add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
-    background: linear-gradient(135deg, #ff5c95 0%, #ff7fa5 100%);
-}
-
-.section-footer-add-btn span {
-    font-size: 16px;
+    
+    .video-info h3 {
+        font-size: 14px;
+    }
+    
+    .video-info p {
+        font-size: 12px;
+    }
+    
+    .ai-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        padding: 10px;
+    }
+    
+    .ai-grid .ai-thumbnail {
+        height: 150px;
+    }
 }
