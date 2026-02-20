@@ -1162,7 +1162,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!track || cards.length === 0) return;
 
         // 配置参数 - 优化半径和视觉效果
-        const radius = 320; // 适配更小的卡片尺寸
+        // 响应式半径：手机端使用较小半径，PC端使用标准半径
+        let radius = window.innerWidth < 768 ? 180 : 320; 
+        
+        // 监听窗口大小改变，动态调整半径
+        window.addEventListener('resize', () => {
+            radius = window.innerWidth < 768 ? 180 : 320;
+        });
+
         const angleStep = 360 / totalCards;
         let rotation = 0;
         let isPaused = false;
