@@ -1121,7 +1121,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             let html = `
-                <div class="honor-page">
+                <div class="honor-page" style="position: relative;">
+                    ${isAdminUser ? `
+                    <button class="add-honor-btn" onclick="window.goToUploadPage('honor')" style="
+                        position: absolute;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 100;
+                        background: #ff6b9d;
+                        color: white;
+                        border: none;
+                        border-radius: 50px;
+                        padding: 10px 20px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        transition: transform 0.2s;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <span>➕</span> 添加荣誉
+                    </button>
+                    ` : ''}
                     <div class="honor-3d-container">
                         <div class="honor-3d-track" id="honorTrack">
                             ${honorData.map((honor, index) => {
