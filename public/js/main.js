@@ -1279,8 +1279,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentActiveIndex = index;
                 }
                 
-                // 核心修改：移除 rotateY，保持卡片始终正面朝向观众（Billboard效果）
-                card.style.transform = `translate3d(${x}px, 0, ${z}px) scale(${scale})`;
+                // 恢复 3D 旋转效果：
+                // 让卡片面向圆心或者稍微有一些透视感
+                // 如果是标准旋转木马，应该是 rotateY(${-angleDeg}deg) 或者 rotateY(${angleDeg}deg)
+                // 这里我们使用 rotateY(${-angleDeg}deg) 让卡片始终面向圆环外侧，配合 translate3d 移动
+                card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${-angleDeg}deg) scale(${scale})`;
                 card.style.opacity = opacity;
                 
                 // 优化：仅当 zIndex 改变时才更新 DOM
