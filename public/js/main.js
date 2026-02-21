@@ -35,6 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 检查是否溢出屏幕
             const rect = el.getBoundingClientRect();
+            
+            // 跳过 .ai-thumbnail 中的图片，因为它们由 CSS grid 和 aspect-ratio 控制
+            if (el.closest('.ai-thumbnail')) return;
+
             if (rect.width > screenWidth) {
                 el.style.maxWidth = '100%';
                 el.style.height = 'auto';
