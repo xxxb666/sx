@@ -260,6 +260,12 @@
                         window.loadAIPage();
                     } else if (currentCategory === 'dance' && typeof window.loadDancePage === 'function') {
                         window.loadDancePage();
+                    } else if (currentCategory === 'painting' && typeof window.loadPaintingPage === 'function') {
+                        window.loadPaintingPage();
+                    } else if (currentCategory === 'honor' && typeof window.loadHonorPage === 'function') {
+                        window.loadHonorPage();
+                    } else if (currentCategory === 'ppt' && typeof window.loadPPTPage === 'function') {
+                        window.loadPPTPage();
                     }
                 }, 1000);
             } else {

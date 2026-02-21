@@ -537,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="painting-page">
                         <div class="empty-state">
                             <p>暂无绘画作品</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'painting\')">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'painting\', \'image/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     ${isAdminUser ? `
                     <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.goToUploadPage('painting')">
+                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('painting', 'image/*')">
                             <span>🎨</span> 上传绘画
                         </button>
                     </div>` : ''}
@@ -600,12 +600,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="painting-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'painting\')">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'painting\', \'image/*\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
+    window.loadPaintingPage = loadPaintingPage;
 
 
 
@@ -639,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="dance-page">
                         <div class="empty-state">
                             <p>暂无舞蹈视频</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'dance\')">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'dance\', \'video/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
@@ -671,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     ${isAdminUser ? `
                     <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.goToUploadPage('dance')">
+                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('dance', 'video/*')">
                             <span>💃</span> 上传舞蹈
                         </button>
                     </div>` : ''}
@@ -706,12 +707,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="dance-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'dance\')">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'dance\', \'video/*\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
+    window.loadDancePage = loadDancePage;
 
     function initVideoCards() {
         const videoCards = document.querySelectorAll('.video-card');
@@ -949,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
             ${isAdminUser ? `
             <div class="section-footer-action">
-                <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'video/*')">
+                <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
                     <span>🎬</span> 上传视频
                 </button>
             </div>` : ''}`;
@@ -1026,12 +1028,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="ai-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ai\')">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ai\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
+    window.loadAIPage = loadAIPage;
 
     function initAICards() {
         const aiCards = document.querySelectorAll('.ai-card');
@@ -1113,7 +1116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="honor-page" style="width: 100%; height: calc(100vh - 120px); display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div class="empty-state" style="text-align: center;">
                             <p style="color: #ff6b9d; font-size: 24px; font-weight: bold; margin-bottom: 20px;">暂无荣誉照片</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'honor\')" style="background: #ff6b9d; color: white; border-radius: 50px; padding: 12px 30px; border: none; font-size: 16px;">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'honor\', \'image/*\')" style="background: #ff6b9d; color: white; border-radius: 50px; padding: 12px 30px; border: none; font-size: 16px;">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
@@ -1123,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = `
                 <div class="honor-page" style="position: relative;">
                     ${isAdminUser ? `
-                    <button class="add-honor-btn" onclick="window.goToUploadPage('honor')" style="
+                    <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')" style="
                         position: absolute;
                         top: 20px;
                         right: 20px;
@@ -1170,12 +1173,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="honor-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'honor\')">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'honor\', \'image/*\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
+    window.loadHonorPage = loadHonorPage;
 
     function initHonor3DCarousel(totalCards) {
         const track = document.getElementById('honorTrack');
@@ -1335,7 +1339,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="ppt-page">
                         <div class="empty-state">
                             <p>暂无PPT文件</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
@@ -1350,7 +1354,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="ppt-page">
                         <div class="empty-state">
                             <p>已上传的PPT文件不支持预览，请上传图片格式的PPT页面</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;
@@ -1374,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="ppt-nav next" id="pptNext">下一页</button>
                         </div>
                     </div>
-                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.goToUploadPage(\'ppt\')" title="上传新作品">+</button>' : ''}
+                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')" title="上传新作品">+</button>' : ''}
                 </div>
             `;
 
@@ -1386,12 +1390,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="ppt-page">
                     <div class="empty-state">
                         <p>加载失败，请刷新页面重试</p>
-                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.goToUploadPage(\'ppt\')">去上传作品</button>' : ''}
+                        ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')">去上传作品</button>' : ''}
                     </div>
                 </div>
             `;
         }
     }
+    window.loadPPTPage = loadPPTPage;
 
     function initPPT(pptData) {
         const prevBtn = document.getElementById('pptPrev');
