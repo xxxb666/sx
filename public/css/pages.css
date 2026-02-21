@@ -112,6 +112,7 @@
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
+    object-position: top !important;
 }
 
 /* AI 左右分栏布局 */
