@@ -1,0 +1,174 @@
+/* 快速上传模态框样式 */
+.quick-upload-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.quick-upload-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.quick-upload-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    border: 2px solid #fff0f5;
+}
+
+.quick-upload-modal.active .quick-upload-content {
+    transform: translateY(0);
+}
+
+.quick-upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ffe4ec;
+    padding-bottom: 10px;
+}
+
+.quick-upload-header h3 {
+    margin: 0;
+    color: #ff6b9d;
+    font-size: 18px;
+}
+
+.quick-upload-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #ffb7c5;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.quick-upload-header .close-btn:hover {
+    color: #ff6b9d;
+}
+
+.file-preview-area {
+    width: 100%;
+    height: 150px;
+    background: #fff5f8;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border: 1px dashed #ffb7c5;
+}
+
+.file-preview-area img, 
+.file-preview-area video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.quick-form-group {
+    margin-bottom: 15px;
+}
+
+.quick-form-group input,
+.quick-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ffe4ec;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.quick-form-group input:focus,
+.quick-form-group textarea:focus {
+    border-color: #ff6b9d;
+}
+
+.quick-upload-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    padding: 8px 20px;
+    border: 1px solid #ffe4ec;
+    background: white;
+    color: #ff6b9d;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-confirm {
+    padding: 8px 25px;
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+}
+
+.btn-confirm:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 进度条 */
+.quick-progress-container {
+    margin-top: 10px;
+    display: none;
+}
+
+.quick-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #ffe4ec;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.quick-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff8fb3, #ff6b9d);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.quick-progress-text {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #ff6b9d;
+    margin-top: 5px;
+}

@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
             ${isAdminUser ? `
             <div class="section-footer-action">
-                <button class="section-footer-add-btn" onclick="window.goToUploadPage('ai', 'image/*')">
+                <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
                     <span>🖼️</span> 上传图片
                 </button>
             </div>` : ''}`;
@@ -1547,6 +1547,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化卡片预览
     initCardPreviews();
+
+    // 暴露页面加载函数供外部调用
+    window.loadAIPage = loadAIPage;
+    window.loadDancePage = loadDancePage;
+    window.loadPaintingPage = loadPaintingPage;
 
     // 初始化页面 - 默认显示封面页(page0)，不自动跳转
     // 用户需要点击"进入空间"按钮才能进入主页面
