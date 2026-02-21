@@ -1441,7 +1441,7 @@ body {
 /* 空状态提示样式 - 绝对定位强力居中 */
 .empty-state {
     position: absolute;
-    top: 40%; /* 上移至视口中上部，视觉更居中 */
+    top: 35%; /* 从 40% 进一步上移至 35%，更接近用户感知的“中间” */
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
