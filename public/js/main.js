@@ -571,13 +571,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         `}).join('')}
+                        ${isAdminUser ? `
+                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('painting', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
-                    ${isAdminUser ? `
-                    <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('painting', 'image/*')">
-                            <span>🎨</span> 上传绘画
-                        </button>
-                    </div>` : ''}
                 </div>
             `;
 
@@ -679,13 +681,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         `}).join('')}
+                        ${isAdminUser ? `
+                        <div class="video-card add-work-card" onclick="window.openQuickUpload('dance', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
-                    ${isAdminUser ? `
-                    <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('dance', 'video/*')">
-                            <span>💃</span> 上传舞蹈
-                        </button>
-                    </div>` : ''}
                 </div>
             `;
 
@@ -936,19 +940,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${videos.map(renderCard).join('')}
+                        ${isAdminUser ? `
+                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; height: auto !important; aspect-ratio: 16/9;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
             } else {
                  html += '<div class="empty-section-hint">暂无视频作品</div>';
+                 if (isAdminUser) {
+                    html += `
+                    <div class="section-footer-action">
+                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
+                            <span>🎬</span> 上传视频
+                        </button>
+                    </div>`;
+                 }
             }
-
-            html += `
-            ${isAdminUser ? `
-            <div class="section-footer-action">
-                <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
-                    <span>🎬</span> 上传视频
-                </button>
-            </div>` : ''}`;
 
             html += '</div>';
 
@@ -966,19 +978,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${images.map(renderCard).join('')}
+                        ${isAdminUser ? `
+                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; height: auto !important; aspect-ratio: 16/9;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
             } else {
                  html += '<div class="empty-section-hint">暂无图片作品</div>';
+                 if (isAdminUser) {
+                    html += `
+                    <div class="section-footer-action">
+                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
+                            <span>🖼️</span> 上传图片
+                        </button>
+                    </div>`;
+                 }
             }
-
-            html += `
-            ${isAdminUser ? `
-            <div class="section-footer-action">
-                <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
-                    <span>🖼️</span> 上传图片
-                </button>
-            </div>` : ''}`;
 
             html += '</div>';
             
