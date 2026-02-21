@@ -178,7 +178,7 @@
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 10px 0;
+    padding: 20px 0; /* 增加内边距，防止投影被截断 */
 }
 
 .ai-scroll-track {
@@ -195,8 +195,8 @@
 
 /* 滚动卡片样式 */
 .ai-scroll-track .ai-card {
-    flex: 0 0 280px; /* 固定宽度 */
-    min-width: 280px;
+    flex: 0 0 340px; /* 更宽的卡片，横向视觉 */
+    min-width: 340px;
 }
 
 /* 静态布局时的网格样式 */
