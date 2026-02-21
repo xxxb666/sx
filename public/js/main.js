@@ -554,34 +554,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            let html = `
-                <div class="painting-page">
-                    <div class="ai-grid">
-                        ${paintingData.map((painting, index) => {
-                            // 优先使用 fileUrl，如果没有则回退到拼接路径
-                            const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
-                            return `
-                            <div class="ai-card" data-type="image" data-content="${imgSrc}">
-                                <div class="ai-thumbnail">
-                                    <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
-                                </div>
-                                <div class="ai-info">
-                                    <h3>${painting.title}</h3>
-                                    <p>${painting.description || ''}</p>
-                                </div>
-                            </div>
-                        `}).join('')}
-                        ${isAdminUser ? `
-                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('painting', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                            </div>
+            // 构建作品卡片HTML
+            const generateCardsHtml = (works) => {
+                return works.map((painting, index) => {
+                    // 优先使用 fileUrl，如果没有则回退到拼接路径
+                    const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
+                    return `
+                    <div class="ai-card" data-type="image" data-content="${imgSrc}">
+                        <div class="ai-thumbnail">
+                            <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
                         </div>
+                        <div class="ai-info">
+                            <h3>${painting.title}</h3>
+                            <p>${painting.description || ''}</p>
+                        </div>
+                        ${isAdminUser ? `
+                        <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; color:#ff4757; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:10;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            </svg>
+                        </button>
                         ` : ''}
                     </div>
+                `}).join('');
+            };
+
+            const addBtnHtml = isAdminUser ? `
+                <div class="ai-card add-work-card" onclick="window.openQuickUpload('painting', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                        <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
+                    </div>
                 </div>
-            `;
+            ` : '';
+
+            let html = '';
+            
+            // 如果作品数量大于等于3，启用跑马灯效果
+            if (paintingData.length >= 3) {
+                const cardsHtml = generateCardsHtml(paintingData);
+                // 组合内容：作品 + 添加按钮（如果是管理员）
+                const fullContent = cardsHtml + addBtnHtml;
+                
+                html = `
+                <div class="painting-page">
+                    <div class="marquee-container">
+                        <div class="marquee-track">
+                            ${fullContent}
+                            ${fullContent} <!-- 重复一份以实现无缝滚动 -->
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else {
+                // 否则使用普通网格布局
+                html = `
+                <div class="painting-page">
+                    <div class="ai-grid">
+                        ${generateCardsHtml(paintingData)}
+                        ${addBtnHtml}
+                    </div>
+                </div>
+                `;
+            }
 
             detailContent.innerHTML = html;
             // 使用AI卡片的初始化函数，因为结构相同

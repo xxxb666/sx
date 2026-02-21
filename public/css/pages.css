@@ -169,235 +169,81 @@
     border-bottom: 2px solid #fff0f5;
 }
 
-.section-title {
-    font-size: 22px;
-    color: #ff6b9d; /* 粉色标题 */
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
+/* Marquee Scrolling Styles */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 20px 0;
+    /* Mask gradient to fade edges */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
-/* 空状态提示优化 */
-.empty-section-hint {
-    text-align: center;
-    color: #999;
-    font-size: 15px;
-    background: #fff0f5;
-    border-radius: 15px;
-    border: 2px dashed #ffb7c5;
-    margin: auto 0; /* 垂直居中 */
+.marquee-track {
+    display: inline-flex;
+    gap: 30px;
+    animation: marquee 20s linear infinite;
+    padding-left: 20px; /* Initial padding */
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } /* Move half width (assuming double content) */
+}
+
+/* Specific styles for cards inside marquee */
+.marquee-track .ai-card {
+    flex-shrink: 0;
+    width: 280px; /* Fixed width for horizontal items */
+    white-space: normal; /* Allow text to wrap inside card */
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    flex: 1; /* 撑满剩余空间 */
-    min-height: 180px;
-    padding-bottom: 30px; /* 稍微向上偏移内容 */
-}
-
-/* 按钮样式优化 - 鲜艳粉色 */
-.section-footer-action {
-    margin-top: auto; /* 推到底部 */
-    padding-top: 20px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.section-footer-add-btn {
-    background: linear-gradient(135deg, #ff6b95 0%, #ff477e 100%); /* 更鲜艳的粉色 */
-    color: white;
-    border: none;
-    padding: 12px 35px;
-    border-radius: 50px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 71, 126, 0.3);
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.1);
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-    letter-spacing: 1px;
+    cursor: pointer;
 }
 
-.section-footer-add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 71, 126, 0.4);
-    background: linear-gradient(135deg, #ff85a9 0%, #ff5c8d 100%);
+.marquee-track .ai-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
 }
 
-.section-footer-add-btn span {
-    font-size: 18px;
-}
-
-/* 隐藏分割线 */
-.hidden-on-desktop {
-    display: none;
-}
-
-/* AI 宽屏横向展示样式 */
-.ai-grid.ai-grid-landscape {
-    display: grid !important;
-    /* 左右分栏后，单栏宽度减半，调整卡片最小宽度 */
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
-    padding: 10px 0;
-    overflow: visible !important;
-}
-
-.ai-grid.ai-grid-landscape .ai-card {
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;
-    flex: none !important;
-    margin: 0 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.ai-grid.ai-grid-landscape .ai-thumbnail {
+.marquee-track .ai-thumbnail {
     width: 100%;
-    height: auto !important;
-    aspect-ratio: 16 / 9; /* 强制 16:9 横向比例 */
-    background: #000;
+    height: 200px; /* Taller for better view */
+    background: white;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.ai-grid.ai-grid-landscape .ai-thumbnail img {
+.marquee-track .ai-thumbnail img,
+.marquee-track .ai-thumbnail video {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
-/* 移动端适配：强制左右分栏布局 */
-@media (max-width: 768px) {
-    /* 强制保持左右分栏 */
-    .ai-sections-container {
-        flex-direction: row; /* 强制水平排列 */
-        gap: 10px; /* 减小间距 */
-        align-items: flex-start; /* 顶部对齐 */
-        overflow-x: auto; /* 如果内容太宽，允许横向滚动（备选） */
-    }
-    
-    .hidden-on-desktop {
-        display: none; /* 继续隐藏分割线 */
-    }
-
-    .ai-split-section {
-        margin: 10px 0;
-        padding: 10px; /* 减小内边距 */
-        min-width: 0; /* 允许 flex item 缩小 */
-        flex: 1 1 50%; /* 强制各占50% */
-    }
-
-    /* 移动端分栏内部：改为单列显示，因为分栏已经很窄了 */
-    .ai-grid.ai-grid-landscape {
-        grid-template-columns: 1fr; /* 单列，因为容器只有屏幕一半宽 */
-        gap: 15px;
-    }
-    
-    /* 字体调整 */
-    .ai-info h3 {
-        font-size: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .ai-info p {
-        font-size: 10px;
-        display: none; /* 隐藏描述以节省空间 */
-    }
-    
-    .section-title {
-        font-size: 16px; /* 缩小标题 */
-        padding: 0 5px;
-    }
+.marquee-track .ai-info {
+    padding: 12px 15px !important;
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-    .video-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 15px;
-        padding: 10px;
-    }
-    
-    .video-thumbnail {
-        height: 120px; /* 移动端高度减小 */
-    }
-    
-    .video-info h3 {
-        font-size: 14px;
-    }
-    
-    .video-info p {
-        font-size: 12px;
-    }
-    
-    .ai-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        padding: 10px;
-    }
-    
-    .ai-grid .ai-thumbnail {
-        height: 150px;
-    }
-
-    .ai-split-section {
-        padding: 15px;
-        margin: 15px auto;
-    }
-
-    .ai-scroll-track .ai-card {
-        flex: 0 0 220px;
-        min-width: 220px;
-    }
-
-    /* AI 宽屏横向展示样式 - 移动端覆盖 */
-    .ai-grid.ai-grid-landscape {
-        grid-template-columns: 1fr !important; /* 移动端单列显示，最大化宽度 */
-        gap: 20px;
-        padding: 15px;
-    }
-
-    .ai-grid.ai-grid-landscape .ai-card {
-        width: 100% !important;
-    }
-
-    .ai-grid.ai-grid-landscape .ai-thumbnail {
-        height: auto !important;
-        aspect-ratio: 16 / 9;
-    }
-}
-
-/* 修复 AI 卡片点击问题 - 全局强制样式 */
-.ai-card {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    position: relative;
-    z-index: 10; /* 提升层级，确保不被遮挡 */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ai-card:active {
-    transform: scale(0.98); /* 添加点击反馈 */
-}
-
-/* 确保播放图标不拦截点击，直接触发卡片点击 */
-.play-icon, 
-.ai-thumbnail, 
-.ai-thumbnail img,
-.ai-info,
-.ai-info h3,
-.ai-info p {
-    pointer-events: none; /* 让点击穿透到 card，统一处理 */
+.marquee-track .add-work-card {
+    border: 2px dashed #ffb7c5;
+    background: #fff0f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px; /* Match approximate height of other cards */
 }
