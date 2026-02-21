@@ -364,8 +364,11 @@ document.addEventListener('DOMContentLoaded', function() {
             editableElements.forEach(el => {
                 el.contentEditable = 'false';
                 el.style.cursor = 'default';
-                el.style.border = 'none';
-                el.style.backgroundColor = 'transparent';
+                // 移除强制样式，保持CSS定义的排版样式
+                el.style.border = '';
+                el.style.backgroundColor = '';
+                el.style.outline = 'none';
+                el.classList.remove('admin-editable');
             });
             
             // 隐藏按钮
