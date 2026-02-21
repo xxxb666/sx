@@ -98,7 +98,7 @@
 
 .ai-grid .ai-thumbnail {
     width: 100%;
-    height: 200px;
+    height: 160px; /* Reduced from 200px to minimize whitespace */
     background: white;
     position: relative;
     overflow: hidden;
