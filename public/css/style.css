@@ -1445,13 +1445,13 @@ body {
     color: #ff6b9d !important; /* 使用更鲜艳的粉色，强制生效 */
     padding: 0;
     gap: 25px;
-    z-index: 10; /* 确保在最上层 */
+    z-index: 100; /* 提高层级，确保在最上层 */
     width: 100%;
-    pointer-events: none; /* 防止遮挡，但子元素(按钮)需要开启 */
+    pointer-events: auto !important; /* 确保可点击 */
 }
 
 .empty-state > * {
-    pointer-events: auto; /* 恢复子元素的交互 */
+    pointer-events: auto !important; /* 确保子元素可点击 */
 }
 
 .empty-state p {
@@ -1467,7 +1467,8 @@ body {
     color: white;
     border: none;
     border-radius: 50px; /* 更圆润 */
-    cursor: pointer;
+    cursor: pointer !important; /* 强制手型 */
+    pointer-events: auto !important; /* 强制可点击 */
     font-size: 16px;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -1476,6 +1477,8 @@ body {
     align-items: center;
     gap: 8px;
     letter-spacing: 1px;
+    position: relative; /* 确保定位层级生效 */
+    z-index: 101; /* 确保在 empty-state 之上 */
 }
 
 .go-upload-btn:hover {
