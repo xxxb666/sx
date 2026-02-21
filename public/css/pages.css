@@ -175,6 +175,7 @@
     width: 100%;
     flex: 1; /* 撑满剩余空间 */
     min-height: 180px;
+    padding-bottom: 30px; /* 稍微向上偏移内容 */
 }
 
 /* 按钮样式优化 - 鲜艳粉色 */
