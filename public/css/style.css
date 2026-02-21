@@ -1431,6 +1431,13 @@ body {
     position: relative;
 }
 
+/* 确保详情内容区域有定位上下文，防止空状态绝对定位溢出覆盖头部 */
+#detail-content {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+}
+
 /* 空状态提示样式 - 绝对定位强力居中 */
 .empty-state {
     position: absolute;
@@ -1445,13 +1452,13 @@ body {
     color: #ff6b9d !important; /* 使用更鲜艳的粉色，强制生效 */
     padding: 0;
     gap: 25px;
-    z-index: 100; /* 提高层级，确保在最上层 */
+    z-index: 10; /* 降低层级，但仍需高于背景 */
     width: 100%;
-    pointer-events: auto !important; /* 确保可点击 */
+    pointer-events: none !important; /* 关键：让点击穿透容器，不阻挡底层交互 */
 }
 
 .empty-state > * {
-    pointer-events: auto !important; /* 确保子元素可点击 */
+    pointer-events: auto !important; /* 确保子元素（如文字、按钮）可交互 */
 }
 
 .empty-state p {
