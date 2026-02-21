@@ -141,6 +141,78 @@
     flex-direction: column;
 }
 
+/* 标题样式 */
+.section-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #fff0f5;
+}
+
+.section-title {
+    font-size: 22px;
+    color: #ff6b9d; /* 粉色标题 */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+/* 空状态提示优化 */
+.empty-section-hint {
+    text-align: center;
+    color: #999;
+    font-size: 15px;
+    background: #fff0f5;
+    border-radius: 15px;
+    border: 2px dashed #ffb7c5;
+    margin: auto 0; /* 垂直居中 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    flex: 1; /* 撑满剩余空间 */
+    min-height: 180px;
+}
+
+/* 按钮样式优化 - 鲜艳粉色 */
+.section-footer-action {
+    margin-top: auto; /* 推到底部 */
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.section-footer-add-btn {
+    background: linear-gradient(135deg, #ff6b95 0%, #ff477e 100%); /* 更鲜艳的粉色 */
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 71, 126, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.section-footer-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 71, 126, 0.4);
+    background: linear-gradient(135deg, #ff85a9 0%, #ff5c8d 100%);
+}
+
+.section-footer-add-btn span {
+    font-size: 18px;
+}
+
 /* 隐藏分割线 */
 .hidden-on-desktop {
     display: none;
