@@ -215,7 +215,7 @@
 /* 空状态提示 */
 .empty-section-hint {
     text-align: center;
-    padding: 0; /* 由flex居中控制 */
+    padding: 0;
     color: #999;
     font-size: 16px;
     background: #fff0f5; /* 浅粉背景 */
@@ -229,8 +229,12 @@
     gap: 15px;
     width: 100%;
     box-sizing: border-box;
-    height: 300px; /* 固定高度，确保撑开容器 */
-    flex: none; /* 不再依赖flex伸缩 */
+    /* 修改为横向比例，类似视频播放器形状 */
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: 200px;
+    max-height: 400px;
+    flex: none;
 }
 
 .empty-section-hint::before {
@@ -276,9 +280,10 @@
 /* AI 宽屏横向展示样式 - 新增 */
 .ai-grid.ai-grid-landscape {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
-    padding: 20px;
+    /* 调整最小宽度以适应更多移动设备 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0; /* 减少水平内边距，利用最大空间 */
     overflow: visible !important;
 }
 
