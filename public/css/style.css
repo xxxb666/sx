@@ -1359,7 +1359,7 @@ body {
     box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2);
     overflow: hidden;
     /* Removed transform transition to fix stuttering - JS drives transform directly */
-    transition: opacity 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     backface-visibility: hidden;
     display: flex;

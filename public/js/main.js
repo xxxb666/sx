@@ -1240,13 +1240,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 性能优化：使用 will-change 并清除旧的内联样式
         cards.forEach(card => {
+            // 优化：明确指定 will-change 属性，帮助浏览器提前优化
             card.style.willChange = 'transform, opacity, z-index';
+            
             // 清除可能存在的旧内联样式
             const inner = card.querySelector('.honor-card-inner');
             if(inner) {
                 inner.style.borderColor = '';
                 inner.style.boxShadow = '';
-                inner.style.transition = 'all 0.3s ease';
+                // 移除 all transition，只保留特定属性，防止 transform 变化时触发不必要的过渡计算
+                inner.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
             }
         });
 
@@ -1260,14 +1263,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const angleRad = angleDeg * Math.PI / 180;
                 
                 // 计算3D位置
-                const x = Math.sin(angleRad) * radius;
-                const z = Math.cos(angleRad) * radius - radius; // z范围: 0 到 -2R
+                // 使用 toFixed 减少小数位数，可能对某些浏览器渲染有帮助
+                const x = (Math.sin(angleRad) * radius).toFixed(2);
+                const z = (Math.cos(angleRad) * radius - radius).toFixed(2); 
                 
                 // 计算缩放和透明度
-                // cos(angle) 从 1 (前) 到 -1 (后)
                 const cosVal = Math.cos(angleRad);
-                const scale = 0.6 + (1 + cosVal) * 0.25; // 范围 0.6 - 1.1
-                const opacity = 0.3 + (1 + cosVal) * 0.35; // 范围 0.3 - 1.0
+                const scale = (0.6 + (1 + cosVal) * 0.25).toFixed(3); 
+                const opacity = (0.3 + (1 + cosVal) * 0.35).toFixed(3); 
                 const zIndex = Math.round((1 + cosVal) * 100);
                 
                 // 找出最前面的卡片
@@ -1277,10 +1280,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // 核心修改：移除 rotateY，保持卡片始终正面朝向观众（Billboard效果）
-                // 这样看起来更整洁，不会有"转圈圈"的眩晕感
                 card.style.transform = `translate3d(${x}px, 0, ${z}px) scale(${scale})`;
                 card.style.opacity = opacity;
-                card.style.zIndex = zIndex;
+                
+                // 优化：仅当 zIndex 改变时才更新 DOM
+                if (card.style.zIndex != zIndex) {
+                    card.style.zIndex = zIndex;
+                }
             });
 
             // 只在状态改变时更新 active 类，减少DOM操作
@@ -1297,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 丝滑动画循环
         let lastTime = performance.now();
-        const rotationSpeed = 15; // 降低速度，更优雅 (度/秒)
+        const rotationSpeed = 20; // 稍微提高速度，看起来更流畅
         
         function animate(currentTime) {
             if (!isPaused) {
@@ -1308,6 +1314,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dt = Math.min(deltaTime, 0.1);
                 
                 rotation -= rotationSpeed * dt; // 逆时针旋转
+                
+                // 防止 rotation 数值过大
+                if (rotation <= -360) rotation += 360;
+                
                 updateCardsPosition(rotation);
             } else {
                 lastTime = currentTime;
