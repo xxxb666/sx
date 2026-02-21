@@ -883,16 +883,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const renderCard = (ai) => {
                 // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const contentSrc = ai.fileUrl || ('/uploads/ai/' + ai.file_path);
+                
+                // 更健壮的类型判断
+                let type = ai.file_type || '';
+                if (!type && ai.file_path) {
+                    if (ai.file_path.match(/\.(mp4|webm|mov)$/i)) type = 'video/mp4';
+                    else if (ai.file_path.match(/\.(jpg|jpeg|png|gif|webp)$/i)) type = 'image/jpeg';
+                }
+                
+                const isVideo = type.startsWith('video');
+                const isImage = type.startsWith('image');
+
                 return `
-                    <div class="ai-card" data-id="${ai.work_id}" data-type="${ai.file_type}" data-content="${contentSrc}">
+                    <div class="ai-card" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
                         <div class="ai-thumbnail">
-                            ${ai.file_type && ai.file_type.startsWith('image') 
+                            ${isImage 
                                 ? `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
                                 : (ai.coverUrl 
                                     ? `<img src="${ai.coverUrl}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
-                                    : `<div class="ai-thumbnail-placeholder">${ai.file_type && ai.file_type.startsWith('video') ? '▶' : '📄'}</div>`)
+                                    : `<div class="ai-thumbnail-placeholder">${isVideo ? '▶' : '📄'}</div>`)
                             }
-                            ${ai.file_type && ai.file_type.startsWith('video') ? '<div class="play-icon">▶</div>' : ''}
+                            ${isVideo ? '<div class="play-icon">▶</div>' : ''}
                         </div>
                         <div class="ai-info">
                             <h3>${ai.title}</h3>
@@ -983,10 +994,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const aiCards = document.querySelectorAll('.ai-card');
 
         aiCards.forEach(card => {
-            card.addEventListener('click', function() {
+            // 使用 onclick 覆盖之前的事件，确保只绑定一次，且不依赖 addEventListener
+            card.onclick = function(e) {
+                // 阻止冒泡，防止被父元素捕获
+                e.stopPropagation();
+
                 const type = this.getAttribute('data-type');
                 const content = this.getAttribute('data-content');
                 const id = this.getAttribute('data-id');
+
+                console.log('AI Card Clicked:', { type, content, id });
 
                 if (type && type.startsWith('image')) {
                     showImageModal(content);
@@ -1023,7 +1040,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.open(content, '_blank');
                     }
                 }
-            });
+            };
         });
     }
 
