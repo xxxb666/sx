@@ -99,7 +99,7 @@
 .ai-grid .ai-thumbnail {
     width: 100%;
     height: 200px;
-    background: #f0f0f0;
+    background: white;
     position: relative;
     overflow: hidden;
     display: flex;
