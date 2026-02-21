@@ -183,37 +183,48 @@
     left: 0;
 }
 
-/* 移动端适配：强制横向滚动布局 */
+/* 移动端适配：强制左右分栏布局 */
 @media (max-width: 768px) {
-    /* 在移动端，如果用户想要“完全横起”，我们可以尝试横向滚动 */
-    /* 或者保持上下结构，但卡片强制横向排列（当前已是 grid） */
-    
-    /* 保持上下结构，因为左右分栏在手机上太窄了 */
+    /* 强制保持左右分栏 */
     .ai-sections-container {
-        flex-direction: column;
+        flex-direction: row; /* 强制水平排列 */
+        gap: 10px; /* 减小间距 */
+        align-items: flex-start; /* 顶部对齐 */
+        overflow-x: auto; /* 如果内容太宽，允许横向滚动（备选） */
     }
     
     .hidden-on-desktop {
-        display: block; /* 显示分割线 */
+        display: none; /* 继续隐藏分割线 */
     }
 
     .ai-split-section {
-        margin: 15px auto;
-        padding: 15px;
+        margin: 10px 0;
+        padding: 10px; /* 减小内边距 */
+        min-width: 0; /* 允许 flex item 缩小 */
+        flex: 1 1 50%; /* 强制各占50% */
     }
 
-    /* 移动端强制双列显示，确保是横向并排的感觉，而不是单列 */
+    /* 移动端分栏内部：改为单列显示，因为分栏已经很窄了 */
     .ai-grid.ai-grid-landscape {
-        grid-template-columns: repeat(2, 1fr); /* 强制两列 */
-        gap: 10px;
+        grid-template-columns: 1fr; /* 单列，因为容器只有屏幕一半宽 */
+        gap: 15px;
     }
     
     /* 字体调整 */
     .ai-info h3 {
-        font-size: 13px;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .ai-info p {
-        font-size: 11px;
+        font-size: 10px;
+        display: none; /* 隐藏描述以节省空间 */
+    }
+    
+    .section-title {
+        font-size: 16px; /* 缩小标题 */
+        padding: 0 5px;
     }
 }
 
