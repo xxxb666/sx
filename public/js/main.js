@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 特别针对后台管理和作品列表的缩略图
             if (el.closest('.admin-work-thumbnail') || el.closest('.work-thumbnail')) {
+                // 如果是 AI 作品（横向），则跳过强制正方形限制
+                if (el.closest('.landscape') || el.closest('.ai-thumbnail')) return;
+                
                 el.style.setProperty('width', '80px', 'important');
                 el.style.setProperty('height', '80px', 'important');
                 el.style.setProperty('max-width', '80px', 'important');
