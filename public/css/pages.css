@@ -127,6 +127,8 @@
     z-index: 1;
     overflow: visible !important; /* 确保不截断内容 */
     min-height: 200px; /* 防止内容为空时高度过小 */
+    display: flex;
+    flex-direction: column;
 }
 
 .section-header {
@@ -136,6 +138,8 @@
     margin-bottom: 25px;
     position: relative;
     padding-bottom: 15px;
+    width: 100%;
+    z-index: 2;
 }
 
 /* 标题样式 */
@@ -223,6 +227,10 @@
     justify-content: center;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box; /* 防止padding撑开宽度 */
+    flex: 1; /* 占据剩余空间 */
+    min-height: 200px; /* 最小高度 */
 }
 
 .empty-section-hint::before {
@@ -236,10 +244,12 @@
 .section-footer-action {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: auto; /* 推到底部 */
+    padding-top: 30px;
     padding-bottom: 10px;
     position: relative;
     z-index: 5;
+    width: 100%;
 }
 
 .section-footer-add-btn {
