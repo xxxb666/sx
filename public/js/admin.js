@@ -382,7 +382,7 @@
                     <div class="admin-checkbox-wrapper">
                         <input type="checkbox" class="work-checkbox" value="${work.work_id}" data-category="${work.category}">
                     </div>
-                    <div class="admin-work-thumbnail">
+                    <div class="admin-work-thumbnail ${work.category === 'ai' ? 'landscape' : ''}">
                         ${getAdminThumbnailHTML(work)}
                     </div>
                     <div class="admin-work-info">
@@ -428,11 +428,11 @@
     // 获取缩略图HTML
     function getAdminThumbnailHTML(work) {
         if (work.file_type && work.file_type.startsWith('image/')) {
-            return `<img src="${'/uploads/' + work.category + '/' + work.file_path}" alt="${work.title}" style="width: 80px; height: 80px; object-fit: contain; background: #f0f0f0; border-radius: 4px;">`;
+            return `<img src="${'/uploads/' + work.category + '/' + work.file_path}" alt="${work.title}" style="width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; border-radius: 4px;">`;
         } else if (work.file_type && work.file_type.startsWith('video/')) {
-            return `<div class="admin-video-thumbnail" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 4px;"><span style="color: #fff; font-size: 24px;">▶</span></div>`;
+            return `<div class="admin-video-thumbnail" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 4px;"><span style="color: #fff; font-size: 24px;">▶</span></div>`;
         } else {
-            return `<div class="admin-file-thumbnail" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 4px;"><span style="font-size: 24px;">📄</span></div>`;
+            return `<div class="admin-file-thumbnail" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 4px;"><span style="font-size: 24px;">📄</span></div>`;
         }
     }
 
