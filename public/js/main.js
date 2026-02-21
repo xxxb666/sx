@@ -1488,6 +1488,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     works = [...works, ...works, ...works]; 
                 }
 
+                // 对于绘画作品，不使用滚动动画，只显示最新的一张作为静态背景
+                if (category === 'painting') {
+                    if (works.length > 0) {
+                        const work = works[0];
+                        const src = work.fileUrl || ('/uploads/painting/' + work.file_path);
+                        scrollContainer.innerHTML = `<img src="${src}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    }
+                    continue; // 跳过后续的滚动轨道生成
+                }
+
                 // 创建滚动轨道
                 const track = document.createElement('div');
                 track.className = 'card-scroll-track';
