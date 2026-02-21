@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
 
             detailContent.innerHTML = html;
-            initAICards();
+            // initAICards(); // 已移除，改为全局事件委托
         } catch (error) {
             console.error('加载AI作品失败:', error);
             detailContent.innerHTML = `
@@ -990,59 +990,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.loadAIPage = loadAIPage;
 
-    function initAICards() {
-        const aiCards = document.querySelectorAll('.ai-card');
+    // 全局事件委托：处理 AI 卡片点击
+    // 使用 body 上的事件委托，确保动态添加的元素也能响应点击
+    document.body.addEventListener('click', function(e) {
+        // 查找最近的 .ai-card 元素
+        const card = e.target.closest('.ai-card');
+        
+        // 如果没有点击 .ai-card，直接返回
+        if (!card) return;
+        
+        // 阻止默认行为和冒泡
+        e.preventDefault();
+        e.stopPropagation();
 
-        aiCards.forEach(card => {
-            // 使用 onclick 覆盖之前的事件，确保只绑定一次，且不依赖 addEventListener
-            card.onclick = function(e) {
-                // 阻止冒泡，防止被父元素捕获
-                e.stopPropagation();
+        const type = card.getAttribute('data-type');
+        const content = card.getAttribute('data-content');
+        const id = card.getAttribute('data-id');
 
-                const type = this.getAttribute('data-type');
-                const content = this.getAttribute('data-content');
-                const id = this.getAttribute('data-id');
+        console.log('AI Card Clicked (Delegated):', { type, content, id });
 
-                console.log('AI Card Clicked:', { type, content, id });
-
-                if (type && type.startsWith('image')) {
-                    showImageModal(content);
-                } else if (type && type.startsWith('video')) {
-                    // 查找索引
-                    if (id && currentVideoList.length > 0) {
-                        const index = currentVideoList.findIndex(v => v.work_id == id);
-                        if (index !== -1) {
-                            currentVideoIndex = index;
-                            playVideoAtIndex(index);
-                            return;
-                        }
-                    }
-                    showVideoPlayer(content);
-                } else if (type && (type.includes('pdf') || content.endsWith('.pdf'))) {
-                    showPdfViewer(content);
-                } else {
-                    // 尝试作为图片打开，或者提示不支持
-                    if (content.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-                        showImageModal(content);
-                    } else if (content.match(/\.(mp4|webm|mov)$/i)) {
-                        // 尝试查找索引
-                        if (id && currentVideoList.length > 0) {
-                            const index = currentVideoList.findIndex(v => v.work_id == id);
-                            if (index !== -1) {
-                                currentVideoIndex = index;
-                                playVideoAtIndex(index);
-                                return;
-                            }
-                        }
-                        showVideoPlayer(content);
-                    } else {
-                        // 对于PPT等其他文件，新窗口打开
-                        window.open(content, '_blank');
+        if (type && type.startsWith('image')) {
+            showImageModal(content);
+        } else if (type && type.startsWith('video')) {
+            // 查找索引
+            if (id && currentVideoList.length > 0) {
+                const index = currentVideoList.findIndex(v => v.work_id == id);
+                if (index !== -1) {
+                    currentVideoIndex = index;
+                    playVideoAtIndex(index);
+                    return;
+                }
+            }
+            showVideoPlayer(content);
+        } else if (type && (type.includes('pdf') || content.endsWith('.pdf'))) {
+            showPdfViewer(content);
+        } else {
+            // 尝试作为图片打开，或者提示不支持
+            if (content.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                showImageModal(content);
+            } else if (content.match(/\.(mp4|webm|mov)$/i)) {
+                // 尝试查找索引
+                if (id && currentVideoList.length > 0) {
+                    const index = currentVideoList.findIndex(v => v.work_id == id);
+                    if (index !== -1) {
+                        currentVideoIndex = index;
+                        playVideoAtIndex(index);
+                        return;
                     }
                 }
-            };
-        });
-    }
+                showVideoPlayer(content);
+            } else {
+                // 对于PPT等其他文件，新窗口打开
+                window.open(content, '_blank');
+            }
+        }
+    });
+
+    // 保留空函数以防万一
+    function initAICards() {}
 
     function showImageModal(imageSrc) {
         modalImage.src = imageSrc;

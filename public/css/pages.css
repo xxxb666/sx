@@ -346,3 +346,26 @@
         aspect-ratio: 16 / 9;
     }
 }
+
+/* 修复 AI 卡片点击问题 - 全局强制样式 */
+.ai-card {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10; /* 提升层级，确保不被遮挡 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-card:active {
+    transform: scale(0.98); /* 添加点击反馈 */
+}
+
+/* 确保播放图标不拦截点击，直接触发卡片点击 */
+.play-icon, 
+.ai-thumbnail, 
+.ai-thumbnail img,
+.ai-info,
+.ai-info h3,
+.ai-info p {
+    pointer-events: none; /* 让点击穿透到 card，统一处理 */
+}
