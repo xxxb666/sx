@@ -258,6 +258,20 @@
     box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
 }
 
+/* AI 宽屏横向展示样式 - 新增 */
+.ai-grid.ai-grid-landscape {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px;
+}
+
+.ai-grid.ai-grid-landscape .ai-thumbnail {
+    width: 100%;
+    height: auto !important; /* 覆盖固定高度 */
+    aspect-ratio: 16 / 9; /* 强制 16:9 横向比例 */
+    background: #000;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
     .video-grid {
@@ -296,5 +310,16 @@
     .ai-scroll-track .ai-card {
         flex: 0 0 220px;
         min-width: 220px;
+    }
+
+    /* AI 宽屏横向展示样式 - 移动端覆盖 */
+    .ai-grid.ai-grid-landscape {
+        grid-template-columns: 1fr; /* 移动端单列显示，最大化宽度 */
+        gap: 20px;
+    }
+
+    .ai-grid.ai-grid-landscape .ai-thumbnail {
+        height: auto !important;
+        aspect-ratio: 16 / 9;
     }
 }
