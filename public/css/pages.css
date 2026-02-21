@@ -112,7 +112,27 @@
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    object-position: top !important;
+    object-position: center !important;
+}
+
+/* AI Info Compact Style - Added to reduce whitespace */
+.ai-info {
+    padding: 8px 10px !important; /* Reduced padding */
+    min-height: auto !important;
+    text-align: center; /* Center the content */
+}
+
+.ai-info h3 {
+    margin: 0 !important;
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ai-info p {
+    display: none !important; /* Hide description to save space */
 }
 
 /* AI 左右分栏布局 */
