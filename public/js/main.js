@@ -918,13 +918,15 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             // 视频区域（左侧/上侧）
+            html += '<div class="ai-sections-container">'; // 新增容器包裹
+
             html += '<div class="ai-split-section ai-videos-section">';
             html += '<div class="section-header">';
             html += '<h3 class="section-title">🎬 AI 视频</h3>';
             html += '</div>';
             
             if (videos.length > 0) {
-                // 使用宽屏网格布局，移除滚动逻辑
+                // 使用宽屏网格布局
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${videos.map(renderCard).join('')}
@@ -944,8 +946,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             html += '</div>';
 
-            // 视频和图片区域之间的分割线
-            html += '<div class="section-divider"></div>';
+            // 视频和图片区域之间的分割线（仅在非宽屏时显示，CSS控制）
+            html += '<div class="section-divider hidden-on-desktop"></div>';
 
             // 图片区域（右侧/下侧）
             html += '<div class="ai-split-section ai-images-section">';
@@ -954,7 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
-                // 使用宽屏网格布局，移除滚动逻辑
+                // 使用宽屏网格布局
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${images.map(renderCard).join('')}
@@ -973,6 +975,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>` : ''}`;
 
             html += '</div>';
+            
+            html += '</div>'; // 结束容器包裹
             
             html += `
                 </div>

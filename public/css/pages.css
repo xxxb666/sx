@@ -114,176 +114,45 @@
     object-fit: contain !important;
 }
 
-/* AI页面分节新样式 */
+/* AI 左右分栏布局 */
+.ai-sections-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    max-width: 1400px; /* 更宽的最大宽度 */
+    margin: 0 auto;
+    align-items: stretch; /* 等高 */
+}
+
 .ai-split-section {
+    flex: 1; /* 平分宽度 */
     padding: 30px;
     background: #fff;
     border-radius: 20px;
-    margin: 30px auto;
-    max-width: 1200px;
+    margin: 30px 0; /* 上下边距 */
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.15);
     border: 1px solid #fff0f5;
     position: relative;
     z-index: 1;
-    overflow: visible !important; /* 确保不截断内容 */
-    min-height: 200px; /* 防止内容为空时高度过小 */
-    display: flex;
-    flex-direction: column;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 25px;
-    position: relative;
-    padding-bottom: 15px;
-    width: 100%;
-    z-index: 2;
-}
-
-/* 标题样式 */
-.section-title {
-    font-size: 24px;
-    color: #ff6b9d; /* 粉色标题 */
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-    padding: 0 20px;
-    background: #fff;
-    z-index: 2;
-}
-
-/* 装饰性标题线 */
-.section-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: #ffb7c5;
-    border-radius: 2px;
-}
-
-/* 明显的分割线 */
-.section-divider {
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #ffb7c5, transparent);
-    margin: 40px auto;
-    width: 80%;
-    opacity: 0.5;
-    border-radius: 2px;
-}
-
-/* 滚动容器 */
-.ai-scroll-container {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    padding: 20px 0; /* 增加内边距，防止投影被截断 */
-}
-
-.ai-scroll-track {
-    display: flex;
-    gap: 20px;
-    animation: scroll linear infinite;
-}
-
-/* 动画定义 */
-@keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-/* 滚动卡片样式 */
-.ai-scroll-track .ai-card {
-    flex: 0 0 340px; /* 更宽的卡片，横向视觉 */
-    min-width: 340px;
-}
-
-/* 静态布局时的网格样式 */
-.ai-scroll-track[style*="animation: none"] {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-/* 空状态提示 */
-.empty-section-hint {
-    text-align: center;
-    padding: 0;
-    color: #999;
-    font-size: 16px;
-    background: #fff0f5; /* 浅粉背景 */
-    border-radius: 15px;
-    border: 2px dashed #ffb7c5;
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
-    /* 修改为横向比例，类似视频播放器形状 */
-    height: auto;
-    aspect-ratio: 16 / 9;
+    overflow: visible !important;
     min-height: 200px;
-    max-height: 400px;
-    flex: none;
-}
-
-.empty-section-hint::before {
-    content: '🌸';
-    font-size: 32px;
-    opacity: 0.5;
-    margin-bottom: 10px;
-}
-
-/* 确保上传按钮区域有足够空间且不重叠 */
-.section-footer-action {
     display: flex;
-    justify-content: center;
-    margin-top: auto; /* 推到底部 */
-    padding-top: 30px;
-    padding-bottom: 10px;
-    position: relative;
-    z-index: 5;
-    width: 100%;
+    flex-direction: column;
 }
 
-.section-footer-add-btn {
-    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: bold;
+/* 隐藏分割线 */
+.hidden-on-desktop {
+    display: none;
 }
 
-.section-footer-add-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
-}
-
-/* AI 宽屏横向展示样式 - 新增 */
+/* AI 宽屏横向展示样式 */
 .ai-grid.ai-grid-landscape {
     display: grid !important;
-    /* 调整最小宽度以适应更多移动设备 */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px 0; /* 减少水平内边距，利用最大空间 */
+    /* 左右分栏后，单栏宽度减半，调整卡片最小宽度 */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
     overflow: visible !important;
 }
 
@@ -298,20 +167,54 @@
 
 .ai-grid.ai-grid-landscape .ai-thumbnail {
     width: 100%;
-    height: auto !important; /* 覆盖固定高度 */
+    height: auto !important;
     aspect-ratio: 16 / 9; /* 强制 16:9 横向比例 */
     background: #000;
     position: relative;
-    overflow: hidden; /* 确保图片不溢出圆角 */
+    overflow: hidden;
 }
 
 .ai-grid.ai-grid-landscape .ai-thumbnail img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important; /* 确保完整显示，不裁剪 */
-    position: absolute; /* 绝对定位确保填满容器 */
+    object-fit: contain !important;
+    position: absolute;
     top: 0;
     left: 0;
+}
+
+/* 移动端适配：强制横向滚动布局 */
+@media (max-width: 768px) {
+    /* 在移动端，如果用户想要“完全横起”，我们可以尝试横向滚动 */
+    /* 或者保持上下结构，但卡片强制横向排列（当前已是 grid） */
+    
+    /* 保持上下结构，因为左右分栏在手机上太窄了 */
+    .ai-sections-container {
+        flex-direction: column;
+    }
+    
+    .hidden-on-desktop {
+        display: block; /* 显示分割线 */
+    }
+
+    .ai-split-section {
+        margin: 15px auto;
+        padding: 15px;
+    }
+
+    /* 移动端强制双列显示，确保是横向并排的感觉，而不是单列 */
+    .ai-grid.ai-grid-landscape {
+        grid-template-columns: repeat(2, 1fr); /* 强制两列 */
+        gap: 10px;
+    }
+    
+    /* 字体调整 */
+    .ai-info h3 {
+        font-size: 13px;
+    }
+    .ai-info p {
+        font-size: 11px;
+    }
 }
 
 /* 移动端适配 */
