@@ -292,31 +292,38 @@
     box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
 
-/* 响应式布局：解决移动端图片区域不可见的问题 */
-@media (max-width: 900px) {
-    .ai-sections-container {
-        flex-direction: column !important;
-        height: auto !important;
-        align-items: center !important;
-    }
+/* 响应式布局：强制保持左右布局，修复挤压问题 */
+.ai-sections-container {
+    /* 确保在所有尺寸下都尝试保持行布局，但允许在极小屏幕下换行以防完全不可读 */
+    flex-wrap: nowrap !important;
+    overflow-x: auto; /* 允许横向滚动如果实在太窄 */
+}
 
-    .ai-split-section {
-        width: 100% !important;
-        margin: 15px 0 !important;
-        min-height: auto !important;
+.ai-split-section {
+    flex: 1 1 50% !important; /* 强制平分宽度 */
+    width: 50% !important;
+    min-width: 0 !important; /* 关键修复：防止内容撑开容器导致另一侧消失 */
+    overflow: hidden !important; /* 防止内容溢出 */
+}
+
+/* 在极小屏幕下优化显示，但保持左右结构 */
+@media (max-width: 600px) {
+    .ai-sections-container {
+        gap: 10px !important;
     }
     
-    .hidden-on-desktop {
-        display: block !important;
-        width: 100%;
-        height: 1px;
-        background: #fff0f5;
-        margin: 10px 0;
+    .ai-split-section {
+        padding: 10px !important;
+    }
+    
+    /* 调整内部网格以适应更窄的空间 */
+    .ai-grid {
+        grid-template-columns: 1fr !important; /* 单列显示 */
+        gap: 10px !important;
+        padding: 5px !important;
     }
 }
 
-@media (min-width: 901px) {
-    .hidden-on-desktop {
-        display: none !important;
-    }
+.hidden-on-desktop {
+    display: none !important;
 }
