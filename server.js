@@ -104,6 +104,28 @@ const upload = multer({
     limits: { fileSize: 500 * 1024 * 1024 } // 500MB 限制
 });
 
+// 上传错误处理中间件
+const uploadMiddleware = (req, res, next) => {
+    const uploadFields = upload.fields([
+        { name: 'file', maxCount: 1 },
+        { name: 'cover', maxCount: 1 }
+    ]);
+
+    uploadFields(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            // Multer 错误
+            console.error('Multer upload error:', err);
+            return res.status(400).json({ success: false, message: `上传错误: ${err.message}` });
+        } else if (err) {
+            // 其他未知错误
+            console.error('Unknown upload error:', err);
+            return res.status(500).json({ success: false, message: `服务器错误: ${err.message}` });
+        }
+        // 一切正常
+        next();
+    });
+};
+
 // 认证中间件
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -250,12 +272,8 @@ app.post('/api/upload/avatar', authenticateToken, avatarUpload, (req, res) => {
 
 // 上传作品
 // 支持上传文件和封面图
-const uploadFields = upload.fields([
-    { name: 'file', maxCount: 1 },
-    { name: 'cover', maxCount: 1 }
-]);
-
-app.post('/api/upload/:category', authenticateToken, uploadFields, (req, res) => {
+// 使用自定义中间件处理上传错误
+app.post('/api/upload/:category', authenticateToken, uploadMiddleware, (req, res) => {
     try {
         const { category } = req.params;
         const { title, description, width, height } = req.body;
@@ -365,6 +383,12 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`已加载作品数: ${db.works.length}`);
     console.log(`时间: ${new Date().toLocaleString()}`);
     console.log('====================================');
+});
+
+// 全局错误处理
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ success: false, message: '服务器内部错误' });
 });
 
 // 设置超时时间为 30 分钟，防止大文件上传中断

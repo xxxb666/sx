@@ -110,8 +110,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 处理文件选择
     async function handleFileSelect(file) {
+        // 限制文件大小为 100MB，防止云服务超时
+        const MAX_SIZE = 100 * 1024 * 1024;
+        
+        if (file.size > MAX_SIZE) {
+            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！请上传小于 100MB 的文件以避免网络超时。`);
+            return;
+        }
+
+        /*
         const validation = FileHandler.validateFile(file, {
-            maxSize: 500 * 1024 * 1024, // 500MB
+            maxSize: MAX_SIZE, 
             allowedTypes: []
         });
 
@@ -119,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(validation.error);
             return;
         }
+        */
 
         currentFile = file;
         

@@ -98,6 +98,14 @@
         const file = e.target.files[0];
         if (!file) return;
 
+        // 检查文件大小 (100MB)
+        const MAX_SIZE = 100 * 1024 * 1024;
+        if (file.size > MAX_SIZE) {
+            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！请上传小于 100MB 的文件以避免网络超时。`);
+            e.target.value = ''; // 清空选择
+            return;
+        }
+
         currentFile = file;
         
         // 显示模态框
