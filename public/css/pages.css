@@ -291,3 +291,32 @@
     transform: translateY(-1px) scale(0.98);
     box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
+
+/* 响应式布局：解决移动端图片区域不可见的问题 */
+@media (max-width: 900px) {
+    .ai-sections-container {
+        flex-direction: column !important;
+        height: auto !important;
+        align-items: center !important;
+    }
+
+    .ai-split-section {
+        width: 100% !important;
+        margin: 15px 0 !important;
+        min-height: auto !important;
+    }
+    
+    .hidden-on-desktop {
+        display: block !important;
+        width: 100%;
+        height: 1px;
+        background: #fff0f5;
+        margin: 10px 0;
+    }
+}
+
+@media (min-width: 901px) {
+    .hidden-on-desktop {
+        display: none !important;
+    }
+}
