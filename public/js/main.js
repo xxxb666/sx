@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageModal = document.getElementById('imageModal');
     const modalImage = imageModal.querySelector('img');
     const closeModalBtn = document.getElementById('closeModal');
+    const prevImageBtn = document.getElementById('prevImage');
+    const nextImageBtn = document.getElementById('nextImage');
     
     // PDF/PPT 查看器
     const pdfModal = document.getElementById('pdfModal');
@@ -22,6 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentVideoList = [];
     let currentVideoIndex = -1;
     let currentVideoCategory = '';
+
+    // 图片查看器导航状态
+    let currentImageList = [];
+    let currentImageIndex = -1;
+    let currentImageCategory = '';
 
     // 强制限制所有媒体元素尺寸的轮询函数
     function enforceMediaSize() {
@@ -542,6 +549,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // 按方向排序（虽然绘画通常是图片，但也可能有竖屏优先的需求）
             paintingData = sortWorks(paintingData);
 
+            // 更新当前图片列表状态
+            currentImageList = paintingData;
+            currentImageCategory = 'painting';
+
             if (paintingData.length === 0) {
                 detailContent.innerHTML = `
                     <div class="painting-page">
@@ -560,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 优先使用 fileUrl，如果没有则回退到拼接路径
                     const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
                     return `
-                    <div class="ai-card" data-type="image" data-content="${imgSrc}">
+                    <div class="ai-card" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}">
                         <div class="ai-thumbnail">
                             <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
                         </div>
@@ -882,6 +893,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.showVideoPlayer = showVideoPlayer;
 
+    // 图片导航
+    if (prevImageBtn) {
+        prevImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentImageList.length === 0) return;
+            
+            let prevIndex = currentImageIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = currentImageList.length - 1; // 循环到最后一个
+            }
+            showImageAtIndex(prevIndex);
+        });
+    }
+
+    if (nextImageBtn) {
+        nextImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentImageList.length === 0) return;
+
+            let nextIndex = currentImageIndex + 1;
+            if (nextIndex >= currentImageList.length) {
+                nextIndex = 0; // 循环到第一个
+            }
+            showImageAtIndex(nextIndex);
+        });
+    }
+
+    function showImageAtIndex(index) {
+        if (index < 0 || index >= currentImageList.length) return;
+        
+        currentImageIndex = index;
+        const image = currentImageList[index];
+        // 兼容不同数据结构
+        const imageSrc = image.fileUrl || ('/uploads/' + currentImageCategory + '/' + image.file_path);
+        
+        showImageModal(imageSrc);
+    }
+
     function showPdfViewer(pdfSrc) {
         pdfFrame.src = pdfSrc;
         pdfModal.style.display = 'flex';
@@ -928,6 +977,10 @@ document.addEventListener('DOMContentLoaded', function() {
             currentVideoList = videos;
             currentVideoCategory = 'ai';
 
+            // 更新当前图片列表状态
+            currentImageList = images;
+            currentImageCategory = 'ai';
+
             let html = '<div class="ai-page ai-split-container">';
             
             // 辅助函数：渲染卡片
@@ -945,18 +998,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isVideo = type.startsWith('video');
                 const isImage = type.startsWith('image');
 
+                let mediaHtml = '';
+                if (isImage) {
+                    mediaHtml = `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`;
+                } else if (isVideo) {
+                    // 视频处理逻辑：如果有封面，显示封面，加载失败回退到视频
+                    // 如果没有封面，直接显示视频
+                    if (ai.coverUrl) {
+                        mediaHtml = `
+                            <img src="${ai.coverUrl}" 
+                                 style="width:100%; height:100%; object-fit:contain; display:block;" 
+                                 alt="${ai.title}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <video src="${contentSrc}" 
+                                   style="width:100%; height:100%; object-fit:contain; display:none;" 
+                                   muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>
+                        `;
+                    } else {
+                        mediaHtml = `<video src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>`;
+                    }
+                } else {
+                    mediaHtml = `<div class="ai-thumbnail-placeholder">📄</div>`;
+                }
+
                 return `
                     <div class="ai-card" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
                         <div class="ai-thumbnail">
-                            ${isImage 
-                                ? `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
-                                : (ai.coverUrl 
-                                    ? `<img src="${ai.coverUrl}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
-                                    : (isVideo 
-                                        ? `<video src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>`
-                                        : `<div class="ai-thumbnail-placeholder">📄</div>`)
-                                    )
-                            }
+                            ${mediaHtml}
                             ${isVideo ? '<div class="play-icon">▶</div>' : ''}
                         </div>
                         <div class="ai-info">
@@ -1072,6 +1140,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('AI Card Clicked (Delegated):', { type, content, id });
 
         if (type && type.startsWith('image')) {
+            // 尝试查找索引
+            if (id && currentImageList.length > 0) {
+                const index = currentImageList.findIndex(img => img.work_id == id);
+                if (index !== -1) {
+                    showImageAtIndex(index);
+                    return;
+                }
+            }
             showImageModal(content);
         } else if (type && type.startsWith('video')) {
             // 查找索引
@@ -1117,6 +1193,17 @@ document.addEventListener('DOMContentLoaded', function() {
         modalImage.style.maxWidth = '100%';
         modalImage.style.maxHeight = '70vh';
         modalImage.style.objectFit = 'contain';
+
+        // 更新导航按钮状态
+        if (prevImageBtn && nextImageBtn) {
+            if (currentImageList.length > 1) {
+                prevImageBtn.style.display = 'flex';
+                nextImageBtn.style.display = 'flex';
+            } else {
+                prevImageBtn.style.display = 'none';
+                nextImageBtn.style.display = 'none';
+            }
+        }
     }
     window.showImageModal = showImageModal;
 
@@ -1137,6 +1224,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // 从后端API获取荣誉墙
             const result = await API.getWorks('honor');
             const honorData = result.works || [];
+
+            // 更新当前图片列表状态
+            currentImageList = honorData;
+            currentImageCategory = 'honor';
 
             if (honorData.length === 0) {
                 detailContent.innerHTML = `
@@ -1327,8 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cards.forEach((card, index) => {
             card.addEventListener('click', function() {
                 // 如果是点击两侧的卡片，可以自动旋转到中间（可选功能，这里暂时只保留查看大图）
-                const imageSrc = this.querySelector('img').src;
-                showImageModal(imageSrc);
+                showImageAtIndex(index);
             });
         });
 
