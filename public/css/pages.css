@@ -247,3 +247,47 @@
     justify-content: center;
     min-height: 250px; /* Match approximate height of other cards */
 }
+
+/* AI页面底部上传按钮样式 */
+.empty-section-hint {
+    text-align: center;
+    color: #999;
+    font-size: 16px;
+    padding: 40px 0;
+}
+
+.section-footer-action {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.section-footer-add-btn {
+    padding: 12px 35px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.section-footer-add-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+}
+
+.section-footer-add-btn:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+}

@@ -52,6 +52,7 @@ function saveData() {
             fs.mkdirSync(dataDir, { recursive: true });
         }
         fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2), 'utf8');
+        console.log(`数据已保存到: ${DATA_FILE} (作品数: ${db.works.length})`);
     } catch (error) {
         console.error('保存数据失败:', error);
     }
@@ -361,6 +362,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`服务器启动成功！`);
     console.log(`运行环境: ${process.env.NODE_ENV || 'development'}`);
     console.log(`端口: ${PORT}`);
+    console.log(`已加载作品数: ${db.works.length}`);
     console.log(`时间: ${new Date().toLocaleString()}`);
     console.log('====================================');
 });
