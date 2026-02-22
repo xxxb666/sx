@@ -1048,14 +1048,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${videos.map(renderCard).join('')}
-                        ${isAdminUser ? `
-                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px; cursor: pointer;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传视频</div>
-                            </div>
-                        </div>
-                        ` : ''}
                     </div>
                 `;
             } else {
@@ -1088,14 +1080,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${images.map(renderCard).join('')}
-                        ${isAdminUser ? `
-                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px; cursor: pointer;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传图片</div>
-                            </div>
-                        </div>
-                        ` : ''}
                     </div>
                 `;
             } else {
