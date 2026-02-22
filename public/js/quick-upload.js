@@ -75,10 +75,16 @@
 
         // 继续上传
         continueBtn.addEventListener('click', () => {
+             // 重置状态变量
+             currentFile = null;
+             currentCoverBlob = null;
+             currentDimensions = { width: 0, height: 0 };
+             fileInput.value = ''; // 清空文件选择，确保能重复选同名文件
+
              // 重置UI并重新触发文件选择
              document.getElementById('quickWorkTitle').value = '';
              document.getElementById('quickWorkDesc').value = '';
-             document.getElementById('quickPreviewArea').innerHTML = '<span style="color: #ffb7c5; font-size: 14px;">预览区域</span>';
+             document.getElementById('quickPreviewArea').innerHTML = '<span style="color: #ffb7c5; font-size: 14px; cursor: pointer;">点击此处选择文件</span>';
              document.getElementById('quickProgressContainer').style.display = 'none';
              document.getElementById('quickProgressFill').style.width = '0%';
              document.getElementById('quickProgressText').textContent = '0%';
@@ -92,6 +98,15 @@
              
              // 触发文件选择
              fileInput.click();
+        });
+
+        // 点击预览区域也可以选择文件
+        document.getElementById('quickPreviewArea').addEventListener('click', () => {
+            // 只有在没有文件被选中（或者是预览区域显示提示文字）时才触发
+            // 或者允许随时点击更换文件
+            if (!currentFile || document.getElementById('continueQuickUploadBtn').style.display === 'none') {
+                fileInput.click();
+            }
         });
 
         // 点击模态框背景关闭
@@ -229,8 +244,9 @@
         // 清理
         currentFile = null;
         currentCoverBlob = null;
+        currentDimensions = { width: 0, height: 0 };
         document.getElementById('quickFileInput').value = '';
-        document.getElementById('quickPreviewArea').innerHTML = '';
+        document.getElementById('quickPreviewArea').innerHTML = '<span style="color: #ffb7c5; font-size: 14px;">预览区域</span>';
         
         // 重置按钮状态
         document.getElementById('confirmQuickUploadBtn').style.display = 'inline-block';
