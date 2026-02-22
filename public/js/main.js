@@ -952,7 +952,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ? `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
                                 : (ai.coverUrl 
                                     ? `<img src="${ai.coverUrl}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`
-                                    : `<div class="ai-thumbnail-placeholder">${isVideo ? '▶' : '📄'}</div>`)
+                                    : (isVideo 
+                                        ? `<video src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>`
+                                        : `<div class="ai-thumbnail-placeholder">📄</div>`)
+                                    )
                             }
                             ${isVideo ? '<div class="play-icon">▶</div>' : ''}
                         </div>
@@ -977,26 +980,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${videos.map(renderCard).join('')}
-                        ${isAdminUser ? `
-                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; height: auto !important; aspect-ratio: 16/9;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                            </div>
-                        </div>
-                        ` : ''}
                     </div>
                 `;
             } else {
                  html += '<div class="empty-section-hint">暂无视频作品</div>';
-                 if (isAdminUser) {
-                    html += `
-                    <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
-                            <span>🎬</span> 上传视频
-                        </button>
-                    </div>`;
-                 }
+            }
+
+            // 始终显示上传按钮（如果管理员）
+            if (isAdminUser) {
+                html += `
+                <div class="section-footer-action">
+                    <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
+                        <span>🎬</span> 上传视频
+                    </button>
+                </div>`;
             }
 
             html += '</div>';
@@ -1015,26 +1012,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="ai-grid ai-grid-landscape">
                         ${images.map(renderCard).join('')}
-                        ${isAdminUser ? `
-                        <div class="ai-card add-work-card" onclick="window.openQuickUpload('ai', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; height: auto !important; aspect-ratio: 16/9;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                            </div>
-                        </div>
-                        ` : ''}
                     </div>
                 `;
             } else {
                  html += '<div class="empty-section-hint">暂无图片作品</div>';
-                 if (isAdminUser) {
-                    html += `
-                    <div class="section-footer-action">
-                        <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
-                            <span>🖼️</span> 上传图片
-                        </button>
-                    </div>`;
-                 }
+            }
+
+            // 始终显示上传按钮（如果管理员）
+            if (isAdminUser) {
+                html += `
+                <div class="section-footer-action">
+                    <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
+                        <span>🖼️</span> 上传图片
+                    </button>
+                </div>`;
             }
 
             html += '</div>';
