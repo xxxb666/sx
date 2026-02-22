@@ -1505,7 +1505,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 首页卡片滚动预览
     async function initCardPreviews() {
-        const categories = ['painting', 'dance', 'ai'];
+        const categories = ['painting', 'dance']; // 移除了 'ai'，防止AI作品预览背景导致的问题
         
         for (const category of categories) {
             const scrollContainer = document.getElementById(`scroll-${category}`);
