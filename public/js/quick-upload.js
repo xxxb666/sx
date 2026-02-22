@@ -45,6 +45,7 @@
                     <div class="quick-upload-footer">
                         <button class="btn-cancel" id="cancelQuickUploadBtn">取消</button>
                         <button class="btn-confirm" id="confirmQuickUploadBtn">确认上传</button>
+                        <button class="btn-confirm" id="continueQuickUploadBtn" style="display: none;">继续上传</button>
                     </div>
                 </div>
             </div>
@@ -59,6 +60,7 @@
         const closeBtn = document.getElementById('closeQuickUploadBtn');
         const cancelBtn = document.getElementById('cancelQuickUploadBtn');
         const confirmBtn = document.getElementById('confirmQuickUploadBtn');
+        const continueBtn = document.getElementById('continueQuickUploadBtn');
         const modal = document.getElementById('quickUploadModal');
 
         // 文件选择变化
@@ -70,6 +72,27 @@
 
         // 确认上传
         confirmBtn.addEventListener('click', uploadWork);
+
+        // 继续上传
+        continueBtn.addEventListener('click', () => {
+             // 重置UI并重新触发文件选择
+             document.getElementById('quickWorkTitle').value = '';
+             document.getElementById('quickWorkDesc').value = '';
+             document.getElementById('quickPreviewArea').innerHTML = '<span style="color: #ffb7c5; font-size: 14px;">预览区域</span>';
+             document.getElementById('quickProgressContainer').style.display = 'none';
+             document.getElementById('quickProgressFill').style.width = '0%';
+             document.getElementById('quickProgressText').textContent = '0%';
+             
+             // 切换按钮状态
+             document.getElementById('confirmQuickUploadBtn').style.display = 'inline-block';
+             document.getElementById('continueQuickUploadBtn').style.display = 'none';
+             document.getElementById('cancelQuickUploadBtn').textContent = '取消';
+             document.getElementById('confirmQuickUploadBtn').disabled = false;
+             document.getElementById('confirmQuickUploadBtn').textContent = '确认上传';
+             
+             // 触发文件选择
+             fileInput.click();
+        });
 
         // 点击模态框背景关闭
         modal.addEventListener('click', (e) => {
@@ -113,7 +136,7 @@
         modal.classList.add('active');
         
         // 重置表单
-        document.getElementById('quickWorkTitle').value = ''; // 文件名可能不适合作为标题，让用户自己填
+        document.getElementById('quickWorkTitle').value = ''; 
         document.getElementById('quickWorkDesc').value = '';
         document.getElementById('quickProgressContainer').style.display = 'none';
         document.getElementById('confirmQuickUploadBtn').disabled = false;
@@ -208,6 +231,14 @@
         currentCoverBlob = null;
         document.getElementById('quickFileInput').value = '';
         document.getElementById('quickPreviewArea').innerHTML = '';
+        
+        // 重置按钮状态
+        document.getElementById('confirmQuickUploadBtn').style.display = 'inline-block';
+        document.getElementById('continueQuickUploadBtn').style.display = 'none';
+        document.getElementById('cancelQuickUploadBtn').textContent = '取消';
+        document.getElementById('confirmQuickUploadBtn').disabled = false;
+        document.getElementById('confirmQuickUploadBtn').textContent = '确认上传';
+        document.getElementById('quickProgressContainer').style.display = 'none';
     }
 
     // 上传作品
@@ -260,22 +291,27 @@
                 progressBar.style.width = '100%';
                 progressText.textContent = '上传成功！';
                 
-                setTimeout(() => {
-                    closeModal();
-                    alert('上传成功！');
-                    // 刷新当前页面
-                    if (currentCategory === 'ai' && typeof window.loadAIPage === 'function') {
-                        window.loadAIPage();
-                    } else if (currentCategory === 'dance' && typeof window.loadDancePage === 'function') {
-                        window.loadDancePage();
-                    } else if (currentCategory === 'painting' && typeof window.loadPaintingPage === 'function') {
-                        window.loadPaintingPage();
-                    } else if (currentCategory === 'honor' && typeof window.loadHonorPage === 'function') {
-                        window.loadHonorPage();
-                    } else if (currentCategory === 'ppt' && typeof window.loadPPTPage === 'function') {
-                        window.loadPPTPage();
-                    }
-                }, 1000);
+                // 刷新当前页面内容
+                if (currentCategory === 'ai' && typeof window.loadAIPage === 'function') {
+                    window.loadAIPage();
+                } else if (currentCategory === 'dance' && typeof window.loadDancePage === 'function') {
+                    window.loadDancePage();
+                } else if (currentCategory === 'painting' && typeof window.loadPaintingPage === 'function') {
+                    window.loadPaintingPage();
+                } else if (currentCategory === 'honor' && typeof window.loadHonorPage === 'function') {
+                    window.loadHonorPage();
+                } else if (currentCategory === 'ppt' && typeof window.loadPPTPage === 'function') {
+                    window.loadPPTPage();
+                }
+                
+                // 切换按钮状态，允许继续上传
+                confirmBtn.style.display = 'none';
+                const continueBtn = document.getElementById('continueQuickUploadBtn');
+                continueBtn.style.display = 'inline-block';
+                
+                const cancelBtn = document.getElementById('cancelQuickUploadBtn');
+                cancelBtn.textContent = '关闭';
+                
             } else {
                 throw new Error(result.message || '上传失败');
             }

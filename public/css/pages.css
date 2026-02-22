@@ -303,7 +303,7 @@
     flex: 1 1 50% !important; /* 强制平分宽度 */
     width: 50% !important;
     min-width: 0 !important; /* 关键修复：防止内容撑开容器导致另一侧消失 */
-    overflow: hidden !important; /* 防止内容溢出 */
+    overflow: visible !important; /* 允许内容溢出，防止按钮被切断 */
 }
 
 /* 在极小屏幕下优化显示，但保持左右结构 */
