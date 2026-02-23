@@ -621,11 +621,9 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = `
             <div class="painting-page">
                 <div class="horizontal-slider-container">
-                    <button class="nav-arrow left-arrow" id="paintingSliderLeftBtn">❮</button>
-                    <div class="video-track" id="paintingSliderTrack">
+                    <div class="video-track" id="paintingSliderTrack" style="overflow-x: auto; scroll-behavior: smooth;">
                         ${cardsHtml}
                     </div>
-                    <button class="nav-arrow right-arrow" id="paintingSliderRightBtn">❯</button>
                 </div>
                 
                 ${isAdminUser ? `
@@ -638,25 +636,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             detailContent.innerHTML = html;
             
-            // 绑定滚动按钮事件
-            const track = document.getElementById('paintingSliderTrack');
-            const leftBtn = document.getElementById('paintingSliderLeftBtn');
-            const rightBtn = document.getElementById('paintingSliderRightBtn');
-            
-            if (track && leftBtn && rightBtn) {
-                // 确保按钮始终显示，保持与AI视频页一致的视觉体验
-                leftBtn.style.display = 'block';
-                rightBtn.style.display = 'block';
-
-                leftBtn.addEventListener('click', () => {
-                    track.scrollBy({ left: -320, behavior: 'smooth' });
-                });
-                
-                rightBtn.addEventListener('click', () => {
-                    track.scrollBy({ left: 320, behavior: 'smooth' });
-                });
-            }
-
             // 使用AI卡片的初始化函数，因为结构相同
             initAICards();
 
