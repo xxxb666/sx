@@ -204,7 +204,9 @@ const API = {
     // 上传头像
     async uploadAvatar(formData) {
         const token = sessionStorage.getItem('adminToken');
-        const response = await fetch(API_CONFIG.getUrl('/upload/avatar'), {
+        const url = API_CONFIG.getUrl ? API_CONFIG.getUrl('/upload/avatar') : '/api/upload/avatar';
+        
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 ...(token && { 'Authorization': `Bearer ${token}` })
@@ -212,7 +214,6 @@ const API = {
             body: formData
         });
         
-        // 处理认证失败
         if (response.status === 401 || response.status === 403) {
             console.warn('API 认证失败 (头像)，清除 Token');
             sessionStorage.removeItem('adminToken');
@@ -221,11 +222,36 @@ const API = {
         }
         
         const data = await response.json();
-        
         if (!response.ok) {
             throw new Error(data.message || '上传失败');
         }
+        return data;
+    },
+
+    // 上传自我介绍视频
+    async uploadIntroVideo(formData) {
+        const token = sessionStorage.getItem('adminToken');
+        const url = API_CONFIG.getUrl ? API_CONFIG.getUrl('/upload/intro-video') : '/api/upload/intro-video';
         
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: formData
+        });
+        
+        if (response.status === 401 || response.status === 403) {
+            console.warn('API 认证失败 (自我介绍视频)，清除 Token');
+            sessionStorage.removeItem('adminToken');
+            window.dispatchEvent(new Event('auth:expired'));
+            throw new Error('登录已过期，请重新登录');
+        }
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || '上传失败');
+        }
         return data;
     }
 };

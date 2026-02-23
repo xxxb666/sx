@@ -90,42 +90,54 @@
             </div>
         </div>
 
-        <!-- 页面2：我的简单介绍 -->
-        <div id="page2" class="page">
-            <div class="header with-back">
-                <button class="back-btn" data-target="page1">
-                    <span class="back-icon">←</span>
-                    <span>返回首页</span>
-                </button>
-            </div>
+        <!-- 页面2：我的简单介绍（作为首页进入后的过渡页） -->
+        <div id="page2" class="page intro-page">
+            <div class="intro-page-content">
+                <!-- 顶部导航栏 -->
+                <div class="intro-header">
+                    <button class="skip-btn" id="skipIntroBtn">
+                        <span>进入作品集</span>
+                        <span class="skip-icon">→</span>
+                    </button>
+                </div>
 
-            <div class="about-content">
                 <!-- 自我介绍视频区域 -->
-                <div class="intro-video-container" id="introVideoContainer" style="display:none; width: 100%; margin-bottom: 20px; text-align: center;">
-                    <video id="introVideo" controls style="max-width: 100%; max-height: 400px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"></video>
+                <div class="intro-video-wrapper">
+                    <div class="intro-video-container" id="introVideoContainer" style="display:none;">
+                        <video id="introVideo" controls autoplay muted playsinline></video>
+                    </div>
+                    
+                    <!-- 无视频时的占位提示 -->
+                    <div id="noVideoPlaceholder" class="no-video-placeholder" style="display: none;">
+                        <div class="placeholder-icon">👋</div>
+                        <h3>欢迎来到我的空间</h3>
+                        <p>这里是徐小泡的个人作品展示</p>
+                    </div>
                 </div>
                 
-                <div class="intro-video-upload" style="text-align: center; margin-bottom: 20px;">
-                    <button class="change-avatar-btn" id="uploadIntroVideoBtn" style="display: none; background: linear-gradient(135deg, #6e8efb, #a777e3); width: auto; padding: 0 20px;">上传自我介绍视频</button>
+                <!-- 管理员上传按钮 -->
+                <div class="intro-admin-controls">
+                    <button class="change-avatar-btn" id="uploadIntroVideoBtn" style="display: none;">
+                        <span>📹</span> 上传/更换自我介绍视频
+                    </button>
                     <input type="file" id="introVideoInput" accept="video/*" style="display: none;">
                 </div>
 
-                <div class="about-avatar">
-                    <div class="avatar-placeholder">👧</div>
-                    <img id="avatarImg" src="" alt="头像" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    <button class="change-avatar-btn" id="changeAvatarBtn">更换头像</button>
-                </div>
-                <div class="about-info">
-                    <h3 class="nickname" contenteditable="true" id="nickname">徐小泡</h3>
-                    <div class="about-section">
-                        <h4>自我介绍</h4>
-                        <p contenteditable="true" id="selfIntro">热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。</p>
+                <!-- 个人信息卡片 (缩小版) -->
+                <div class="intro-profile-card">
+                    <div class="about-avatar small">
+                        <div class="avatar-placeholder">👧</div>
+                        <img id="avatarImg" src="" alt="头像" style="display: none;">
+                        <button class="change-avatar-btn mini" id="changeAvatarBtn">📷</button>
                     </div>
-                    <div class="about-section">
-                        <h4>专属座右铭</h4>
+                    <div class="about-info-compact">
+                        <h3 class="nickname" contenteditable="true" id="nickname">徐小泡</h3>
                         <p class="motto" contenteditable="true" id="motto">"每一个不曾起舞的日子，都是对生命的辜负"</p>
+                        <div class="about-desc" style="display:none;">
+                            <p contenteditable="true" id="selfIntro">热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。</p>
+                        </div>
+                        <button class="save-profile-btn mini" id="saveProfileBtn">保存</button>
                     </div>
-                    <button class="save-profile-btn" id="saveProfileBtn">保存个人资料</button>
                 </div>
             </div>
         </div>

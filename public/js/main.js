@@ -1367,49 +1367,50 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             let html = `
-                <div class="honor-page" style="position: relative;">
+                <div class="honor-page" style="position: relative; padding: 20px;">
                     ${isAdminUser ? `
-                    <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')" style="
-                        position: absolute;
-                        top: 20px;
-                        right: 20px;
-                        z-index: 100;
-                        background: #ff6b9d;
-                        color: white;
-                        border: none;
-                        border-radius: 50px;
-                        padding: 10px 20px;
-                        font-size: 14px;
-                        cursor: pointer;
-                        box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
-                        display: flex;
-                        align-items: center;
-                        gap: 5px;
-                        transition: transform 0.2s;
-                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                        <span>➕</span> 添加荣誉
-                    </button>
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                        <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')" style="
+                            background: #ff6b9d;
+                            color: white;
+                            border: none;
+                            border-radius: 50px;
+                            padding: 10px 20px;
+                            font-size: 14px;
+                            cursor: pointer;
+                            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                            transition: transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <span>➕</span> 添加荣誉
+                        </button>
+                    </div>
                     ` : ''}
-                    <div class="honor-3d-container">
-                        <div class="honor-3d-track" id="honorTrack">
-                            ${honorData.map((honor, index) => {
-                                // 优先使用 fileUrl，如果没有则回退到拼接路径
-                                const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
-                                return `
-                                <div class="honor-3d-card" data-index="${index}">
-                                    <div class="honor-card-inner">
-                                        <img src="${imgSrc}" alt="${honor.title}" style="width:100%; height:100%; object-fit:cover; display:block;">
-                                    <div class="honor-card-title">${honor.title}</div>
+                    
+                    <div class="ai-grid honor-grid">
+                        ${honorData.map((honor, index) => {
+                            // 优先使用 fileUrl，如果没有则回退到拼接路径
+                            const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
+                            return `
+                            <div class="ai-card honor-card" onclick="window.showImageAtIndex(${index})" style="animation-delay: ${index * 0.05}s">
+                                <div class="ai-thumbnail">
+                                    <img src="${imgSrc}" alt="${honor.title}" loading="lazy">
+                                </div>
+                                <div class="ai-info">
+                                    <h3>${honor.title}</h3>
                                 </div>
                             </div>
                         `}).join('')}
-                        </div>
                     </div>
                 </div>
             `;
 
             detailContent.innerHTML = html;
-            initHonor3DCarousel(honorData.length);
+            // initHonor3DCarousel(honorData.length); //不再使用3D轮播
+
+
         } catch (error) {
             console.error('加载荣誉墙失败:', error);
             detailContent.innerHTML = `
@@ -1424,38 +1425,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.loadHonorPage = loadHonorPage;
 
+    // 全局变量存储动画ID，防止内存泄漏
+    let honorCarouselAnimationId = null;
+
     function initHonor3DCarousel(totalCards) {
+        // 清理旧的动画循环
+        if (honorCarouselAnimationId) {
+            cancelAnimationFrame(honorCarouselAnimationId);
+            honorCarouselAnimationId = null;
+        }
+
         const track = document.getElementById('honorTrack');
+        // 重新获取卡片，确保是最新的DOM
         const cards = document.querySelectorAll('.honor-3d-card');
         
         if (!track || cards.length === 0) return;
 
         // 配置参数 - 优化半径和视觉效果
-        // 响应式半径：手机端使用较小半径，PC端使用标准半径
-        let radius = window.innerWidth < 768 ? 160 : 280; 
+        // 增加半径，确保旋转效果明显
+        let radius = window.innerWidth < 768 ? 200 : 350; 
         
         // 监听窗口大小改变，动态调整半径
         window.addEventListener('resize', () => {
-            radius = window.innerWidth < 768 ? 160 : 280;
+            radius = window.innerWidth < 768 ? 200 : 350;
         });
 
         const angleStep = 360 / totalCards;
         let rotation = 0;
         let isPaused = false;
-        let animationFrameId;
         let lastActiveIndex = -1;
         
         // 性能优化：使用 will-change 并清除旧的内联样式
         cards.forEach(card => {
-            // 优化：明确指定 will-change 属性，帮助浏览器提前优化
             card.style.willChange = 'transform, opacity, z-index';
+            card.style.position = 'absolute'; // 强制绝对定位，防止CSS未生效
+            card.style.left = '50%';
+            card.style.top = '50%';
+            // 保持CSS中的 margin 设置
             
-            // 清除可能存在的旧内联样式
             const inner = card.querySelector('.honor-card-inner');
             if(inner) {
                 inner.style.borderColor = '';
                 inner.style.boxShadow = '';
-                // 移除 all transition，只保留特定属性，防止 transform 变化时触发不必要的过渡计算
                 inner.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
             }
         });
@@ -1469,37 +1480,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 const angleDeg = (index * angleStep + rotationAngle) % 360;
                 const angleRad = angleDeg * Math.PI / 180;
                 
-                // 计算3D位置
-                // 使用 toFixed 减少小数位数，可能对某些浏览器渲染有帮助
-                const x = (Math.sin(angleRad) * radius).toFixed(2);
-                const z = (Math.cos(angleRad) * radius - radius).toFixed(2); 
+                // 计算3D位置 - 围绕中心旋转
+                // x = sin(a) * r
+                // z = cos(a) * r - r (为了让最前面的卡片在 z=0 处，或者稍微靠前)
+                // 这里我们将中心设为 (0, 0, -radius)，这样最前面的卡片在 z=0
+                const x = Math.sin(angleRad) * radius;
+                // z轴坐标：cos(a)*r 是相对于圆心的z，减去r是将圆心移到 z=-r，这样圆周最前面点在 z=0
+                const z = Math.cos(angleRad) * radius - radius; 
                 
-                // 计算缩放和透明度
-                const cosVal = Math.cos(angleRad);
-                const scale = (0.6 + (1 + cosVal) * 0.25).toFixed(3); 
-                const opacity = (0.3 + (1 + cosVal) * 0.35).toFixed(3); 
+                // 计算缩放和透明度 - 增加透视感
+                const cosVal = Math.cos(angleRad); // 1 (front) to -1 (back)
+                
+                // 缩放范围：0.6 到 1.0
+                const scale = 0.6 + (1 + cosVal) * 0.2;
+                
+                // 透明度范围：0.5 到 1.0
+                const opacity = 0.5 + (1 + cosVal) * 0.25;
+                
+                // z-index 越大越靠前
                 const zIndex = Math.round((1 + cosVal) * 100);
                 
-                // 找出最前面的卡片
                 if (zIndex > maxZIndex) {
                     maxZIndex = zIndex;
                     currentActiveIndex = index;
                 }
                 
-                // 恢复 3D 旋转效果：
-                // 让卡片面向圆心或者稍微有一些透视感
-                // 如果是标准旋转木马，应该是 rotateY(${-angleDeg}deg) 或者 rotateY(${angleDeg}deg)
-                // 这里我们使用 rotateY(${-angleDeg}deg) 让卡片始终面向圆环外侧，配合 translate3d 移动
-                card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${-angleDeg}deg) scale(${scale})`;
-                card.style.opacity = opacity;
+                // 组合变换：位移 -> 旋转 -> 缩放
+                // translate3d(x, 0, z) 移动到圆周位置
+                // rotateY(${-angleDeg}deg) 旋转卡片使其面向圆心 (因为 translate 之后坐标系也变了... 不，transform顺序是关键)
+                // 在 CSS transform 中，变换是后乘的（或者说从左到右应用）。
+                // translate 移动原点。rotate 旋转坐标系。
+                // 实际上，为了让卡片面向圆心，我们需要抵消它在圆周上的角度。
+                // 如果 angleDeg 是 0（正前方），rotateY(0)。
+                // 如果 angleDeg 是 90（右侧），x=r, z=-r。rotateY(-90) 使其面向左侧（圆心）。
+                // 所以 rotateY(${-angleDeg}deg) 是正确的。
                 
-                // 优化：仅当 zIndex 改变时才更新 DOM
-                if (card.style.zIndex != zIndex) {
-                    card.style.zIndex = zIndex;
-                }
+                card.style.transform = `translate3d(${x.toFixed(2)}px, 0, ${z.toFixed(2)}px) rotateY(${-angleDeg}deg) scale(${scale.toFixed(3)})`;
+                card.style.opacity = opacity.toFixed(3);
+                card.style.zIndex = zIndex;
             });
 
-            // 只在状态改变时更新 active 类，减少DOM操作
+            // 更新激活状态
             if (currentActiveIndex !== lastActiveIndex) {
                 if (lastActiveIndex !== -1 && cards[lastActiveIndex]) {
                     cards[lastActiveIndex].classList.remove('active');
@@ -1516,6 +1537,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const rotationSpeed = 20; // 稍微提高速度，看起来更流畅
         
         function animate(currentTime) {
+            // 检查元素是否还在文档中，如果不在则停止动画并清理
+            if (!document.body.contains(track)) {
+                if (honorCarouselAnimationId) {
+                    cancelAnimationFrame(honorCarouselAnimationId);
+                    honorCarouselAnimationId = null;
+                }
+                return;
+            }
+
             if (!isPaused) {
                 const deltaTime = (currentTime - lastTime) / 1000;
                 lastTime = currentTime;
@@ -1533,11 +1563,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 lastTime = currentTime;
             }
             
-            animationFrameId = requestAnimationFrame(animate);
+            honorCarouselAnimationId = requestAnimationFrame(animate);
         }
 
         // 启动动画
-        animationFrameId = requestAnimationFrame(animate);
+        honorCarouselAnimationId = requestAnimationFrame(animate);
 
         // 初始化点击事件
         cards.forEach((card, index) => {
@@ -1714,6 +1744,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const enterSpaceBtn = document.getElementById('enterSpaceBtn');
     if (enterSpaceBtn) {
         enterSpaceBtn.addEventListener('click', function() {
+            window.switchPage('page2');
+        });
+    }
+
+    // 跳过介绍/进入作品集按钮事件
+    const skipIntroBtn = document.getElementById('skipIntroBtn');
+    if (skipIntroBtn) {
+        skipIntroBtn.addEventListener('click', function() {
             window.switchPage('page1');
         });
     }

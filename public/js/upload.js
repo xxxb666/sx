@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 uploadIntroVideoBtn.disabled = true;
                 
                 const formData = new FormData();
-                formData.append('introVideo', file);
+                formData.append('file', file);
                 
                 const result = await API.uploadIntroVideo(formData);
                 
@@ -710,10 +710,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const introVideoContainer = document.getElementById('introVideoContainer');
                 const introVideo = document.getElementById('introVideo');
                 const uploadIntroVideoBtn = document.getElementById('uploadIntroVideoBtn');
+                const noVideoPlaceholder = document.getElementById('noVideoPlaceholder');
                 const isAdmin = API.isLoggedIn();
 
                 if (profile.introVideo && introVideo) {
                     introVideoContainer.style.display = 'block';
+                    if (noVideoPlaceholder) noVideoPlaceholder.style.display = 'none';
+                    
                     // 添加时间戳防止缓存
                     const timestamp = new Date().getTime();
                     const videoSrc = profile.introVideo.includes('?') ? 
@@ -723,9 +726,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 只有当源改变时才更新，避免重新加载
                     if (!introVideo.src || !introVideo.src.includes(profile.introVideo)) {
                         introVideo.src = videoSrc;
+                        // 尝试自动播放
+                        introVideo.play().catch(e => console.log('Autoplay blocked:', e));
                     }
                 } else {
                     if (introVideoContainer) introVideoContainer.style.display = 'none';
+                    if (noVideoPlaceholder) noVideoPlaceholder.style.display = 'flex';
                 }
 
                 // 管理员按钮显示
@@ -733,9 +739,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     uploadIntroVideoBtn.style.display = isAdmin ? 'inline-block' : 'none';
                     if (isAdmin) {
                          if (!profile.introVideo) {
-                             uploadIntroVideoBtn.textContent = '上传自我介绍视频';
+                             uploadIntroVideoBtn.innerHTML = '<span>📹</span> 上传自我介绍视频';
                          } else {
-                             uploadIntroVideoBtn.textContent = '更换自我介绍视频';
+                             uploadIntroVideoBtn.innerHTML = '<span>📹</span> 更换自我介绍视频';
                          }
                     }
                 }

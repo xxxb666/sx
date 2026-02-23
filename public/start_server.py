@@ -3,13 +3,18 @@ import socketserver
 import json
 import os
 import sys
+
+print("Server starting...", flush=True)
+with open("server_log.txt", "w") as log_file:
+    log_file.write("Script started\n")
+
 import shutil
 import cgi
 import mimetypes
 from urllib.parse import urlparse, parse_qs
 
 # Configuration
-PORT = 8088
+PORT = 8080
 ADMIN_TOKEN = "mock-dev-token"
 # Assume this script is in public/ folder, so root is one level up
 # But we need to handle if it's run from root
@@ -176,6 +181,59 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
                     self.wfile.write(json.dumps({"success": True, "url": avatar_url}).encode('utf-8'))
+                    return
+            
+            self.send_error(400, "No file uploaded")
+            return
+
+        # API: Upload Intro Video
+        if path == '/api/upload/intro-video':
+            # Parse Multipart
+            content_type = self.headers.get('Content-Type')
+            if not content_type or 'multipart/form-data' not in content_type:
+                self.send_error(400, "Content-Type must be multipart/form-data")
+                return
+
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={'REQUEST_METHOD': 'POST',
+                         'CONTENT_TYPE': self.headers['Content-Type'],
+                         }
+            )
+
+            if 'file' in form:
+                file_item = form['file']
+                if file_item.filename:
+                    # Create intro-video dir
+                    video_dir = os.path.join(UPLOADS_DIR, 'intro-video')
+                    if not os.path.exists(video_dir):
+                        os.makedirs(video_dir)
+                    
+                    import time
+                    import random
+                    filename = f"intro-{int(time.time())}{os.path.splitext(file_item.filename)[1]}"
+                    file_path = os.path.join(video_dir, filename)
+                    
+                    with open(file_path, 'wb') as f:
+                        f.write(file_item.file.read())
+                    
+                    video_url = f"/uploads/intro-video/{filename}"
+                    
+                    # Update profile
+                    with open(DATA_FILE, 'r+', encoding='utf-8') as f:
+                        data = json.load(f)
+                        if 'profile' not in data:
+                            data['profile'] = {}
+                        data['profile']['introVideo'] = video_url
+                        f.seek(0)
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                        f.truncate()
+                    
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": True, "url": video_url}).encode('utf-8'))
                     return
             
             self.send_error(400, "No file uploaded")
@@ -375,10 +433,16 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
 # Start Server
 try:
+    print(f"Attempting to start server on port {PORT}...", flush=True)
     with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-        print(f"Serving at http://localhost:{PORT}")
-        print("Press Ctrl+C to stop")
+        print(f"Serving at http://localhost:{PORT}", flush=True)
+        print("Press Ctrl+C to stop", flush=True)
         httpd.serve_forever()
 except KeyboardInterrupt:
-    print("\nShutting down server...")
+    print("\nShutting down server...", flush=True)
     sys.exit(0)
+except Exception as e:
+    print(f"Error starting server: {e}", flush=True)
+    import traceback
+    traceback.print_exc()
+
