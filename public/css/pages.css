@@ -1,16 +1,41 @@
 
 /* 舞蹈视频页面样式 */
 .video-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    display: none; /* Deprecated in favor of slider */
+}
+
+/* Horizontal Slider Styles */
+.horizontal-slider-container {
+    position: relative;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px 60px; /* Space for arrows */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 5px; /* Space for shadows */
+    width: 100%;
+    
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.video-track::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 .video-card {
+    flex: 0 0 300px; /* Fixed width for slider items */
     background: white;
     border-radius: 12px;
     overflow: hidden;
@@ -24,6 +49,45 @@
 .video-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: 1px solid #ffb7c5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 24px;
+    color: #ff6b9d;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.2);
+    transition: all 0.3s;
+    outline: none;
+}
+
+.nav-arrow:hover {
+    background: #fff0f5;
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.nav-arrow.left-arrow {
+    left: 10px;
+}
+
+.nav-arrow.right-arrow {
+    right: 10px;
 }
 
 .video-thumbnail {

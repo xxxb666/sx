@@ -763,33 +763,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let html = '';
             
-            // 如果作品数量大于等于3，启用跑马灯效果
-            if (danceData.length >= 3) {
-                const cardsHtml = generateVideoCardsHtml(danceData);
-                const fullContent = cardsHtml + addVideoBtnHtml;
-                
-                html = `
-                <div class="dance-page">
-                    <div class="marquee-container">
-                        <div class="marquee-track reverse">
-                            ${fullContent}
-                            ${fullContent}
-                        </div>
-                    </div>
-                </div>
-                `;
-            } else {
-                html = `
-                <div class="dance-page">
-                    <div class="video-grid">
-                        ${generateVideoCardsHtml(danceData)}
+            // 统一使用横向滚动布局
+            const cardsHtml = generateVideoCardsHtml(danceData);
+            html = `
+            <div class="dance-page">
+                <div class="horizontal-slider-container">
+                    <button class="nav-arrow left-arrow" id="sliderLeftBtn">❮</button>
+                    <div class="video-track" id="videoSliderTrack">
+                        ${cardsHtml}
                         ${addVideoBtnHtml}
                     </div>
+                    <button class="nav-arrow right-arrow" id="sliderRightBtn">❯</button>
                 </div>
-                `;
-            }
+            </div>
+            `;
 
             detailContent.innerHTML = html;
+            
+            // 绑定滚动按钮事件
+            const track = document.getElementById('videoSliderTrack');
+            const leftBtn = document.getElementById('sliderLeftBtn');
+            const rightBtn = document.getElementById('sliderRightBtn');
+            
+            if (track && leftBtn && rightBtn) {
+                leftBtn.addEventListener('click', () => {
+                    track.scrollBy({ left: -320, behavior: 'smooth' });
+                });
+                
+                rightBtn.addEventListener('click', () => {
+                    track.scrollBy({ left: 320, behavior: 'smooth' });
+                });
+            }
+
             initVideoCards();
 
             // 绑定删除按钮事件（仅管理员）
