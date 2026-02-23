@@ -1147,7 +1147,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="ai-card" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
                         <div class="ai-thumbnail">
                             ${mediaHtml}
-                            ${isVideo ? '<div class="play-icon">▶</div>' : ''}
                         </div>
                         <div class="ai-info">
                             <h3>${ai.title}</h3>
