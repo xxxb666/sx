@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('%c 当前版本: v1.0.4 (修复媒体元素尺寸过大问题) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
+    console.log('%c 当前版本: v1.0.5 (新增视频播放器内直接上传功能) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
     
     const pages = document.querySelectorAll('.page');
     const navBtns = document.querySelectorAll('.nav-btn');
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoPlayer = document.getElementById('videoPlayer');
     const videoElement = videoPlayer.querySelector('video');
     const closeVideoBtn = document.getElementById('closeVideo');
+    const uploadVideoBtn = document.getElementById('uploadVideoBtn');
     const imageModal = document.getElementById('imageModal');
     const modalImage = imageModal.querySelector('img');
     const closeModalBtn = document.getElementById('closeModal');
@@ -163,6 +164,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (error) {
                     alert('删除失败: ' + error.message);
                 }
+            }
+        });
+    }
+
+    // 视频上传按钮事件 (继续上传)
+    if (uploadVideoBtn) {
+        uploadVideoBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // 暂停播放
+            if (videoElement) {
+                videoElement.pause();
+            }
+            
+            // 打开上传窗口，使用当前分类
+            // 如果 currentVideoCategory 为空，默认为 'ai'
+            const category = currentVideoCategory || 'ai';
+            if (window.openQuickUpload) {
+                window.openQuickUpload(category, 'video/*');
+            } else {
+                console.error('Quick upload function not found');
             }
         });
     }
@@ -840,6 +861,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 deleteVideoBtn.style.display = 'none';
             }
         }
+
+        // 上传按钮仅管理员可见
+        if (uploadVideoBtn) {
+            const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+            uploadVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
+        }
     }
 
     function showVideoPlayer(videoSrc) {
@@ -860,6 +887,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
         if (deleteVideoBtn) {
             deleteVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
+        }
+        if (uploadVideoBtn) {
+            uploadVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
         }
         
         // 更新导航按钮状态

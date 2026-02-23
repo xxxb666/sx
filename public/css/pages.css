@@ -307,6 +307,7 @@
     width: 50% !important;
     min-width: 0 !important; /* 关键修复：防止内容撑开容器导致另一侧消失 */
     overflow: visible !important; /* 允许内容溢出，防止按钮被切断 */
+    padding-bottom: 80px; /* 增加底部内边距，确保底部按钮不被遮挡 */
 }
 
 /* 在极小屏幕下优化显示，但保持左右结构 */
