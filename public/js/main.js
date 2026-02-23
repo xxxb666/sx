@@ -554,6 +554,95 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 分页组件类
+    class PaginatedViewer {
+        constructor(options) {
+            this.data = options.data || [];
+            this.containerId = options.containerId;
+            this.renderItemCallback = options.renderItem;
+            this.itemsPerPage = options.itemsPerPage || 3;
+            this.currentPage = 0;
+            this.onPageChange = options.onPageChange;
+            
+            this.init();
+        }
+        
+        init() {
+            const container = document.getElementById(this.containerId);
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="paginated-container">
+                    <button class="pagination-btn prev-btn" id="${this.containerId}-prev" title="上一页">◀</button>
+                    <div class="items-wrapper" id="${this.containerId}-items"></div>
+                    <button class="pagination-btn next-btn" id="${this.containerId}-next" title="下一页">▶</button>
+                </div>
+            `;
+            
+            this.itemsContainer = document.getElementById(`${this.containerId}-items`);
+            this.prevBtn = document.getElementById(`${this.containerId}-prev`);
+            this.nextBtn = document.getElementById(`${this.containerId}-next`);
+            
+            this.prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.prevPage();
+            });
+            this.nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.nextPage();
+            });
+            
+            this.render();
+        }
+        
+        render() {
+            const start = this.currentPage * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            const currentItems = this.data.slice(start, end);
+            
+            this.itemsContainer.innerHTML = currentItems.map((item, index) => 
+                this.renderItemCallback(item, start + index)
+            ).join('');
+            
+            this.updateButtons();
+            
+            if (this.onPageChange) {
+                this.onPageChange();
+            }
+        }
+        
+        updateButtons() {
+            this.prevBtn.disabled = this.currentPage === 0;
+            const maxPage = Math.ceil(this.data.length / this.itemsPerPage) - 1;
+            this.nextBtn.disabled = this.currentPage >= maxPage;
+            
+            // 如果只有一页或没有数据，隐藏按钮
+            if (this.data.length <= this.itemsPerPage) {
+                 this.prevBtn.style.visibility = 'hidden';
+                 this.nextBtn.style.visibility = 'hidden';
+            } else {
+                 this.prevBtn.style.visibility = 'visible';
+                 this.nextBtn.style.visibility = 'visible';
+            }
+        }
+        
+        prevPage() {
+            if (this.currentPage > 0) {
+                this.currentPage--;
+                this.render();
+            }
+        }
+        
+        nextPage() {
+            const maxPage = Math.ceil(this.data.length / this.itemsPerPage) - 1;
+            if (this.currentPage < maxPage) {
+                this.currentPage++;
+                this.render();
+            }
+        }
+    }
+    window.PaginatedViewer = PaginatedViewer;
+
     // 绘画作品页 - 从后端API加载
     async function loadPaintingPage() {
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
@@ -572,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await API.getWorks('painting');
             let paintingData = result.works || [];
 
-            // 按方向排序（虽然绘画通常是图片，但也可能有竖屏优先的需求）
+            // 按方向排序
             paintingData = sortWorks(paintingData);
 
             // 更新当前图片列表状态
@@ -591,43 +680,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // 构建作品卡片HTML
-            const generateCardsHtml = (works) => {
-                return works.map((painting, index) => {
-                    // 优先使用 fileUrl，如果没有则回退到拼接路径
-                    const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
-                    return `
-                    <div class="ai-card" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}">
-                        <div class="ai-thumbnail">
-                            <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
-                        </div>
-                        <div class="ai-info">
-                            <h3>${painting.title}</h3>
-                            <p>${painting.description || ''}</p>
-                        </div>
-                        ${isAdminUser ? `
-                        <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 6h18"></path>
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        ` : ''}
-                    </div>
-                `}).join('');
-            };
-
-            const cardsHtml = generateCardsHtml(paintingData);
-            
-            // 使用横向滚动布局，类似于AI视频和舞蹈页面
-            let html = `
+            // 构建基本HTML结构
+            detailContent.innerHTML = `
             <div class="painting-page">
-                <div class="horizontal-slider-container">
-                    <div class="video-track" id="paintingSliderTrack" style="overflow-x: auto; scroll-behavior: smooth;">
-                        ${cardsHtml}
-                    </div>
-                </div>
+                <div id="painting-paginated-root"></div>
                 
                 ${isAdminUser ? `
                 <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
@@ -637,30 +693,50 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             `;
 
-            detailContent.innerHTML = html;
-            
-            // 使用AI卡片的初始化函数，因为结构相同
-            initAICards();
+            // 渲染单个卡片的函数
+            const renderCard = (painting, index) => {
+                // 优先使用 fileUrl，如果没有则回退到拼接路径
+                const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
+                return `
+                <div class="ai-card" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}" onclick="window.showImageAtIndex(${index})">
+                    <div class="ai-thumbnail">
+                        <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
+                    </div>
+                    <div class="ai-info">
+                        <h3>${painting.title}</h3>
+                        <p>${painting.description || ''}</p>
+                    </div>
+                    ${isAdminUser ? `
+                    <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            `};
 
-            // 绑定删除按钮事件（仅管理员）
+            // 初始化分页组件
+            new PaginatedViewer({
+                containerId: 'painting-paginated-root',
+                data: paintingData,
+                renderItem: renderCard,
+                itemsPerPage: 3,
+                onPageChange: () => {
+                    // 重新绑定删除按钮事件（仅管理员）
+                    if (isAdminUser) {
+                        bindDeleteEvents('painting', loadPaintingPage);
+                    }
+                }
+            });
+            
+            // 初次绑定删除事件
             if (isAdminUser) {
-                document.querySelectorAll('.work-delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async function(e) {
-                        e.stopPropagation();
-                        const workId = this.getAttribute('data-id');
-                        const category = this.getAttribute('data-category');
-                        if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
-                            try {
-                                await API.deleteWork(category, workId);
-                                loadPaintingPage();
-                                alert('作品已删除');
-                            } catch (error) {
-                                alert('删除失败: ' + error.message);
-                            }
-                        }
-                    });
-                });
+                bindDeleteEvents('painting', loadPaintingPage);
             }
+
         } catch (error) {
             console.error('加载绘画作品失败:', error);
             detailContent.innerHTML = `
@@ -672,6 +748,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
+    }
+
+    // 辅助函数：绑定删除事件
+    function bindDeleteEvents(category, reloadFunc) {
+        document.querySelectorAll('.work-delete-btn, .video-delete-btn-card').forEach(btn => {
+            // 移除旧的监听器（如果有）- 这里通过 cloneNode 简单处理，或者假设每次都是重新渲染
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const workId = this.getAttribute('data-id');
+                // const category = this.getAttribute('data-category'); // Use passed category
+                if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
+                    try {
+                        await API.deleteWork(category, workId);
+                        reloadFunc(); // Reload the page
+                        alert('作品已删除');
+                    } catch (error) {
+                        alert('删除失败: ' + error.message);
+                    }
+                }
+            });
+        });
     }
     window.loadPaintingPage = loadPaintingPage;
 
@@ -714,39 +814,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // 构建作品卡片HTML
-            const generateVideoCardsHtml = (videos) => {
-                return videos.map(video => {
-                    // 优先使用 fileUrl，如果没有则回退到拼接路径
-                    const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
-                    // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
-                    const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
-                    
-                    return `
-                    <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}">
-                        <div class="video-thumbnail">
-                            ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
-                            <div class="play-icon">▶</div>
-                        </div>
-                        <div class="video-info">
-                            <h3>${video.title}</h3>
-                            ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
-                        </div>
-                    </div>
-                `}).join('');
-            };
-
-            let html = '';
-            
-            // 统一使用横向滚动布局
-            const cardsHtml = generateVideoCardsHtml(danceData);
-            html = `
+            // 构建基本HTML结构
+            detailContent.innerHTML = `
             <div class="dance-page">
-                <div class="horizontal-slider-container">
-                    <div class="video-track" id="videoSliderTrack">
-                        ${cardsHtml}
-                    </div>
-                </div>
+                <div id="dance-paginated-root"></div>
                 
                 ${isAdminUser ? `
                 <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
@@ -756,32 +827,57 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             `;
 
-            detailContent.innerHTML = html;
+            // 渲染单个视频卡片的函数
+            const renderVideoCard = (video, index) => {
+                // 优先使用 fileUrl，如果没有则回退到拼接路径
+                const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
+                // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
+                const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
+                
+                return `
+                <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}" onclick="window.playVideoAtIndex(${index})">
+                    <div class="video-thumbnail">
+                        ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
+                        <div class="play-icon">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <h3>${video.title}</h3>
+                        ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
+                    </div>
+                    ${isAdminUser ? `
+                    <button class="video-delete-btn-card" data-id="${video.work_id}" data-category="dance" style="position: absolute; top: 10px; right: 10px; background: rgba(255, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            `};
             
-            // 绑定滚动按钮事件 - 已移除箭头
-            const track = document.getElementById('videoSliderTrack');
-            
-            initVideoCards();
+            // 初始化分页组件
+            new PaginatedViewer({
+                containerId: 'dance-paginated-root',
+                data: danceData,
+                renderItem: renderVideoCard,
+                itemsPerPage: 3,
+                onPageChange: () => {
+                    // 重新绑定删除按钮事件（仅管理员）
+                    if (isAdminUser) {
+                        bindDeleteEvents('dance', loadDancePage);
+                    }
+                }
+            });
 
-            // 绑定删除按钮事件（仅管理员）
+            // 初次绑定删除事件
             if (isAdminUser) {
-                document.querySelectorAll('.video-delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async function(e) {
-                        e.stopPropagation();
-                        const workId = this.getAttribute('data-id');
-                        const category = this.getAttribute('data-category');
-                        if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
-                            try {
-                                await API.deleteWork(category, workId);
-                                loadDancePage();
-                                alert('作品已删除');
-                            } catch (error) {
-                                alert('删除失败: ' + error.message);
-                            }
-                        }
-                    });
-                });
+                bindDeleteEvents('dance', loadDancePage);
             }
+            
+            // 暴露给全局以便点击事件使用
+            window.playVideoAtIndex = playVideoAtIndex;
+
         } catch (error) {
             console.error('加载舞蹈视频失败:', error);
             detailContent.innerHTML = `
@@ -1044,39 +1140,50 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await API.getWorks('ai');
             let aiData = result.works || [];
             
-            // 按创建时间升序排序（最早发布的在前面，类似于选集顺序 1, 2, 3...）
+            // 按创建时间升序排序
             aiData.sort((a, b) => {
                 const dateA = new Date(a.created_at || 0);
                 const dateB = new Date(b.created_at || 0);
                 return dateA - dateB;
             });
             
-            // 分类：视频和图片
-            const videos = aiData.filter(ai => {
-                return (ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i));
-            });
-            
-            const images = aiData.filter(ai => {
-                const isVideo = (ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i));
-                return !isVideo;
-            });
-
-            // 更新当前视频列表状态
-            currentVideoList = videos;
+            // 更新当前列表状态
+            currentVideoList = aiData.filter(ai => (ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i)));
             currentVideoCategory = 'ai';
-
-            // 更新当前图片列表状态
-            currentImageList = images;
+            currentImageList = aiData.filter(ai => !((ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i))));
             currentImageCategory = 'ai';
 
-            let html = '<div class="ai-page ai-split-container">';
+            if (aiData.length === 0) {
+                detailContent.innerHTML = `
+                    <div class="ai-page">
+                        <div class="empty-state">
+                            <p>暂无AI作品</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ai\', \'image/*\')">去上传作品</button>' : ''}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 构建基本HTML结构
+            detailContent.innerHTML = `
+            <div class="ai-page">
+                <div id="ai-paginated-root"></div>
+                
+                ${isAdminUser ? `
+                <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
+                    <button class="go-upload-btn" onclick="window.openQuickUpload('ai', 'image/*')">上传新作品</button>
+                </div>
+                ` : ''}
+            </div>
+            `;
             
-            // 辅助函数：渲染卡片
-            const renderCard = (ai) => {
+            // 渲染卡片函数
+            const renderCard = (ai, index) => {
                 // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const contentSrc = ai.fileUrl || ('/uploads/ai/' + ai.file_path);
                 
-                // 更健壮的类型判断
+                // 类型判断
                 let type = ai.file_type || '';
                 if (!type && ai.file_path) {
                     if (ai.file_path.match(/\.(mp4|webm|mov)$/i)) type = 'video/mp4';
@@ -1090,8 +1197,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isImage) {
                     mediaHtml = `<img src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ai.title}">`;
                 } else if (isVideo) {
-                    // 视频处理逻辑：如果有封面，显示封面，加载失败回退到视频
-                    // 如果没有封面，直接显示视频
                     if (ai.coverUrl) {
                         mediaHtml = `
                             <img src="${ai.coverUrl}" 
@@ -1118,104 +1223,36 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h3>${ai.title}</h3>
                             ${ai.description && ai.description.trim() ? `<p>${ai.description}</p>` : ''}
                         </div>
+                        ${isAdminUser ? `
+                        <button class="work-delete-btn" data-id="${ai.work_id}" data-category="ai">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                        ` : ''}
                     </div>
                 `;
             };
 
-            // 视频区域（左侧/上侧）
-            html += '<div class="ai-sections-container">'; // 新增容器包裹
-
-            html += '<div class="ai-split-section ai-videos-section">';
-            html += '<div class="section-header">';
-            html += '<h3 class="section-title">🎬 AI 视频</h3>';
-            html += '</div>';
-            
-            if (videos.length > 0) {
-                // 使用网格布局 (Grid) - 视频也使用网格，适应左侧分栏
-                html += `
-                    <div class="ai-grid ai-video-grid">
-                        ${videos.map(renderCard).join('')}
-                    </div>
-                `;
-            } else {
-                 html += '<div class="empty-section-hint">暂无视频作品</div>';
-            }
-
-            // 始终显示上传按钮（如果管理员）
-            if (isAdminUser) {
-                html += `
-                <div class="section-footer-action">
-                    <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
-                        <span>🎬</span> 上传视频
-                    </button>
-                </div>`;
-            }
-
-            html += '</div>';
-
-            // 视频和图片区域之间的分割线（仅在移动端显示，CSS控制）
-            html += '<div class="section-divider visible-on-mobile"></div>';
-
-            // 图片区域（右侧/下侧）
-            html += '<div class="ai-split-section ai-images-section">';
-            html += '<div class="section-header">';
-            html += '<h3 class="section-title">🖼️ AI 图片</h3>';
-            html += '</div>';
-            
-            if (images.length > 0) {
-                // 使用小图网格布局
-                html += `
-                    <div class="ai-grid ai-grid-small">
-                        ${images.map(renderCard).join('')}
-                    </div>
-                `;
-            } else {
-                 html += '<div class="empty-section-hint">暂无图片作品</div>';
-            }
-
-            // 始终显示上传按钮（如果管理员）
-            if (isAdminUser) {
-                html += `
-                <div class="section-footer-action">
-                    <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'image/*')">
-                        <span>🖼️</span> 上传图片
-                    </button>
-                </div>`;
-            }
-
-            html += '</div>';
-            
-            html += '</div>'; // 结束容器包裹
-            
-            html += `
-                </div>
-            `;
-
-            detailContent.innerHTML = html;
-            
-            // 绑定 AI 视频横向滚动按钮事件 - 已移除箭头
-            const aiTrack = document.getElementById('aiVideoTrack');
-            
-            /*
-            const aiLeftBtn = document.getElementById('aiVideoLeftBtn');
-            const aiRightBtn = document.getElementById('aiVideoRightBtn');
-            
-            if (aiTrack && aiLeftBtn && aiRightBtn) {
-                // 如果没有内容溢出，可以隐藏按钮（可选优化）
-                if (aiTrack.scrollWidth <= aiTrack.clientWidth) {
-                    aiLeftBtn.style.display = 'none';
-                    aiRightBtn.style.display = 'none';
+            // 初始化分页组件
+            new PaginatedViewer({
+                containerId: 'ai-paginated-root',
+                data: aiData,
+                renderItem: renderCard,
+                itemsPerPage: 3,
+                onPageChange: () => {
+                    if (isAdminUser) {
+                        bindDeleteEvents('ai', loadAIPage);
+                    }
                 }
-                
-                aiLeftBtn.addEventListener('click', () => {
-                    aiTrack.scrollBy({ left: -300, behavior: 'smooth' });
-                });
-                
-                aiRightBtn.addEventListener('click', () => {
-                    aiTrack.scrollBy({ left: 300, behavior: 'smooth' });
-                });
+            });
+            
+            if (isAdminUser) {
+                bindDeleteEvents('ai', loadAIPage);
             }
-            */
+
         } catch (error) {
             console.error('加载AI作品失败:', error);
             detailContent.innerHTML = `
@@ -1380,35 +1417,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            let html = `
-                <div class="honor-page" style="position: relative; padding: 20px;">
-                    ${isAdminUser ? `
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                        <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')">
-                            <span>➕</span> 添加荣誉
-                        </button>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="ai-grid honor-grid">
-                        ${honorData.map((honor, index) => {
-                            // 优先使用 fileUrl，如果没有则回退到拼接路径
-                            const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
-                            return `
-                            <div class="ai-card honor-card" onclick="window.showImageAtIndex(${index})" style="animation-delay: ${index * 0.05}s">
-                                <div class="ai-thumbnail">
-                                    <img src="${imgSrc}" alt="${honor.title}" loading="lazy">
-                                </div>
-                                <div class="ai-info">
-                                    <h3>${honor.title}</h3>
-                                </div>
-                            </div>
-                        `}).join('')}
-                    </div>
+            // 构建基本HTML结构
+            detailContent.innerHTML = `
+            <div class="honor-page">
+                ${isAdminUser ? `
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')">
+                        <span>➕</span> 添加荣誉
+                    </button>
                 </div>
+                ` : ''}
+                
+                <div id="honor-paginated-root"></div>
+            </div>
             `;
 
-            detailContent.innerHTML = html;
+            // 渲染卡片函数
+            const renderCard = (honor, index) => {
+                // 优先使用 fileUrl，如果没有则回退到拼接路径
+                const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
+                return `
+                <div class="ai-card honor-card" onclick="window.showImageAtIndex(${index})">
+                    <div class="ai-thumbnail">
+                        <img src="${imgSrc}" alt="${honor.title}" loading="lazy">
+                    </div>
+                    <div class="ai-info">
+                        <h3>${honor.title}</h3>
+                    </div>
+                    ${isAdminUser ? `
+                    <button class="work-delete-btn" data-id="${honor.work_id}" data-category="honor">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            `};
+
+            // 初始化分页组件
+            new PaginatedViewer({
+                containerId: 'honor-paginated-root',
+                data: honorData,
+                renderItem: renderCard,
+                itemsPerPage: 3,
+                onPageChange: () => {
+                    if (isAdminUser) {
+                        bindDeleteEvents('honor', loadHonorPage);
+                    }
+                }
+            });
+            
+            if (isAdminUser) {
+                bindDeleteEvents('honor', loadHonorPage);
+            }
+
         } catch (error) {
             console.error('加载荣誉墙失败:', error);
             detailContent.innerHTML = `
@@ -1439,13 +1503,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 从后端API获取PPT
             const result = await API.getWorks('ppt');
-            const pptData = result.works || [];
+            let pptData = result.works || [];
+
+            // 更新当前列表状态
+            currentImageList = pptData;
+            currentImageCategory = 'ppt';
 
             if (pptData.length === 0) {
                 detailContent.innerHTML = `
                     <div class="ppt-page">
                         <div class="empty-state">
-                            <p>暂无PPT文件</p>
+                            <p>暂无PPT作品</p>
                             ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
@@ -1453,44 +1521,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // 只显示图片类型的PPT页面
-            const imagePPTs = pptData.filter(ppt => ppt.file_type && ppt.file_type.startsWith('image'));
-            
-            if (imagePPTs.length === 0) {
-                detailContent.innerHTML = `
-                    <div class="ppt-page">
-                        <div class="empty-state">
-                            <p>已上传的PPT文件不支持预览，请上传图片格式的PPT页面</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')">去上传作品</button>' : ''}
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = `
-                <div class="ppt-page">
-                    <div class="ppt-container">
-                        <div class="ppt-display">
-                            <img src="${imagePPTs[0].fileUrl || ('/uploads/ppt/' + imagePPTs[0].file_path)}" alt="PPT页面" id="pptImage" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">
-                            <p class="ppt-page-number">1 / ${imagePPTs.length}</p>
-                        </div>
-                        <div class="ppt-controls">
-                            <button class="ppt-nav prev" id="pptPrev">上一页</button>
-                            <div class="ppt-indicators">
-                                ${imagePPTs.map((_, index) => `
-                                    <span class="indicator ${index === 0 ? 'active' : ''}" data-page="${index}"></span>
-                                `).join('')}
-                            </div>
-                            <button class="ppt-nav next" id="pptNext">下一页</button>
-                        </div>
-                    </div>
-                    ${isAdminUser ? '<button class="floating-upload-btn" onclick="window.openQuickUpload(\'ppt\', \'image/*\')" title="上传新作品">+</button>' : ''}
+            // 构建基本HTML结构
+            detailContent.innerHTML = `
+            <div class="ppt-page">
+                <div id="ppt-paginated-root"></div>
+                
+                ${isAdminUser ? `
+                <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
+                    <button class="go-upload-btn" onclick="window.openQuickUpload('ppt', 'image/*')">上传新作品</button>
                 </div>
+                ` : ''}
+            </div>
             `;
 
-            detailContent.innerHTML = html;
-            initPPT(imagePPTs);
+            // 渲染卡片函数
+            const renderCard = (ppt, index) => {
+                // 优先使用 fileUrl，如果没有则回退到拼接路径
+                const imgSrc = ppt.fileUrl || ('/uploads/ppt/' + ppt.file_path);
+                
+                return `
+                <div class="ai-card ppt-card" onclick="window.showImageAtIndex(${index})">
+                    <div class="ai-thumbnail">
+                        <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ppt.title || 'PPT作品'}">
+                    </div>
+                    <div class="ai-info">
+                        <h3>${ppt.title || 'PPT作品'}</h3>
+                        <p>${ppt.description || ''}</p>
+                    </div>
+                    ${isAdminUser ? `
+                    <button class="work-delete-btn" data-id="${ppt.work_id}" data-category="ppt">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            `};
+
+            // 初始化分页组件
+            new PaginatedViewer({
+                containerId: 'ppt-paginated-root',
+                data: pptData,
+                renderItem: renderCard,
+                itemsPerPage: 3,
+                onPageChange: () => {
+                    if (isAdminUser) {
+                        bindDeleteEvents('ppt', loadPPTPage);
+                    }
+                }
+            });
+            
+            if (isAdminUser) {
+                bindDeleteEvents('ppt', loadPPTPage);
+            }
+
         } catch (error) {
             console.error('加载PPT失败:', error);
             detailContent.innerHTML = `
@@ -1505,51 +1591,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.loadPPTPage = loadPPTPage;
 
-    function initPPT(pptData) {
-        const prevBtn = document.getElementById('pptPrev');
-        const nextBtn = document.getElementById('pptNext');
-        const pptImage = document.getElementById('pptImage');
-        const pageNumber = document.querySelector('.ppt-page-number');
-        const indicators = document.querySelectorAll('.indicator');
-        let currentPage = 0;
-
-        function showPage(index) {
-            // 优先使用 fileUrl，如果没有则回退到拼接路径
-            const imgSrc = pptData[index].fileUrl || ('/uploads/ppt/' + pptData[index].file_path);
-            pptImage.src = imgSrc;
-            pageNumber.textContent = `${index + 1} / ${pptData.length}`;
-
-            indicators.forEach((indicator, i) => {
-                indicator.classList.toggle('active', i === index);
-            });
-
-            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
-            nextBtn.style.opacity = index === pptData.length - 1 ? '0.5' : '1';
-        }
-
-        prevBtn.addEventListener('click', function() {
-            if (currentPage > 0) {
-                currentPage--;
-                showPage(currentPage);
-            }
-        });
-
-        nextBtn.addEventListener('click', function() {
-            if (currentPage < pptData.length - 1) {
-                currentPage++;
-                showPage(currentPage);
-            }
-        });
-
-        indicators.forEach(indicator => {
-            indicator.addEventListener('click', function() {
-                currentPage = parseInt(this.getAttribute('data-page'));
-                showPage(currentPage);
-            });
-        });
-
-        showPage(0);
-    }
 
     // 关闭图片查看器
     closeModalBtn.addEventListener('click', function() {
