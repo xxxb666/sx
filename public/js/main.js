@@ -644,14 +644,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const rightBtn = document.getElementById('paintingSliderRightBtn');
             
             if (track && leftBtn && rightBtn) {
-                // 如果没有内容溢出，可以隐藏按钮（可选优化）
-                // 延迟一点以确保渲染完成
-                setTimeout(() => {
-                    if (track.scrollWidth <= track.clientWidth) {
-                        leftBtn.style.display = 'none';
-                        rightBtn.style.display = 'none';
-                    }
-                }, 100);
+                // 确保按钮始终显示，保持与AI视频页一致的视觉体验
+                leftBtn.style.display = 'block';
+                rightBtn.style.display = 'block';
 
                 leftBtn.addEventListener('click', () => {
                     track.scrollBy({ left: -320, behavior: 'smooth' });
