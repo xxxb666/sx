@@ -459,7 +459,7 @@ body {
 .video-delete-btn {
     position: fixed;
     top: 20px;
-    right: 80px; /* 放在关闭按钮左侧 */
+    right: 110px; /* 放在关闭按钮左侧，增加间距 */
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -484,7 +484,7 @@ body {
 .video-close-btn {
     position: fixed;
     top: 20px;
-    right: 20px;
+    right: 40px; /* 增加右侧间距 */
     background: rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
@@ -971,7 +971,7 @@ body {
 .video-upload-btn {
     position: fixed;
     top: 20px;
-    right: 140px; /* 放在删除按钮左侧 */
+    right: 180px; /* 放在删除按钮左侧，增加间距 */
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
