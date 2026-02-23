@@ -615,46 +615,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 `}).join('');
             };
 
-            const addBtnHtml = isAdminUser ? `
-                <div class="ai-card add-work-card" onclick="window.openQuickUpload('painting', 'image/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                        <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                    </div>
-                </div>
-            ` : '';
-
-            let html = '';
+            const cardsHtml = generateCardsHtml(paintingData);
             
-            // 如果作品数量大于等于3，启用跑马灯效果
-            if (paintingData.length >= 3) {
-                const cardsHtml = generateCardsHtml(paintingData);
-                // 组合内容：作品 + 添加按钮（如果是管理员）
-                const fullContent = cardsHtml + addBtnHtml;
+            // 使用横向滚动布局，类似于AI视频和舞蹈页面
+            let html = `
+            <div class="painting-page">
+                <div class="horizontal-slider-container">
+                    <button class="nav-arrow left-arrow" id="paintingSliderLeftBtn">❮</button>
+                    <div class="video-track" id="paintingSliderTrack">
+                        ${cardsHtml}
+                    </div>
+                    <button class="nav-arrow right-arrow" id="paintingSliderRightBtn">❯</button>
+                </div>
                 
-                html = `
-                <div class="painting-page">
-                    <div class="marquee-container">
-                        <div class="marquee-track reverse">
-                            ${fullContent}
-                            ${fullContent} <!-- 重复一份以实现无缝滚动 -->
-                        </div>
-                    </div>
+                ${isAdminUser ? `
+                <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
+                    <button class="go-upload-btn" onclick="window.openQuickUpload('painting', 'image/*')">上传新作品</button>
                 </div>
-                `;
-            } else {
-                // 否则使用普通网格布局
-                html = `
-                <div class="painting-page">
-                    <div class="ai-grid">
-                        ${generateCardsHtml(paintingData)}
-                        ${addBtnHtml}
-                    </div>
-                </div>
-                `;
-            }
+                ` : ''}
+            </div>
+            `;
 
             detailContent.innerHTML = html;
+            
+            // 绑定滚动按钮事件
+            const track = document.getElementById('paintingSliderTrack');
+            const leftBtn = document.getElementById('paintingSliderLeftBtn');
+            const rightBtn = document.getElementById('paintingSliderRightBtn');
+            
+            if (track && leftBtn && rightBtn) {
+                // 如果没有内容溢出，可以隐藏按钮（可选优化）
+                // 延迟一点以确保渲染完成
+                setTimeout(() => {
+                    if (track.scrollWidth <= track.clientWidth) {
+                        leftBtn.style.display = 'none';
+                        rightBtn.style.display = 'none';
+                    }
+                }, 100);
+
+                leftBtn.addEventListener('click', () => {
+                    track.scrollBy({ left: -320, behavior: 'smooth' });
+                });
+                
+                rightBtn.addEventListener('click', () => {
+                    track.scrollBy({ left: 320, behavior: 'smooth' });
+                });
+            }
+
             // 使用AI卡片的初始化函数，因为结构相同
             initAICards();
 
