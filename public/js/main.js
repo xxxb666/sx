@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                 <div class="section-footer-action">
                     <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
-                        <span>🎬</span> 上传视频
+                        <span>🎬</span> 继续上传视频
                     </button>
                 </div>`;
             }
