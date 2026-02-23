@@ -118,17 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        /*
-        const validation = FileHandler.validateFile(file, {
-            maxSize: MAX_SIZE, 
-            allowedTypes: []
-        });
-
-        if (!validation.valid) {
-            alert(validation.error);
-            return;
-        }
-        */
 
         currentFile = file;
         
@@ -147,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const img = new Image();
                 img.onload = function() {
                     currentFileDimensions = { width: this.width, height: this.height };
-                    console.log('图片尺寸:', currentFileDimensions);
                 };
                 img.src = currentFileData;
             } else if (file.type.startsWith('video/')) {
@@ -158,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (file.type.startsWith('video/')) {
                 generateVideoThumbnail(file).then(blob => {
                     currentCoverBlob = blob;
-                    console.log('视频封面生成成功');
                 }).catch(err => {
                     console.warn('视频封面生成失败:', err);
                     currentCoverBlob = null;
@@ -683,8 +670,20 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadProfile() {
         try {
             const result = await API.getProfile();
+
+            const noVideoPlaceholder = document.getElementById('noVideoPlaceholder');
+            const isAdmin = API.isLoggedIn();
+
+            // 设置编辑权限
+            if (nickname) nickname.contentEditable = isAdmin;
+            if (motto) motto.contentEditable = isAdmin;
+            if (selfIntro) selfIntro.contentEditable = isAdmin;
+            
+            if (saveProfileBtn) saveProfileBtn.style.display = isAdmin ? 'inline-block' : 'none';
+            if (changeAvatarBtn) changeAvatarBtn.style.display = isAdmin ? 'flex' : 'none';
+
             if (result.success) {
-                const profile = result.profile;
+                const profile = result.data || result.profile; // 兼容不同格式
                 if (nickname) nickname.textContent = profile.nickname;
                 if (selfIntro) selfIntro.textContent = profile.selfIntro;
                 if (motto) motto.textContent = profile.motto;
@@ -709,9 +708,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 处理自我介绍视频显示
                 const introVideoContainer = document.getElementById('introVideoContainer');
                 const introVideo = document.getElementById('introVideo');
-                const uploadIntroVideoBtn = document.getElementById('uploadIntroVideoBtn');
-                const noVideoPlaceholder = document.getElementById('noVideoPlaceholder');
-                const isAdmin = API.isLoggedIn();
+                // uploadIntroVideoBtn already declared above
+                // noVideoPlaceholder already declared above
+                // isAdmin already declared above
 
                 if (profile.introVideo && introVideo) {
                     introVideoContainer.style.display = 'block';

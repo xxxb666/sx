@@ -66,46 +66,31 @@ const API = {
         return data;
     },
 
-    // 上传自我介绍视频
-    async uploadIntroVideo(formData) {
-        const token = sessionStorage.getItem('adminToken');
-        const response = await fetch(API_CONFIG.getUrl('/upload/intro-video'), {
-            method: 'POST',
-            headers: {
-                ...(token && { 'Authorization': `Bearer ${token}` })
-            },
-            body: formData
-        });
-        
-        // 处理认证失败
-        if (response.status === 401 || response.status === 403) {
-            console.warn('API 认证失败 (视频)，清除 Token');
-            sessionStorage.removeItem('adminToken');
-            window.dispatchEvent(new Event('auth:expired'));
-            throw new Error('登录已过期，请重新登录');
-        }
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || '上传失败');
-        }
-        
-        return data;
-    },
+
 
     // 登录
     async login(username, password) {
-        const data = await this.request(API_CONFIG.getUrl('/auth/login'), {
-            method: 'POST',
-            body: JSON.stringify({ username, password })
-        });
-        
-        if (data.token) {
-            sessionStorage.setItem('adminToken', data.token);
+        try {
+            const data = await this.request(API_CONFIG.getUrl('/auth/login'), {
+                method: 'POST',
+                body: JSON.stringify({ username, password })
+            });
+            
+            if (data.token) {
+                sessionStorage.setItem('adminToken', data.token);
+            }
+            
+            return data;
+        } catch (error) {
+            // 模拟环境登录
+            if (window.location.protocol === 'file:' || error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                console.warn('模拟环境：使用模拟登录');
+                const mockToken = 'mock_token_' + Date.now();
+                sessionStorage.setItem('adminToken', mockToken);
+                return { success: true, token: mockToken, message: '模拟登录成功' };
+            }
+            throw error;
         }
-        
-        return data;
     },
 
     // 检查是否已登录
@@ -120,11 +105,28 @@ const API = {
 
     // 获取个人资料
     async getProfile() {
-        return this.request(API_CONFIG.getUrl('/profile'));
+        try {
+            return await this.request(API_CONFIG.getUrl('/profile'));
+        } catch (error) {
+            if (typeof MOCK_DATA !== 'undefined' && (window.location.protocol === 'file:' || error.message.includes('Failed to fetch'))) {
+                return { success: true, profile: MOCK_DATA.profile };
+            }
+            throw error;
+        }
     },
 
     // 更新个人资料
     async updateProfile(profile) {
+        // 模拟环境
+        if (window.location.protocol === 'file:') {
+            console.warn('模拟环境：模拟更新个人资料');
+            // Update MOCK_DATA
+            if (typeof MOCK_DATA !== 'undefined') {
+                Object.assign(MOCK_DATA.profile, profile);
+            }
+            return { success: true, message: '模拟更新成功' };
+        }
+
         return this.request(API_CONFIG.getUrl('/profile'), {
             method: 'PUT',
             body: JSON.stringify(profile)
@@ -133,14 +135,34 @@ const API = {
 
     // 获取作品 (支持获取所有或按分类获取)
     async getWorks(category = null) {
-        if (category) {
-            return this.request(API_CONFIG.getUrl(`/works/category/${category}`));
+        try {
+            if (category) {
+                return await this.request(API_CONFIG.getUrl(`/works/category/${category}`));
+            }
+            return await this.request(API_CONFIG.getUrl('/works'));
+        } catch (error) {
+            // 如果请求失败且存在模拟数据，则返回模拟数据
+            if (typeof MOCK_DATA !== 'undefined' && (window.location.protocol === 'file:' || error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+                console.warn('API请求失败，使用模拟数据:', category);
+                if (category) {
+                    return { works: MOCK_DATA.works[category] || [] };
+                }
+                // 展平所有作品
+                const allWorks = Object.values(MOCK_DATA.works).flat();
+                return { works: allWorks };
+            }
+            throw error;
         }
-        return this.request(API_CONFIG.getUrl('/works'));
     },
 
     // 删除作品
     async deleteWork(category, workId) {
+        // 如果是模拟数据环境，模拟删除成功
+        if (typeof MOCK_DATA !== 'undefined' && window.location.protocol === 'file:') {
+            console.warn('模拟环境：删除作品', category, workId);
+            return { success: true, message: "模拟删除成功" };
+        }
+        
         // 如果只传了一个参数，则认为是 workId
         const id = workId || category;
         return this.request(API_CONFIG.getUrl(`/works/${id}`), {
@@ -151,6 +173,42 @@ const API = {
     // 上传作品 (支持进度回调)
     addWork(category, formData, onProgress) {
         return new Promise((resolve, reject) => {
+            // 模拟环境上传
+            if (window.location.protocol === 'file:') {
+                console.warn('模拟环境：模拟上传作品', category);
+                
+                // 模拟进度
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    if (onProgress) onProgress(progress);
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Add to MOCK_DATA
+                        if (typeof MOCK_DATA !== 'undefined') {
+                            const file = formData.get('file');
+                            const url = file ? URL.createObjectURL(file) : 'https://placehold.co/600x400?text=New+Work';
+                            
+                            const newWork = {
+                                id: Date.now(),
+                                title: formData.get('title') || '新作品',
+                                description: formData.get('description') || '',
+                                url: url,
+                                category: category,
+                                createTime: new Date().toISOString()
+                            };
+                            
+                            if (!MOCK_DATA.works[category]) MOCK_DATA.works[category] = [];
+                            MOCK_DATA.works[category].unshift(newWork);
+                        }
+                        
+                        resolve({ success: true, message: '模拟上传成功' });
+                    }
+                }, 100);
+                return;
+            }
+
             const xhr = new XMLHttpRequest();
             const url = API_CONFIG.getUrl(`/upload/${category}`);
             const token = sessionStorage.getItem('adminToken');
@@ -203,6 +261,17 @@ const API = {
 
     // 上传头像
     async uploadAvatar(formData) {
+        // 模拟环境
+        if (window.location.protocol === 'file:') {
+            console.warn('模拟环境：模拟上传头像');
+            const file = formData.get('avatar');
+            const url = file ? URL.createObjectURL(file) : '';
+            if (typeof MOCK_DATA !== 'undefined') {
+                MOCK_DATA.profile.avatar = url;
+            }
+            return { success: true, message: '模拟上传成功', avatar: url };
+        }
+
         const token = sessionStorage.getItem('adminToken');
         const url = API_CONFIG.getUrl ? API_CONFIG.getUrl('/upload/avatar') : '/api/upload/avatar';
         
@@ -230,6 +299,18 @@ const API = {
 
     // 上传自我介绍视频
     async uploadIntroVideo(formData) {
+        // 模拟环境
+        if (window.location.protocol === 'file:') {
+            console.warn('模拟环境：模拟上传自我介绍视频');
+            const file = formData.get('file');
+            const url = file ? URL.createObjectURL(file) : '';
+            // Update MOCK_DATA if available
+            if (typeof MOCK_DATA !== 'undefined') {
+                MOCK_DATA.profile.introVideo = url;
+            }
+            return { success: true, message: '模拟上传成功', introVideo: url };
+        }
+
         const token = sessionStorage.getItem('adminToken');
         const url = API_CONFIG.getUrl ? API_CONFIG.getUrl('/upload/intro-video') : '/api/upload/intro-video';
         

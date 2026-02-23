@@ -18,19 +18,12 @@
 
 ```
 徐小泡的专属空间 - 个人作品展示网站项目文档/
-├── index.html              # 主页面
-├── css/
-│   ├── style.css          # 主样式文件
-│   └── pages.css          # 子页面样式
-├── js/
-│   └── main.js            # 主要JavaScript逻辑
-├── assets/
-│   ├── images/            # 图片资源
-│   ├── videos/            # 视频资源
-│   ├── audio/             # 音频资源
-│   └── documents/         # 文档资源
-├── start-server.ps1       # 本地服务器启动脚本
-└── README.md             # 项目说明文档
+├── public/
+│   ├── index.html         # 主页面
+│   ├── css/               # 样式文件目录
+│   └── js/                # 脚本文件目录
+├── preview.bat            # 本地预览启动脚本
+└── README.md              # 项目说明文档
 ```
 
 ## 功能页面
@@ -45,21 +38,16 @@
 
 ## 如何使用
 
-### 方法一：使用本地服务器（推荐）
+### 方法一：一键启动（推荐）
 
-1. 打开PowerShell终端
-2. 进入项目目录
-3. 运行以下命令启动服务器：
+直接双击运行项目根目录下的 **`preview.bat`** 文件。
+- 如果您的电脑安装了 Python，它会自动启动本地服务器。
+- 如果没有 Python，它会自动在浏览器中打开静态页面（使用模拟数据）。
 
-```powershell
-powershell -ExecutionPolicy Bypass -File start-server.ps1
-```
+### 方法二：手动打开
 
-4. 在浏览器中访问：http://localhost:8000
-
-### 方法二：直接打开
-
-直接在浏览器中打开 `index.html` 文件即可浏览网站。
+直接进入 `public` 文件夹，双击 `index.html` 文件即可浏览网站。
+注意：在此模式下，上传和删除功能将仅在本地模拟，不会保存到服务器。
 
 ## 资源替换说明
 

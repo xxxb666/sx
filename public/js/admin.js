@@ -56,7 +56,6 @@
         // 监听认证过期事件
         window.addEventListener('auth:expired', function() {
             if (isAdminLoggedIn) {
-                console.log('收到认证过期事件，执行登出');
                 // 此时 token 已经被 api.js 移除了，我们只需要更新 UI
                 isAdminLoggedIn = false;
                 updateAdminUI();
@@ -427,8 +426,10 @@
 
     // 获取缩略图HTML
     function getAdminThumbnailHTML(work) {
+        const fileSrc = work.fileUrl || ('/uploads/' + work.category + '/' + work.file_path);
+        
         if (work.file_type && work.file_type.startsWith('image/')) {
-            return `<img src="${'/uploads/' + work.category + '/' + work.file_path}" alt="${work.title}" style="width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; border-radius: 4px;">`;
+            return `<img src="${fileSrc}" alt="${work.title}" style="width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; border-radius: 4px;">`;
         } else if (work.file_type && work.file_type.startsWith('video/')) {
             return `<div class="admin-video-thumbnail" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 4px;"><span style="color: #fff; font-size: 24px;">▶</span></div>`;
         } else {
@@ -440,26 +441,38 @@
     async function viewWorkAsAdmin(workId, category) {
         try {
             const result = await API.getWorks();
-            const work = result.works.find(w => w.work_id === workId);
+            const work = result.works.find(w => w.work_id == workId); // Use loose equality for id
             if (!work) return;
+
+            const fileSrc = work.fileUrl || ('/uploads/' + work.category + '/' + work.file_path);
 
             if (work.file_type.startsWith('image/')) {
                 const modal = document.getElementById('imageModal');
                 if (modal) {
                     const img = modal.querySelector('img');
-                    img.src = '/uploads/' + work.category + '/' + work.file_path;
+                    img.src = fileSrc;
                     modal.classList.add('active');
+                    // Add close handler if not present (simplified for admin view)
+                    const closeBtn = modal.querySelector('.modal-close-btn');
+                    if(closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
                 }
             } else if (work.file_type.startsWith('video/')) {
                 const player = document.getElementById('videoPlayer');
                 if (player) {
                     const video = player.querySelector('video');
-                    video.src = '/uploads/' + work.category + '/' + work.file_path;
+                    video.src = fileSrc;
                     player.classList.add('active');
                     video.play();
+                    // Add close handler
+                    const closeBtn = player.querySelector('.video-close-btn');
+                    if(closeBtn) closeBtn.onclick = () => {
+                        player.classList.remove('active');
+                        video.pause();
+                    };
                 }
             }
         } catch (error) {
+            console.error(error);
             alert('查看失败');
         }
     }

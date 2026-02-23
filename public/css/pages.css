@@ -3,12 +3,31 @@
    Intro Page (Page 2) Styling
    ----------------------------------------------------------- */
 .intro-page {
-    background: #0f0f1e; /* Deep dark background for cinema feel */
-    color: #fff;
+    /* Pink Vintage Style */
+    background-color: #fff0f5;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 182, 193, 0.2) 0px,
+        rgba(255, 182, 193, 0.2) 2px,
+        transparent 2px,
+        transparent 4px
+    ), radial-gradient(circle at center, #fff5f8 0%, #ffe4e1 100%);
+    color: #4a2c36; /* Deep plum text for pink vintage feel */
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    position: relative;
+}
+
+/* Add a vignette effect for worn edges */
+.intro-page::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 60%, rgba(219, 112, 147, 0.2) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .intro-page-content {
@@ -22,6 +41,7 @@
     margin: 0 auto;
     width: 100%;
     position: relative;
+    z-index: 2; /* Ensure content is above vignette */
 }
 
 /* Header with Skip Button */
@@ -33,9 +53,9 @@
 }
 
 .skip-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
+    background: rgba(255, 105, 180, 0.1);
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    color: #d81b60;
     padding: 10px 20px;
     border-radius: 30px;
     cursor: pointer;
@@ -43,13 +63,15 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(255, 105, 180, 0.1);
 }
 
 .skip-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 105, 180, 0.2);
     transform: translateX(5px);
+    color: #c2185b;
 }
 
 .skip-icon {
@@ -61,15 +83,17 @@
     width: 100%;
     max-width: 900px; /* Cinema width */
     aspect-ratio: 16/9;
-    background: #000;
-    border-radius: 12px;
+    background: #000; /* Video area stays black for contrast */
+    border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(74, 59, 42, 0.4);
     margin-bottom: 30px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 8px solid #fff;
+    outline: 1px solid #ddd;
 }
 
 .intro-video-container {
@@ -90,7 +114,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.8);
 }
 
 .placeholder-icon {
@@ -112,19 +136,22 @@
 }
 
 .intro-admin-controls .change-avatar-btn {
-    background: linear-gradient(135deg, #ff6b9d, #ff8e53);
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #8d6e63, #5d4037); /* Vintage leather colors */
+    color: #fff4e6;
+    border: 1px solid #4e342e;
     padding: 10px 25px;
-    border-radius: 25px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 15px;
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
     transition: transform 0.2s;
+    font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+    letter-spacing: 1px;
 }
 
 .intro-admin-controls .change-avatar-btn:hover {
     transform: translateY(-2px);
+    background: linear-gradient(135deg, #a1887f, #6d4c41);
 }
 
 /* Profile Card (Compact) */
@@ -132,19 +159,23 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px 30px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    padding: 20px 30px;
+    border-radius: 2px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(74, 59, 42, 0.2);
     max-width: 600px;
     width: 90%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    /* Paper texture effect */
+    background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.02));
 }
 
 .about-avatar.small {
     width: 60px;
     height: 60px;
     flex-shrink: 0;
+    position: relative;
 }
 
 .about-avatar.small .avatar-placeholder,
@@ -153,7 +184,8 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .about-info-compact {
@@ -162,23 +194,25 @@
 }
 
 .about-info-compact .nickname {
-    font-size: 18px;
+    font-size: 20px;
     margin: 0 0 5px 0;
-    color: #fff;
+    color: #3e2723;
+    font-family: 'Georgia', serif;
 }
 
 .about-info-compact .motto {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #5d4037;
     margin: 0;
     font-style: italic;
+    font-family: 'Times New Roman', serif;
 }
 
 .about-info-compact .about-desc {
     margin-top: 10px;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.4;
+    font-size: 14px;
+    color: #6d4c41;
+    line-height: 1.5;
 }
 
 /* Mini buttons */
@@ -194,13 +228,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.6);
+    background: #8d6e63;
+    color: white;
+    border: 2px solid #fff;
+    cursor: pointer;
 }
 
 .save-profile-btn.mini {
-    margin-top: 5px;
+    margin-top: 10px;
     padding: 4px 12px;
     font-size: 12px;
+    background: #5d4037;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 /* -----------------------------------------------------------
