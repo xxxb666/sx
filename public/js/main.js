@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p>${painting.description || ''}</p>
                         </div>
                         ${isAdminUser ? `
-                        <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; color:#ff4757; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:10;">
+                        <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 6h18"></path>
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1128,12 +1128,10 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
-                // 使用横向滚动布局 (Horizontal Slider)
+                // 使用网格布局 (Grid) - 视频也使用网格，适应左侧分栏
                 html += `
-                    <div class="horizontal-slider-container">
-                        <div class="video-track" id="aiVideoTrack">
-                            ${videos.map(renderCard).join('')}
-                        </div>
+                    <div class="ai-grid ai-video-grid">
+                        ${videos.map(renderCard).join('')}
                     </div>
                 `;
             } else {
@@ -1152,8 +1150,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             html += '</div>';
 
-            // 视频和图片区域之间的分割线（仅在非宽屏时显示，CSS控制）
-            html += '<div class="section-divider hidden-on-desktop"></div>';
+            // 视频和图片区域之间的分割线（仅在移动端显示，CSS控制）
+            html += '<div class="section-divider visible-on-mobile"></div>';
 
             // 图片区域（右侧/下侧）
             html += '<div class="ai-split-section ai-images-section">';
@@ -1162,9 +1160,9 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (images.length > 0) {
-                // 使用宽屏网格布局
+                // 使用小图网格布局
                 html += `
-                    <div class="ai-grid ai-grid-landscape">
+                    <div class="ai-grid ai-grid-small">
                         ${images.map(renderCard).join('')}
                     </div>
                 `;
@@ -1370,20 +1368,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="honor-page" style="position: relative; padding: 20px;">
                     ${isAdminUser ? `
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                        <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')" style="
-                            background: #ff6b9d;
-                            color: white;
-                            border: none;
-                            border-radius: 50px;
-                            padding: 10px 20px;
-                            font-size: 14px;
-                            cursor: pointer;
-                            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
-                            display: flex;
-                            align-items: center;
-                            gap: 5px;
-                            transition: transform 0.2s;
-                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button class="add-honor-btn" onclick="window.openQuickUpload('honor', 'image/*')">
                             <span>➕</span> 添加荣誉
                         </button>
                     </div>
@@ -1408,9 +1393,6 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
 
             detailContent.innerHTML = html;
-            // initHonor3DCarousel(honorData.length); //不再使用3D轮播
-
-
         } catch (error) {
             console.error('加载荣誉墙失败:', error);
             detailContent.innerHTML = `
@@ -1424,182 +1406,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     window.loadHonorPage = loadHonorPage;
-
-    // 全局变量存储动画ID，防止内存泄漏
-    let honorCarouselAnimationId = null;
-
-    function initHonor3DCarousel(totalCards) {
-        // 清理旧的动画循环
-        if (honorCarouselAnimationId) {
-            cancelAnimationFrame(honorCarouselAnimationId);
-            honorCarouselAnimationId = null;
-        }
-
-        const track = document.getElementById('honorTrack');
-        // 重新获取卡片，确保是最新的DOM
-        const cards = document.querySelectorAll('.honor-3d-card');
-        
-        if (!track || cards.length === 0) return;
-
-        // 配置参数 - 优化半径和视觉效果
-        // 增加半径，确保旋转效果明显
-        let radius = window.innerWidth < 768 ? 200 : 350; 
-        
-        // 监听窗口大小改变，动态调整半径
-        window.addEventListener('resize', () => {
-            radius = window.innerWidth < 768 ? 200 : 350;
-        });
-
-        const angleStep = 360 / totalCards;
-        let rotation = 0;
-        let isPaused = false;
-        let lastActiveIndex = -1;
-        
-        // 性能优化：使用 will-change 并清除旧的内联样式
-        cards.forEach(card => {
-            card.style.willChange = 'transform, opacity, z-index';
-            card.style.position = 'absolute'; // 强制绝对定位，防止CSS未生效
-            card.style.left = '50%';
-            card.style.top = '50%';
-            // 保持CSS中的 margin 设置
-            
-            const inner = card.querySelector('.honor-card-inner');
-            if(inner) {
-                inner.style.borderColor = '';
-                inner.style.boxShadow = '';
-                inner.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
-            }
-        });
-
-        // 初始化卡片位置 - 优化的3D排列
-        function updateCardsPosition(rotationAngle) {
-            let maxZIndex = -Infinity;
-            let currentActiveIndex = -1;
-
-            cards.forEach((card, index) => {
-                const angleDeg = (index * angleStep + rotationAngle) % 360;
-                const angleRad = angleDeg * Math.PI / 180;
-                
-                // 计算3D位置 - 围绕中心旋转
-                // x = sin(a) * r
-                // z = cos(a) * r - r (为了让最前面的卡片在 z=0 处，或者稍微靠前)
-                // 这里我们将中心设为 (0, 0, -radius)，这样最前面的卡片在 z=0
-                const x = Math.sin(angleRad) * radius;
-                // z轴坐标：cos(a)*r 是相对于圆心的z，减去r是将圆心移到 z=-r，这样圆周最前面点在 z=0
-                const z = Math.cos(angleRad) * radius - radius; 
-                
-                // 计算缩放和透明度 - 增加透视感
-                const cosVal = Math.cos(angleRad); // 1 (front) to -1 (back)
-                
-                // 缩放范围：0.6 到 1.0
-                const scale = 0.6 + (1 + cosVal) * 0.2;
-                
-                // 透明度范围：0.5 到 1.0
-                const opacity = 0.5 + (1 + cosVal) * 0.25;
-                
-                // z-index 越大越靠前
-                const zIndex = Math.round((1 + cosVal) * 100);
-                
-                if (zIndex > maxZIndex) {
-                    maxZIndex = zIndex;
-                    currentActiveIndex = index;
-                }
-                
-                // 组合变换：位移 -> 旋转 -> 缩放
-                // translate3d(x, 0, z) 移动到圆周位置
-                // rotateY(${-angleDeg}deg) 旋转卡片使其面向圆心 (因为 translate 之后坐标系也变了... 不，transform顺序是关键)
-                // 在 CSS transform 中，变换是后乘的（或者说从左到右应用）。
-                // translate 移动原点。rotate 旋转坐标系。
-                // 实际上，为了让卡片面向圆心，我们需要抵消它在圆周上的角度。
-                // 如果 angleDeg 是 0（正前方），rotateY(0)。
-                // 如果 angleDeg 是 90（右侧），x=r, z=-r。rotateY(-90) 使其面向左侧（圆心）。
-                // 所以 rotateY(${-angleDeg}deg) 是正确的。
-                
-                card.style.transform = `translate3d(${x.toFixed(2)}px, 0, ${z.toFixed(2)}px) rotateY(${-angleDeg}deg) scale(${scale.toFixed(3)})`;
-                card.style.opacity = opacity.toFixed(3);
-                card.style.zIndex = zIndex;
-            });
-
-            // 更新激活状态
-            if (currentActiveIndex !== lastActiveIndex) {
-                if (lastActiveIndex !== -1 && cards[lastActiveIndex]) {
-                    cards[lastActiveIndex].classList.remove('active');
-                }
-                if (currentActiveIndex !== -1 && cards[currentActiveIndex]) {
-                    cards[currentActiveIndex].classList.add('active');
-                }
-                lastActiveIndex = currentActiveIndex;
-            }
-        }
-
-        // 丝滑动画循环
-        let lastTime = performance.now();
-        const rotationSpeed = 20; // 稍微提高速度，看起来更流畅
-        
-        function animate(currentTime) {
-            // 检查元素是否还在文档中，如果不在则停止动画并清理
-            if (!document.body.contains(track)) {
-                if (honorCarouselAnimationId) {
-                    cancelAnimationFrame(honorCarouselAnimationId);
-                    honorCarouselAnimationId = null;
-                }
-                return;
-            }
-
-            if (!isPaused) {
-                const deltaTime = (currentTime - lastTime) / 1000;
-                lastTime = currentTime;
-                
-                // 限制最大帧时间，防止切换标签后飞转
-                const dt = Math.min(deltaTime, 0.1);
-                
-                rotation -= rotationSpeed * dt; // 逆时针旋转
-                
-                // 防止 rotation 数值过大
-                if (rotation <= -360) rotation += 360;
-                
-                updateCardsPosition(rotation);
-            } else {
-                lastTime = currentTime;
-            }
-            
-            honorCarouselAnimationId = requestAnimationFrame(animate);
-        }
-
-        // 启动动画
-        honorCarouselAnimationId = requestAnimationFrame(animate);
-
-        // 初始化点击事件
-        cards.forEach((card, index) => {
-            card.addEventListener('click', function() {
-                // 如果是点击两侧的卡片，可以自动旋转到中间（可选功能，这里暂时只保留查看大图）
-                showImageAtIndex(index);
-            });
-        });
-
-        // 鼠标悬停暂停
-        const container = document.querySelector('.honor-3d-container');
-        if (container) {
-            container.addEventListener('mouseenter', function() {
-                isPaused = true;
-            });
-
-            container.addEventListener('mouseleave', function() {
-                isPaused = false;
-                lastTime = performance.now();
-            });
-        }
-        
-        // 页面不可见时暂停动画
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                isPaused = true;
-            } else {
-                isPaused = false;
-                lastTime = performance.now();
-            }
-        });
-    }
 
     // PPT展示页 - 从后端API加载
     async function loadPPTPage() {

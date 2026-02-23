@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryWorks = result.works || [];
 
             if (categoryWorks.length === 0) {
-                worksList.innerHTML = '<p class="no-works">暂无作品，请上传</p>';
+                worksList.innerHTML = '<div class="empty-state" style="height: 200px;"><p>暂无作品，请上传</p></div>';
                 return;
             }
 
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } catch (error) {
             console.error('加载作品列表失败:', error);
-            worksList.innerHTML = '<p class="no-works">加载失败，请检查网络连接</p>';
+            worksList.innerHTML = '<div class="empty-state"><p>加载失败，请检查网络连接</p></div>';
         }
     }
 

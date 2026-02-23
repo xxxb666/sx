@@ -373,7 +373,7 @@
             }
 
             if (categoryWorks.length === 0) {
-                adminWorksList.innerHTML = '<p class="admin-empty">该分类暂无作品</p>';
+                adminWorksList.innerHTML = '<div class="empty-state" style="height: 200px;"><p>该分类暂无作品</p></div>';
                 return;
             }
 
@@ -409,7 +409,7 @@
             // 绑定事件 (已在 init 中处理或通过事件委托)
         } catch (error) {
             console.error('加载作品列表失败:', error);
-            adminWorksList.innerHTML = '<p class="admin-error">加载失败，请重试</p>';
+            adminWorksList.innerHTML = '<div class="empty-state"><p>加载失败，请重试</p></div>';
         }
     }
 

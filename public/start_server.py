@@ -240,8 +240,12 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # API: Upload Work
-        if path.startswith('/api/works/'):
+        if path.startswith('/api/upload/'):
             category = path.split('/')[-1]
+            
+            # Skip if it's avatar or intro-video (already handled above)
+            if category in ['avatar', 'intro-video']:
+                return
             
             # Parse Multipart
             content_type = self.headers.get('Content-Type')

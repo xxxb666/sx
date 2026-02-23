@@ -204,8 +204,160 @@
 }
 
 /* -----------------------------------------------------------
-   Shared Grid Styles (AI Page & Honor Wall)
+   AI Page Split Layout
    ----------------------------------------------------------- */
+.ai-split-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden; /* Prevent body scroll */
+}
+
+.ai-sections-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 100%;
+    overflow: hidden; /* Internal scrolling */
+}
+
+.ai-split-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+
+.section-title {
+    font-size: 18px;
+    color: #ff6b9d;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Scrollable content area within section */
+.ai-split-section .ai-grid {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 5px; /* Space for scrollbar */
+    padding-bottom: 10px;
+    align-content: start; /* Align grid items to top */
+}
+
+/* Custom scrollbar for sections */
+.ai-split-section .ai-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ai-split-section .ai-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 157, 0.3);
+    border-radius: 3px;
+}
+
+.ai-split-section .ai-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 157, 0.6);
+}
+
+/* Video Grid (Left Side) - Increased specificity */
+.ai-grid.ai-video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Larger items for video */
+    gap: 15px;
+}
+
+/* Image Grid (Right Side) - Smaller items - Increased specificity */
+.ai-grid.ai-grid-small {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Smaller min-width */
+    gap: 10px;
+}
+
+/* Override card styles for small grid */
+.ai-grid.ai-grid-small .ai-card .ai-thumbnail {
+    aspect-ratio: 1; /* Square thumbnails for small grid */
+}
+
+.ai-grid.ai-grid-small .ai-card .ai-info h3 {
+    font-size: 12px;
+}
+
+.ai-grid.ai-grid-small .ai-card .ai-info p {
+    display: none; /* Hide description for small cards to save space */
+}
+
+/* Footer Action */
+.section-footer-action {
+    margin-top: 10px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* Divider for Mobile */
+.section-divider {
+    height: 1px;
+    background: rgba(255, 107, 157, 0.2);
+    margin: 20px 0;
+    width: 100%;
+}
+
+.visible-on-mobile {
+    display: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .ai-split-container {
+        height: auto;
+        overflow-y: auto; /* Allow body scroll on mobile */
+        display: block;
+    }
+
+    .ai-sections-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+    }
+
+    .ai-split-section {
+        height: auto;
+        min-height: 300px;
+        max-height: 500px; /* Limit height */
+        overflow: visible;
+    }
+    
+    .ai-split-section .ai-grid {
+        overflow-y: visible; /* Let container handle scroll or limit height */
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .visible-on-mobile {
+        display: block;
+    }
+    
+    .ai-video-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    
+    .ai-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Even smaller on mobile */
+    }
+}
 .ai-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -350,4 +502,108 @@
     .ai-grid-landscape {
         grid-template-columns: repeat(1, 1fr); /* On mobile landscape might need full width */
     }
+}
+
+/* Pink centered empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: #ff6b9d;
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+}
+
+.empty-state p {
+    margin-bottom: 15px;
+}
+
+.empty-state button,
+.go-upload-btn,
+.section-footer-add-btn {
+    background: #ff6b9d;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+    transition: transform 0.2s;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.empty-state button:hover,
+.go-upload-btn:hover,
+.section-footer-add-btn:hover {
+    transform: scale(1.05);
+    background: #ff8fb3;
+}
+
+/* Section specific empty state (smaller height) */
+.empty-section-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    color: #ff6b9d;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+    background: rgba(255, 107, 157, 0.05);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 107, 157, 0.3);
+}
+
+/* Add Honor Button */
+.add-honor-btn {
+    background: #ff6b9d;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s;
+}
+
+.add-honor-btn:hover {
+    transform: scale(1.05);
+    background: #ff8fb3;
+}
+
+/* Work Delete Button */
+.work-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #ff4757;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.work-delete-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
 }
