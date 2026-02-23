@@ -1078,11 +1078,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await API.getWorks('ai');
             let aiData = result.works || [];
             
-            // 按创建时间降序排序（最新发布的在最上面）
+            // 按创建时间升序排序（最早发布的在前面，类似于选集顺序 1, 2, 3...）
             aiData.sort((a, b) => {
                 const dateA = new Date(a.created_at || 0);
                 const dateB = new Date(b.created_at || 0);
-                return dateB - dateA;
+                return dateA - dateB;
             });
             
             // 分类：视频和图片
