@@ -200,8 +200,18 @@
     100% { transform: translateX(-50%); } /* Move half width (assuming double content) */
 }
 
+@keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}
+
+.marquee-track.reverse {
+    animation-name: marquee-reverse;
+}
+
 /* Specific styles for cards inside marquee */
-.marquee-track .ai-card {
+.marquee-track .ai-card,
+.marquee-track .video-card {
     flex-shrink: 0;
     width: 280px; /* Fixed width for horizontal items */
     white-space: normal; /* Allow text to wrap inside card */
@@ -215,12 +225,14 @@
     cursor: pointer;
 }
 
-.marquee-track .ai-card:hover {
+.marquee-track .ai-card:hover,
+.marquee-track .video-card:hover {
     transform: translateY(-5px) scale(1.02);
     box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
 }
 
-.marquee-track .ai-thumbnail {
+.marquee-track .ai-thumbnail,
+.marquee-track .video-thumbnail {
     width: 100%;
     height: 200px; /* Taller for better view */
     background: white;
@@ -232,13 +244,16 @@
 }
 
 .marquee-track .ai-thumbnail img,
-.marquee-track .ai-thumbnail video {
+.marquee-track .ai-thumbnail video,
+.marquee-track .video-thumbnail img,
+.marquee-track .video-thumbnail video {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
 }
 
-.marquee-track .ai-info {
+.marquee-track .ai-info,
+.marquee-track .video-info {
     padding: 12px 15px !important;
 }
 

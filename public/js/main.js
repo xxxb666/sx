@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html = `
                 <div class="painting-page">
                     <div class="marquee-container">
-                        <div class="marquee-track">
+                        <div class="marquee-track reverse">
                             ${fullContent}
                             ${fullContent} <!-- 重复一份以实现无缝滚动 -->
                         </div>
@@ -730,39 +730,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            let html = `
-                <div class="dance-page">
-                    <div class="video-grid">
-                        ${danceData.map(video => {
-                            // 优先使用 fileUrl，如果没有则回退到拼接路径
-                            const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
-                            // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
-                            // 注意：旧数据可能没有封面，这里给个默认值或者留空让CSS处理
-                            const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
-                            
-                            return `
-                            <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}">
-                                <div class="video-thumbnail">
-                                    ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
-                                    <div class="play-icon">▶</div>
-                                </div>
-                                <div class="video-info">
-                                    <h3>${video.title}</h3>
-                                    ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
-                                </div>
-                            </div>
-                        `}).join('')}
-                        ${isAdminUser ? `
-                        <div class="video-card add-work-card" onclick="window.openQuickUpload('dance', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                                <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                            </div>
+            // 构建作品卡片HTML
+            const generateVideoCardsHtml = (videos) => {
+                return videos.map(video => {
+                    // 优先使用 fileUrl，如果没有则回退到拼接路径
+                    const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
+                    // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
+                    const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
+                    
+                    return `
+                    <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}">
+                        <div class="video-thumbnail">
+                            ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
+                            <div class="play-icon">▶</div>
                         </div>
-                        ` : ''}
+                        <div class="video-info">
+                            <h3>${video.title}</h3>
+                            ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
+                        </div>
+                    </div>
+                `}).join('');
+            };
+
+            const addVideoBtnHtml = isAdminUser ? `
+                <div class="video-card add-work-card" onclick="window.openQuickUpload('dance', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
+                        <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
                     </div>
                 </div>
-            `;
+            ` : '';
+
+            let html = '';
+            
+            // 如果作品数量大于等于3，启用跑马灯效果
+            if (danceData.length >= 3) {
+                const cardsHtml = generateVideoCardsHtml(danceData);
+                const fullContent = cardsHtml + addVideoBtnHtml;
+                
+                html = `
+                <div class="dance-page">
+                    <div class="marquee-container">
+                        <div class="marquee-track reverse">
+                            ${fullContent}
+                            ${fullContent}
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else {
+                html = `
+                <div class="dance-page">
+                    <div class="video-grid">
+                        ${generateVideoCardsHtml(danceData)}
+                        ${addVideoBtnHtml}
+                    </div>
+                </div>
+                `;
+            }
 
             detailContent.innerHTML = html;
             initVideoCards();
