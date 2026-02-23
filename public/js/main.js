@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalBtn = document.getElementById('closeModal');
     const prevImageBtn = document.getElementById('prevImage');
     const nextImageBtn = document.getElementById('nextImage');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
     
     // PDF/PPT 查看器
     const pdfModal = document.getElementById('pdfModal');
@@ -950,6 +952,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 图片删除按钮事件
+    if (deleteImageBtn) {
+        deleteImageBtn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (currentImageIndex === -1 || !currentImageCategory) return;
+            
+            const currentImage = currentImageList[currentImageIndex];
+            if (!currentImage) return;
+
+            if (confirm('确定要删除这个作品吗？此操作不可恢复！')) {
+                try {
+                    await API.deleteWork(currentImageCategory, currentImage.work_id);
+                    alert('作品已删除');
+                    
+                    // 从列表中移除
+                    currentImageList.splice(currentImageIndex, 1);
+                    
+                    // 如果列表为空，关闭查看器
+                    if (currentImageList.length === 0) {
+                        imageModal.style.display = 'none';
+                        modalImage.src = '';
+                    } else {
+                        // 如果不为空，显示下一个或上一个
+                        if (currentImageIndex >= currentImageList.length) {
+                            currentImageIndex = currentImageList.length - 1;
+                        }
+                        // 显示新的当前索引
+                        showImageAtIndex(currentImageIndex);
+                    }
+
+                    // 重新加载页面列表
+                    if (currentImageCategory === 'ai') {
+                        loadAIPage();
+                    } else if (currentImageCategory === 'painting') {
+                        loadPaintingPage();
+                    } else if (currentImageCategory === 'honor') {
+                        loadHonorPage();
+                    }
+                } catch (error) {
+                    alert('删除失败: ' + error.message);
+                }
+            }
+        });
+    }
+
+    // 图片上传按钮事件 (继续上传)
+    if (uploadImageBtn) {
+        uploadImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // 打开上传窗口，使用当前分类
+            const category = currentImageCategory || 'ai';
+            if (window.openQuickUpload) {
+                window.openQuickUpload(category, 'image/*');
+            } else {
+                console.error('Quick upload function not found');
+            }
+        });
+    }
+
     function showImageAtIndex(index) {
         if (index < 0 || index >= currentImageList.length) return;
         
@@ -1233,6 +1295,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 prevImageBtn.style.display = 'none';
                 nextImageBtn.style.display = 'none';
             }
+        }
+
+        // 检查管理员权限显示删除和上传按钮
+        const isAdminUser = window.isAdmin ? window.isAdmin() : false;
+        
+        if (deleteImageBtn) {
+            if (isAdminUser && currentImageList.length > 0) {
+                deleteImageBtn.style.display = 'flex';
+            } else {
+                deleteImageBtn.style.display = 'none';
+            }
+        }
+        
+        if (uploadImageBtn) {
+            uploadImageBtn.style.display = isAdminUser ? 'flex' : 'none';
         }
     }
     window.showImageModal = showImageModal;

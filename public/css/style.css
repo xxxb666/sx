@@ -524,25 +524,78 @@ body {
 .modal-close-btn {
     position: absolute;
     top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
+    right: 40px; /* Changed to match video player */
+    background: rgba(0, 0, 0, 0.5); /* Match video player */
+    border: 2px solid rgba(255, 255, 255, 0.3); /* Match video player */
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 44px; /* Match video player */
+    height: 44px; /* Match video player */
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 28px; /* Match video player */
     cursor: pointer;
     z-index: 2001;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    line-height: 1;
 }
 
 .modal-close-btn:hover {
-    background: #ff8fb3;
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+    transform: rotate(90deg);
+}
+
+/* Image Viewer Action Buttons */
+.image-upload-btn {
+    position: fixed;
+    top: 20px;
+    right: 180px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2001;
+}
+
+.image-upload-btn:hover {
     transform: scale(1.1);
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+}
+
+.image-delete-btn {
+    position: fixed;
+    top: 20px;
+    right: 110px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2001;
+}
+
+.image-delete-btn:hover {
+    background: rgba(255, 68, 68, 0.6);
+    transform: scale(1.1);
+    border-color: rgba(255, 68, 68, 0.8);
 }
 
 /* 我的介绍页面样式 */
