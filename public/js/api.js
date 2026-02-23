@@ -66,6 +66,34 @@ const API = {
         return data;
     },
 
+    // 上传自我介绍视频
+    async uploadIntroVideo(formData) {
+        const token = sessionStorage.getItem('adminToken');
+        const response = await fetch(API_CONFIG.getUrl('/upload/intro-video'), {
+            method: 'POST',
+            headers: {
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: formData
+        });
+        
+        // 处理认证失败
+        if (response.status === 401 || response.status === 403) {
+            console.warn('API 认证失败 (视频)，清除 Token');
+            sessionStorage.removeItem('adminToken');
+            window.dispatchEvent(new Event('auth:expired'));
+            throw new Error('登录已过期，请重新登录');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || '上传失败');
+        }
+        
+        return data;
+    },
+
     // 登录
     async login(username, password) {
         const data = await this.request(API_CONFIG.getUrl('/auth/login'), {

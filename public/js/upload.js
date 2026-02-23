@@ -608,6 +608,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 自我介绍视频上传
+    const uploadIntroVideoBtn = document.getElementById('uploadIntroVideoBtn');
+    const introVideoInput = document.getElementById('introVideoInput');
+    
+    if (uploadIntroVideoBtn && introVideoInput) {
+        uploadIntroVideoBtn.addEventListener('click', () => {
+             // 检查登录
+            if (!API.isLoggedIn()) {
+                alert('请先登录管理员账号');
+                return;
+            }
+            introVideoInput.click();
+        });
+        
+        introVideoInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // 简单的文件大小检查 (例如 500MB)
+            if (file.size > 500 * 1024 * 1024) {
+                alert('文件太大，请上传小于 500MB 的视频');
+                return;
+            }
+            
+            try {
+                const originalText = uploadIntroVideoBtn.textContent;
+                uploadIntroVideoBtn.textContent = '上传中...';
+                uploadIntroVideoBtn.disabled = true;
+                
+                const formData = new FormData();
+                formData.append('introVideo', file);
+                
+                const result = await API.uploadIntroVideo(formData);
+                
+                if (result.success) {
+                    alert('视频上传成功！');
+                    loadProfile();
+                } else {
+                    alert('上传失败: ' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('上传异常:', error);
+                alert('上传失败: ' + error.message);
+            } finally {
+                uploadIntroVideoBtn.textContent = '更换自我介绍视频';
+                uploadIntroVideoBtn.disabled = false;
+                introVideoInput.value = ''; // 清空选择
+            }
+        });
+    }
+
     // 保存个人资料
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', async function() {
@@ -653,6 +704,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     if (avatarImg) avatarImg.style.display = 'none';
                     if (avatarPlaceholder) avatarPlaceholder.style.display = 'flex';
+                }
+
+                // 处理自我介绍视频显示
+                const introVideoContainer = document.getElementById('introVideoContainer');
+                const introVideo = document.getElementById('introVideo');
+                const uploadIntroVideoBtn = document.getElementById('uploadIntroVideoBtn');
+                const isAdmin = API.isLoggedIn();
+
+                if (profile.introVideo && introVideo) {
+                    introVideoContainer.style.display = 'block';
+                    // 添加时间戳防止缓存
+                    const timestamp = new Date().getTime();
+                    const videoSrc = profile.introVideo.includes('?') ? 
+                        `${profile.introVideo}&t=${timestamp}` : 
+                        `${profile.introVideo}?t=${timestamp}`;
+                    
+                    // 只有当源改变时才更新，避免重新加载
+                    if (!introVideo.src || !introVideo.src.includes(profile.introVideo)) {
+                        introVideo.src = videoSrc;
+                    }
+                } else {
+                    if (introVideoContainer) introVideoContainer.style.display = 'none';
+                }
+
+                // 管理员按钮显示
+                if (uploadIntroVideoBtn) {
+                    uploadIntroVideoBtn.style.display = isAdmin ? 'inline-block' : 'none';
+                    if (isAdmin) {
+                         if (!profile.introVideo) {
+                             uploadIntroVideoBtn.textContent = '上传自我介绍视频';
+                         } else {
+                             uploadIntroVideoBtn.textContent = '更换自我介绍视频';
+                         }
+                    }
                 }
             }
         } catch (error) {

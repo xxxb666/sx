@@ -35,7 +35,8 @@ let db = {
         nickname: '徐小泡',
         selfIntro: '热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。',
         motto: '"每一个不曾起舞的日子，都是对生命的辜负"',
-        avatar: null
+        avatar: null,
+        introVideo: null
     },
     works: []
 };
@@ -270,6 +271,46 @@ app.post('/api/upload/avatar', authenticateToken, avatarUpload, (req, res) => {
         });
     } catch (error) {
         console.error('头像上传失败:', error);
+        if (req.file && fs.existsSync(req.file.path)) {
+            try { fs.unlinkSync(req.file.path); } catch(e) {}
+        }
+        res.status(500).json({ success: false, message: '上传失败' });
+    }
+});
+
+// 自我介绍视频上传配置
+const introVideoUpload = upload.single('introVideo');
+
+// 上传自我介绍视频
+app.post('/api/upload/intro-video', authenticateToken, introVideoUpload, (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: '没有上传文件' });
+        }
+        
+        // 文件默认上传到了 uploads/misc/ (因为 req.params.category 未定义)
+        const fileUrl = `/uploads/misc/${req.file.filename}`;
+        
+        // 如果已有视频，删除旧视频
+        if (db.profile.introVideo) {
+            const oldPath = path.join(UPLOADS_DIR, 'misc', path.basename(db.profile.introVideo));
+            if (fs.existsSync(oldPath)) {
+                try { fs.unlinkSync(oldPath); } catch(e) {}
+            }
+        }
+        
+        // 更新个人资料
+        db.profile.introVideo = fileUrl;
+        saveData();
+        
+        res.json({
+            success: true,
+            message: '自我介绍视频上传成功',
+            url: fileUrl,
+            introVideo: fileUrl
+        });
+    } catch (error) {
+        console.error('视频上传失败:', error);
         if (req.file && fs.existsSync(req.file.path)) {
             try { fs.unlinkSync(req.file.path); } catch(e) {}
         }
