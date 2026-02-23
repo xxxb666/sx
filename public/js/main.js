@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('%c 当前版本: v1.0.7 (调整视频播放器按钮位置) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
+    console.log('%c 当前版本: v1.0.8 (修复视频播放器按钮重叠问题) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
     
     const pages = document.querySelectorAll('.page');
     const navBtns = document.querySelectorAll('.nav-btn');
