@@ -548,7 +548,8 @@ body {
 }
 
 /* Image Viewer Action Buttons */
-.image-upload-btn {
+.image-upload-btn,
+.video-upload-btn {
     position: fixed;
     top: 20px;
     right: 180px;
@@ -567,7 +568,8 @@ body {
     z-index: 2001;
 }
 
-.image-upload-btn:hover {
+.image-upload-btn:hover,
+.video-upload-btn:hover {
     transform: scale(1.1);
     background: #ff6b9d;
     border-color: #ff6b9d;
@@ -596,6 +598,46 @@ body {
     background: rgba(255, 68, 68, 0.6);
     transform: scale(1.1);
     border-color: rgba(255, 68, 68, 0.8);
+}
+
+/* Navigation Buttons for Video and Image Viewers */
+.video-player-overlay .nav-btn,
+.image-modal .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    cursor: pointer;
+    z-index: 2002; /* Higher than overlay content */
+    transition: all 0.3s ease;
+    padding: 0; /* Reset padding */
+}
+
+.video-player-overlay .nav-btn:hover,
+.image-modal .nav-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+    border-color: white;
+}
+
+.video-player-overlay .nav-btn.prev-btn,
+.image-modal .nav-btn.prev-btn {
+    left: 20px;
+}
+
+.video-player-overlay .nav-btn.next-btn,
+.image-modal .nav-btn.next-btn {
+    right: 20px;
 }
 
 /* 我的介绍页面样式 */
@@ -963,674 +1005,213 @@ body {
 .admin-upload-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+    background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%);
 }
 
 .admin-logout-btn {
-    padding: 8px 18px;
+    padding: 8px 24px;
     background: white;
     color: #ff6b9d;
-    border: 1px solid #ffb7c5;
+    border: 1px solid #ff6b9d;
     border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .admin-logout-btn:hover {
     background: #fff0f5;
-    border-color: #ff6b9d;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
 }
 
-/* 内容区域 */
 .admin-panel-content {
+    padding: 30px 40px;
     max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
+    margin: 0 auto;
 }
 
-/* 标签页导航 */
 .admin-tabs {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 15px;
     margin-bottom: 30px;
     flex-wrap: wrap;
 }
 
 .admin-tab {
-    padding: 8px 24px;
+    padding: 10px 25px;
     background: white;
-    border: 1px solid #fff0f5;
-    border-radius: 20px;
+    border: none;
+    border-radius: 25px;
     color: #888;
-    font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 2px 5px rgba(255, 107, 157, 0.05);
-}
-
-.admin-tab:hover {
-    color: #ff6b9d;
-    transform: translateY(-2px);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .admin-tab.active {
-    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
     color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    transform: translateY(-2px);
 }
 
-.video-upload-btn {
-    position: fixed;
-    top: 20px;
-    right: 180px; /* 放在删除按钮左侧，增加间距 */
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 2000;
+.admin-tab:hover:not(.active) {
+    background: #fff5f8;
+    color: #ff6b9d;
 }
 
-.video-upload-btn:hover {
-    transform: scale(1.1);
-    background: #ff6b9d;
-    border-color: #ff6b9d;
-}
-
-/* 批量操作栏 */
 .admin-batch-actions {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 15px 30px;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.08);
-    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(255, 107, 157, 0.05);
 }
 
 .select-all-label {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
-    color: #ff6b9d;
-    font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
+    color: #666;
 }
 
-.select-all-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #ff6b9d;
-    cursor: pointer;
-}
-
-/* 红色批量删除按钮 */
 .batch-delete-btn {
-    padding: 8px 24px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+    padding: 6px 16px;
+    background: #ff4444;
     color: white;
     border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(238, 82, 83, 0.2);
 }
 
 .batch-delete-btn:disabled {
-    background: #eee;
-    color: #bbb;
+    background: #ccc;
     cursor: not-allowed;
-    box-shadow: none;
 }
 
 .batch-delete-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(238, 82, 83, 0.3);
+    background: #cc0000;
+    transform: translateY(-1px);
 }
 
-#selectedCount {
-    color: #aaa;
-    font-size: 14px;
-    margin-left: auto;
-}
-
-/* 作品列表 */
 .admin-works-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding-bottom: 40px;
-}
-
-.admin-empty, .admin-error {
-    text-align: center;
-    padding: 80px 0;
-    color: #ff8fb3;
-    font-size: 18px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
 }
 
 .admin-work-item {
     background: white;
-    border-radius: 15px;
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-    border: 1px solid white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+    display: flex;
+    border: 1px solid #ffeef8;
+    position: relative;
+    height: 100px; /* 固定高度 */
 }
 
 .admin-work-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.1);
-    border-color: #fff0f5;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.15);
+    border-color: #ffb7c5;
 }
 
-.admin-checkbox-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-.work-checkbox {
-    width: 18px;
-    height: 18px;
-    accent-color: #ff6b9d;
-    cursor: pointer;
+.admin-work-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    transform: scale(1.2);
 }
 
 .admin-work-thumbnail {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f8f8f8;
+    width: 100px;
+    height: 100%;
     flex-shrink: 0;
-    border: 1px solid #f0f0f0;
+    position: relative;
+    background: #f8f8f8;
 }
 
-/* AI作品横向宽屏展示 */
-.admin-work-thumbnail.landscape {
-    width: 142px; /* 16:9 of 80px height */
-    aspect-ratio: 16 / 9;
-}
-
-.admin-work-thumbnail img {
+.admin-work-thumbnail img,
+.admin-work-thumbnail video {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    background: #f0f0f0;
-}
-
-.admin-video-thumbnail,
-.admin-file-thumbnail {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f9f9f9;
-    color: #ffb7c5;
-    font-size: 28px;
+    object-fit: cover;
 }
 
 .admin-work-info {
     flex: 1;
-    min-width: 0; /* 防止文本溢出 */
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .admin-work-title {
     font-size: 16px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 6px 0;
+    margin-bottom: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .admin-work-desc {
+    font-size: 12px;
     color: #888;
-    font-size: 13px;
-    margin: 0 0 8px 0;
+    margin-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .admin-work-meta {
-    display: flex;
-    gap: 15px;
     font-size: 12px;
-}
-
-.admin-work-date {
-    color: #bbb;
-}
-
-.admin-work-tag {
-    color: #ff6b9d;
-    background: #fff0f5;
-    padding: 2px 8px;
-    border-radius: 10px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .admin-work-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
-.admin-btn {
-    padding: 6px 16px;
+.admin-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     border: none;
-    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     transition: all 0.2s;
 }
 
-.admin-view-btn {
-    background: #f0f0f0;
-    color: #666;
+.btn-delete {
+    background: #fff0f0;
+    color: #ff4444;
 }
 
-.admin-view-btn:hover {
-    background: #e0e0e0;
-}
-
-.admin-delete-btn {
-    background: #fff5f5;
-    color: #ff4d4f;
-    border: 1px solid #ffccc7;
-}
-
-.admin-delete-btn:hover {
-    background: #ff4d4f;
+.btn-delete:hover {
+    background: #ff4444;
     color: white;
-    border-color: #ff4d4f;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .header h1 {
-        font-size: 28px;
-    }
-
-    .header.with-back {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-
-    .cards-container {
-        gap: 20px;
-    }
-
-    .card {
-        flex: 0 1 45%; /* 平板端每行2个 */
-        min-width: 150px;
-        height: 150px;
-    }
-
-    .card-icon {
-        font-size: 36px;
-    }
-
-    .about-content {
-        padding: 30px 20px;
-    }
-
-    .nav-btn {
-        padding: 10px 25px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .page {
-        padding: 20px 10px;
-    }
-
-    .header h1 {
-        font-size: 24px;
-    }
-
-    .nickname {
-        font-size: 24px;
-    }
-
-    .cards-container {
-        gap: 15px;
-    }
-
-    .card {
-        flex: 0 1 45%; /* 手机端也尝试每行2个，避免太大 */
-        min-width: 120px;
-        height: 120px;
-        padding: 10px 5px;
-    }
-
-    .card-icon {
-        font-size: 30px;
-        margin-bottom: 6px;
-    }
-
-    .card-title {
-        font-size: 13px;
-    }
-}
-
-/* 首页卡片滚动预览背景 */
-.card-bg-scroll {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    display: flex;
-    overflow: hidden;
-    opacity: 0.6; /* 调整透明度以保持背景可见性 */
-    pointer-events: none; /* 确保不影响点击 */
-}
-
-.card-scroll-track {
-    display: flex;
-    flex-shrink: 0;
-    height: 100%;
-    /* 默认动画，JS加载后可能会调整 */
-    animation: card-scroll-left 20s linear infinite;
-}
-
-.card-scroll-item {
-    height: 100%;
-    width: auto;
-    aspect-ratio: 1/1; /* 保持方形 */
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-/* 确保内容在滚动背景之上 */
-.card-content {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    /* 添加半透明背景以保证文字清晰度 */
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(2px);
-    border-radius: 10px;
-    padding: 10px;
-    transition: all 0.3s ease;
-}
-
-.card:hover .card-content {
-    background: rgba(255, 255, 255, 0.85);
-}
-
-@keyframes card-scroll-left {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); } /* 假设内容重复一次 */
-}
-
-/* 针对不同卡片类型的微调 */
-#scroll-dance .card-scroll-item {
-    /* 舞蹈视频可能更适合竖屏裁剪 */
-    aspect-ratio: 9/16; 
-    width: auto;
-}
-
-/* 响应式调整 */
-@media (max-width: 480px) {
-    .card-content {
-        background: rgba(255, 255, 255, 0.75);
-    }
-}
-
-.honor-3d-container {
-    width: 100%;
-    height: 600px;
-    perspective: 1200px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.honor-3d-track {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.honor-3d-card {
-    position: absolute;
-    width: 200px; /* Further reduced from 220px */
-    height: 280px; /* Further reduced from 300px */
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2);
-    overflow: hidden;
-    /* Removed transform transition to fix stuttering - JS drives transform directly */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    border: 2px solid transparent; /* Subtle border */
-}
-
-.honor-3d-card.active {
-    /* Active state styling - Removed Golden Border */
-    border-color: #ff6b9d; /* Theme pink color */
-    box-shadow: 0 10px 40px rgba(255, 107, 157, 0.3); /* Softer glow */
-}
-
-.honor-img-wrapper {
-    width: 100%;
-    height: 160px; /* Reduced from 210px to fix "image too big" */
-    overflow: hidden;
-    position: relative;
-}
-
-.honor-img-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.honor-info {
-    padding: 12px;
-    text-align: center;
-    background: linear-gradient(to bottom, white, #fff5f8);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.honor-info h3 {
-    color: #ff6b9d;
-    font-size: 15px; /* Reduced font size */
-    margin-bottom: 5px;
-}
-
-.honor-info p {
-    color: #888;
-    font-size: 14px;
-}
-
-.honor-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.8);
-    border: none;
-    color: #ff6b9d;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 20;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.honor-nav-btn:hover {
-    background: white;
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
-}
-
-.honor-prev {
-    left: 20px;
-}
-
-.honor-next {
-    right: 20px;
-}
-
-/* 确保媒体元素在卡片中正确显示 */
-.honor-3d-card video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* 详情页特殊布局 - 使用 Flex 实现内容区域自适应 */
-#page3 {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* 详情页禁止整体滚动，改用内容区域滚动 */
-    padding: 0; /* 确保无内边距 */
-}
-
-#page3 .header {
-    flex-shrink: 0; /* 头部固定高度 */
-    background: transparent; /* 保持透明或根据需要设置背景 */
-    z-index: 10;
-}
-
-/* 确保详情页内容区域能撑开高度 */
-#detail-content {
-    flex: 1 1 auto;
-    height: 100%; /* 确保有高度 */
-    width: 100%;
-    position: relative;
-    display: flex; /* 让子页面容器可以撑满高度 */
-    flex-direction: column;
-    overflow-y: auto;
-    /* 优化滚动体验 */
-    -webkit-overflow-scrolling: touch;
-}
-
-/* 各个子页面的容器，确保占满高度以支持垂直居中 */
-.dance-page, 
-.painting-page, 
-.ai-page, 
-.honor-page, 
-.ppt-page {
-    width: 100%;
-    height: 100%; /* 明确高度 */
-    flex: 1; /* 确保在 flex 容器中占满空间 */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* 顶部对齐，避免内容少时居中导致留白太多 */
-    align-items: center; /* 水平居中 */
-    position: relative;
-    padding-top: 20px; /* 增加一点顶部内边距，避免紧贴顶部 */
-}
-
-/* 确保详情内容区域有定位上下文，防止空状态绝对定位溢出覆盖头部 */
-#detail-content {
-    position: relative;
-    width: 100%;
-    min-height: 100%;
-}
-
-/* 空状态提示样式 - 绝对定位强力居中 */
-.empty-state {
-    position: absolute;
-    top: 35%; /* 从 40% 进一步上移至 35%，更接近用户感知的“中间” */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #ff6b9d !important; /* 使用更鲜艳的粉色，强制生效 */
-    padding: 0;
-    gap: 25px;
-    z-index: 10; /* 降低层级，但仍需高于背景 */
-    width: 100%;
-    pointer-events: none !important; /* 关键：让点击穿透容器，不阻挡底层交互 */
-}
-
-.empty-state > * {
-    pointer-events: auto !important; /* 确保子元素（如文字、按钮）可交互 */
-}
-
-.empty-state p {
-    font-size: 20px; /* 字体加大 */
-    margin-bottom: 10px;
-    font-weight: 600; /* 加粗 */
-    letter-spacing: 1px;
-}
-
-.go-upload-btn {
-    padding: 12px 35px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
-    color: white;
-    border: none;
-    border-radius: 50px; /* 更圆润 */
-    cursor: pointer !important; /* 强制手型 */
-    pointer-events: auto !important; /* 强制可点击 */
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3); /* 更明显的阴影 */
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    letter-spacing: 1px;
-    position: relative; /* 确保定位层级生效 */
-    z-index: 101; /* 确保在 empty-state 之上 */
-}
-
-.go-upload-btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
-    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
-}
-
-.go-upload-btn:active {
-    transform: translateY(-1px) scale(0.98);
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
