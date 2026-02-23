@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoPlayer = document.getElementById('videoPlayer');
     const videoElement = videoPlayer.querySelector('video');
     const closeVideoBtn = document.getElementById('closeVideo');
-    const uploadVideoBtn = document.getElementById('uploadVideoBtn');
+    const loopVideoBtn = document.getElementById('loopVideoBtn');
     const imageModal = document.getElementById('imageModal');
     const modalImage = imageModal.querySelector('img');
     const closeModalBtn = document.getElementById('closeModal');
@@ -168,22 +168,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 视频上传按钮事件 (继续上传)
-    if (uploadVideoBtn) {
-        uploadVideoBtn.addEventListener('click', function(e) {
+    // 视频循环播放按钮事件
+    if (loopVideoBtn) {
+        loopVideoBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            // 暂停播放
             if (videoElement) {
-                videoElement.pause();
-            }
-            
-            // 打开上传窗口，使用当前分类
-            // 如果 currentVideoCategory 为空，默认为 'ai'
-            const category = currentVideoCategory || 'ai';
-            if (window.openQuickUpload) {
-                window.openQuickUpload(category, 'video/*');
-            } else {
-                console.error('Quick upload function not found');
+                videoElement.loop = !videoElement.loop;
+                if (videoElement.loop) {
+                    loopVideoBtn.classList.add('active');
+                    // 添加一个小提示
+                    const toast = document.createElement('div');
+                    toast.textContent = '已开启单曲循环';
+                    toast.style.position = 'fixed';
+                    toast.style.top = '50%';
+                    toast.style.left = '50%';
+                    toast.style.transform = 'translate(-50%, -50%)';
+                    toast.style.background = 'rgba(0,0,0,0.7)';
+                    toast.style.color = 'white';
+                    toast.style.padding = '10px 20px';
+                    toast.style.borderRadius = '20px';
+                    toast.style.zIndex = '3000';
+                    toast.style.transition = 'opacity 0.5s';
+                    document.body.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.opacity = '0';
+                        setTimeout(() => document.body.removeChild(toast), 500);
+                    }, 1500);
+                } else {
+                    loopVideoBtn.classList.remove('active');
+                }
             }
         });
     }
@@ -862,11 +875,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 上传按钮仅管理员可见
-        if (uploadVideoBtn) {
-            const isAdminUser = window.isAdmin ? window.isAdmin() : false;
-            uploadVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
-        }
+
     }
 
     function showVideoPlayer(videoSrc) {
@@ -888,8 +897,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (deleteVideoBtn) {
             deleteVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
         }
-        if (uploadVideoBtn) {
-            uploadVideoBtn.style.display = isAdminUser ? 'flex' : 'none';
+        
+        // 循环按钮对所有用户可见
+        if (loopVideoBtn) {
+            loopVideoBtn.style.display = 'flex';
+            // 同步状态
+            if (videoElement.loop) {
+                loopVideoBtn.classList.add('active');
+            } else {
+                loopVideoBtn.classList.remove('active');
+            }
         }
         
         // 更新导航按钮状态
@@ -1042,10 +1059,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <video src="${contentSrc}" 
                                    style="width:100%; height:100%; object-fit:contain; display:none;" 
-                                   muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>
+                                   muted preload="metadata" playsinline onloadeddata="this.currentTime=0.1"></video>
                         `;
                     } else {
-                        mediaHtml = `<video src="${contentSrc}" style="width:100%; height:100%; object-fit:contain;" muted preload="metadata" onloadeddata="this.currentTime=0.1"></video>`;
+                        mediaHtml = `<video src="${contentSrc}" style="width:100%; height:100%; object-fit:contain; background-color: #000;" muted preload="metadata" playsinline onloadeddata="this.currentTime=0.1"></video>`;
                     }
                 } else {
                     mediaHtml = `<div class="ai-thumbnail-placeholder">📄</div>`;

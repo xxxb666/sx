@@ -968,7 +968,7 @@ body {
     box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
 
-.video-upload-btn {
+.video-loop-btn {
     position: fixed;
     top: 20px;
     right: 180px; /* 放在删除按钮左侧，增加间距 */
@@ -987,11 +987,18 @@ body {
     z-index: 2000;
 }
 
-.video-upload-btn:hover {
+.video-loop-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
     transform: scale(1.1);
+}
+
+.video-loop-btn.active {
     background: #ff6b9d;
     border-color: #ff6b9d;
+    box-shadow: 0 0 10px rgba(255, 107, 157, 0.6);
 }
+
+
 
 /* 批量操作栏 */
 .admin-batch-actions {
