@@ -1305,6 +1305,18 @@ document.addEventListener('DOMContentLoaded', function() {
         modalImage.style.maxHeight = '';
         modalImage.style.objectFit = '';
 
+        // 更新图片计数器
+        const imageCounter = document.getElementById('imageCounter');
+        if (imageCounter) {
+            // 确保 currentImageIndex 是有效的
+            if (currentImageList.length > 0 && currentImageIndex >= 0 && currentImageIndex < currentImageList.length) {
+                imageCounter.textContent = `${currentImageIndex + 1} / ${currentImageList.length}`;
+                imageCounter.style.display = 'block';
+            } else {
+                imageCounter.style.display = 'none';
+            }
+        }
+
         // 更新导航按钮状态
         if (prevImageBtn && nextImageBtn) {
             // 只要有图片列表，就显示导航按钮（即使只有一张，也保持显示，与视频播放器一致）
