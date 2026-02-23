@@ -25,6 +25,9 @@
     padding: 10px 5px; /* Space for shadows */
     width: 100%;
     
+    /* Scroll snap for better alignment */
+    scroll-snap-type: x mandatory;
+    
     /* Hide scrollbar */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
@@ -36,6 +39,7 @@
 
 .video-card {
     flex: 0 0 300px; /* Fixed width for slider items */
+    scroll-snap-align: center;
     background: white;
     border-radius: 12px;
     overflow: hidden;
@@ -49,6 +53,7 @@
 /* Style for AI cards inside video track */
 .video-track .ai-card {
     flex: 0 0 280px; /* Fixed width for slider items */
+    scroll-snap-align: center;
     background: white;
     border-radius: 12px;
     overflow: hidden;
@@ -277,8 +282,45 @@
     border-bottom: 2px solid #fff0f5;
 }
 
-/* Marquee Scrolling Styles */
-.marquee-container {
+/* AI Page Compact Slider - Fix for split layout */
+.ai-split-section .horizontal-slider-container {
+    padding: 0 40px; /* Reduce horizontal padding to fit content better */
+    width: 100%;
+    margin: 0; /* Remove auto margin */
+}
+
+.ai-split-section .nav-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ffdde5;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.15);
+}
+
+.ai-split-section .nav-arrow:hover {
+    transform: translateY(-50%) scale(1.1);
+    background: #fff;
+}
+
+.ai-split-section .nav-arrow.left-arrow {
+    left: 0;
+}
+
+.ai-split-section .nav-arrow.right-arrow {
+    right: 0;
+}
+
+/* Ensure video track uses full available width */
+.ai-split-section .video-track {
+    padding: 20px 5px; /* Adjust padding for shadows */
+    width: 100%;
+}
+
+/* Adjust card size slightly for better fit in split view */
+.ai-split-section .video-track .ai-card {
+    flex: 0 0 260px; /* Slightly smaller width */
+}
     width: 100%;
     overflow: hidden;
     white-space: nowrap;
