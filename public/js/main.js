@@ -733,15 +733,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `}).join('');
             };
 
-            const addVideoBtnHtml = isAdminUser ? `
-                <div class="video-card add-work-card" onclick="window.openQuickUpload('dance', 'video/*')" style="border: 2px dashed #ffb7c5; background: #fff0f5; display: flex; align-items: center; justify-content: center; min-height: 250px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 40px; color: #ff6b9d; line-height: 1;">+</div>
-                        <div style="color: #ff6b9d; font-weight: bold; margin-top: 10px;">上传新作品</div>
-                    </div>
-                </div>
-            ` : '';
-
             let html = '';
             
             // 统一使用横向滚动布局
@@ -752,10 +743,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button class="nav-arrow left-arrow" id="sliderLeftBtn">❮</button>
                     <div class="video-track" id="videoSliderTrack">
                         ${cardsHtml}
-                        ${addVideoBtnHtml}
                     </div>
                     <button class="nav-arrow right-arrow" id="sliderRightBtn">❯</button>
                 </div>
+                
+                ${isAdminUser ? `
+                <div class="section-footer-action" style="text-align: center; margin-top: 30px;">
+                    <button class="go-upload-btn" onclick="window.openQuickUpload('dance', 'video/*')">上传新作品</button>
+                </div>
+                ` : ''}
             </div>
             `;
 
