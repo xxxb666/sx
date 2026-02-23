@@ -109,8 +109,8 @@
 .video-player-container {
     width: auto !important;
     height: auto !important;
-    max-width: 75% !important; /* 限制最大宽度，手机/平板尺寸 */
-    max-height: 75vh !important; /* 限制最大高度，留出更多空间 */
+    max-width: 60% !important; /* 限制最大宽度，手机/平板尺寸 */
+    max-height: 60vh !important; /* 限制最大高度，留出更多空间 */
     display: flex !important;
     justify-content: center;
     align-items: center;
