@@ -507,6 +507,7 @@
     text-align: center;
     width: 100%;
     color: #666;
+    padding-bottom: 80px; /* Move visual center up */
 }
 
 .empty-state p {
