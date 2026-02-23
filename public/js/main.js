@@ -740,11 +740,9 @@ document.addEventListener('DOMContentLoaded', function() {
             html = `
             <div class="dance-page">
                 <div class="horizontal-slider-container">
-                    <button class="nav-arrow left-arrow" id="sliderLeftBtn">❮</button>
                     <div class="video-track" id="videoSliderTrack">
                         ${cardsHtml}
                     </div>
-                    <button class="nav-arrow right-arrow" id="sliderRightBtn">❯</button>
                 </div>
                 
                 ${isAdminUser ? `
@@ -757,21 +755,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             detailContent.innerHTML = html;
             
-            // 绑定滚动按钮事件
+            // 绑定滚动按钮事件 - 已移除箭头
             const track = document.getElementById('videoSliderTrack');
-            const leftBtn = document.getElementById('sliderLeftBtn');
-            const rightBtn = document.getElementById('sliderRightBtn');
             
-            if (track && leftBtn && rightBtn) {
-                leftBtn.addEventListener('click', () => {
-                    track.scrollBy({ left: -320, behavior: 'smooth' });
-                });
-                
-                rightBtn.addEventListener('click', () => {
-                    track.scrollBy({ left: 320, behavior: 'smooth' });
-                });
-            }
-
             initVideoCards();
 
             // 绑定删除按钮事件（仅管理员）
@@ -1145,11 +1131,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 使用横向滚动布局 (Horizontal Slider)
                 html += `
                     <div class="horizontal-slider-container">
-                        <button class="nav-arrow left-arrow" id="aiVideoLeftBtn">❮</button>
                         <div class="video-track" id="aiVideoTrack">
                             ${videos.map(renderCard).join('')}
                         </div>
-                        <button class="nav-arrow right-arrow" id="aiVideoRightBtn">❯</button>
                     </div>
                 `;
             } else {
@@ -1208,8 +1192,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             detailContent.innerHTML = html;
             
-            // 绑定 AI 视频横向滚动按钮事件
+            // 绑定 AI 视频横向滚动按钮事件 - 已移除箭头
             const aiTrack = document.getElementById('aiVideoTrack');
+            
+            /*
             const aiLeftBtn = document.getElementById('aiVideoLeftBtn');
             const aiRightBtn = document.getElementById('aiVideoRightBtn');
             
@@ -1228,6 +1214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     aiTrack.scrollBy({ left: 300, behavior: 'smooth' });
                 });
             }
+            */
         } catch (error) {
             console.error('加载AI作品失败:', error);
             detailContent.innerHTML = `
