@@ -628,28 +628,30 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
+    width: 60px; /* Match video-nav.css */
+    height: 60px; /* Match video-nav.css */
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    background: rgba(255, 107, 157, 0.4); /* Match video-nav.css */
     color: white;
-    font-size: 24px;
+    font-size: 28px; /* Match video-nav.css */
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    border: none; /* Match video-nav.css */
+    box-shadow: none; /* Match video-nav.css */
     cursor: pointer;
     z-index: 2002; /* Higher than overlay content */
     transition: all 0.3s ease;
     padding: 0; /* Reset padding */
+    backdrop-filter: blur(5px); /* Match video-nav.css */
 }
 
 .video-player-overlay .nav-btn:hover,
 .image-modal .nav-btn:hover {
+    background: rgba(255, 107, 157, 0.9); /* Match video-nav.css hover */
     transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
-    border-color: white;
+    box-shadow: 0 0 15px rgba(255, 107, 157, 0.5); /* Match video-nav.css hover */
+    border-color: transparent;
 }
 
 .video-player-overlay .nav-btn.prev-btn,

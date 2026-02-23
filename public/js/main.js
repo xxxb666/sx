@@ -1343,7 +1343,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 更新导航按钮状态
         if (prevImageBtn && nextImageBtn) {
-            if (currentImageList.length > 1) {
+            // 只要有图片列表，就显示导航按钮（即使只有一张，也保持显示，与视频播放器一致）
+            if (currentImageList.length > 0) {
                 prevImageBtn.style.display = 'flex';
                 nextImageBtn.style.display = 'flex';
             } else {
