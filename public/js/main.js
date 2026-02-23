@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('%c 当前版本: v1.0.5 (新增视频播放器内直接上传功能) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
+    console.log('%c 当前版本: v1.0.6 (优化AI视频上传按钮文案) ', 'background: #ff6b9d; color: #fff; padding: 4px; border-radius: 4px;');
     
     const pages = document.querySelectorAll('.page');
     const navBtns = document.querySelectorAll('.nav-btn');
@@ -1089,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                 <div class="section-footer-action">
                     <button class="section-footer-add-btn" onclick="window.openQuickUpload('ai', 'video/*')">
-                        <span>🎬</span> 继续上传视频
+                        <span>🎬</span> 上传视频
                     </button>
                 </div>`;
             }
