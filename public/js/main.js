@@ -1391,10 +1391,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (honorData.length === 0) {
                 detailContent.innerHTML = `
-                    <div class="honor-page" style="width: 100%; height: calc(100vh - 120px); display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <div class="empty-state" style="text-align: center;">
-                            <p style="color: #ff6b9d; font-size: 24px; font-weight: bold; margin-bottom: 20px;">暂无荣誉照片</p>
-                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'honor\', \'image/*\')" style="background: #ff6b9d; color: white; border-radius: 50px; padding: 12px 30px; border: none; font-size: 16px;">去上传作品</button>' : ''}
+                    <div class="honor-page">
+                        <div class="empty-state">
+                            <p>暂无荣誉照片</p>
+                            ${isAdminUser ? '<button class="go-upload-btn" onclick="window.openQuickUpload(\'honor\', \'image/*\')">去上传作品</button>' : ''}
                         </div>
                     </div>
                 `;

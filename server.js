@@ -5,6 +5,13 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('ffmpeg-static');
+const ffprobePath = require('ffprobe-static');
+
+// 配置 ffmpeg 和 ffprobe 路径
+ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath.path);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -270,10 +277,63 @@ app.post('/api/upload/avatar', authenticateToken, avatarUpload, (req, res) => {
     }
 });
 
+// 视频压缩辅助函数
+const compressVideo = (inputPath, outputPath, targetSizeMB) => {
+    return new Promise((resolve, reject) => {
+        // 获取视频元数据
+        ffmpeg.ffprobe(inputPath, (err, metadata) => {
+            if (err) return reject(err);
+            
+            const duration = metadata.format.duration;
+            if (!duration) return reject(new Error('无法获取视频时长'));
+            
+            // 计算目标比特率 (bits/s)
+            // 目标大小 (bits) = 时长 (s) * (视频码率 + 音频码率)
+            // 音频码率假设为 128k (128000 bits/s)
+            const targetSizeBits = targetSizeMB * 8 * 1024 * 1024;
+            const audioBitrate = 128000;
+            
+            // 计算视频码率 = (总大小 / 时长) - 音频码率
+            let videoBitrate = Math.floor((targetSizeBits / duration) - audioBitrate);
+            
+            // 设置最小视频码率保护 (例如 500k)，避免画质过差
+            // 如果计算出的码率太低，可能无法压缩到目标大小，但至少保证能看
+            if (videoBitrate < 500000) {
+                console.warn(`计算出的码率 (${Math.round(videoBitrate/1000)}k) 过低，使用最低码率 500k`);
+                videoBitrate = 500000;
+            }
+            
+            console.log(`开始压缩视频: 时长=${duration}s, 目标=${targetSizeMB}MB, 视频码率=${Math.round(videoBitrate/1000)}k`);
+
+            ffmpeg(inputPath)
+                .output(outputPath)
+                .videoCodec('libx264')
+                .audioCodec('aac')
+                .audioBitrate('128k')
+                .videoBitrate(Math.round(videoBitrate / 1000) + 'k') // fluent-ffmpeg 接受 '1000k' 格式
+                .outputOptions([
+                    '-preset fast', // 快速编码预设
+                    '-movflags +faststart', // 使得视频可以在网页上边下边播
+                    '-crf 23' // 配合 bitrate 使用，限制最大质量开销，也可以只用 bitrate
+                ])
+                // 注意：指定了 bitrate 后 CRF 可能被忽略或作为上限，这里主要依赖 bitrate
+                .on('end', () => {
+                    console.log('视频压缩完成');
+                    resolve();
+                })
+                .on('error', (err) => {
+                    console.error('视频压缩出错:', err);
+                    reject(err);
+                })
+                .run();
+        });
+    });
+};
+
 // 上传作品
 // 支持上传文件和封面图
 // 使用自定义中间件处理上传错误
-app.post('/api/upload/:category', authenticateToken, uploadMiddleware, (req, res) => {
+app.post('/api/upload/:category', authenticateToken, uploadMiddleware, async (req, res) => {
     try {
         const { category } = req.params;
         const { title, description, width, height } = req.body;
@@ -282,8 +342,44 @@ app.post('/api/upload/:category', authenticateToken, uploadMiddleware, (req, res
             return res.status(400).json({ success: false, message: '没有上传文件' });
         }
 
-        const file = req.files['file'][0];
+        let file = req.files['file'][0];
         const cover = req.files['cover'] ? req.files['cover'][0] : null;
+
+        // --- 视频压缩逻辑 ---
+        // 如果是视频文件且大于 100MB，则自动压缩
+        const MAX_SIZE_MB = 100;
+        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+        if (file.mimetype.startsWith('video/') && file.size > MAX_SIZE_BYTES) {
+            console.log(`检测到大视频文件 (${(file.size / 1024 / 1024).toFixed(2)}MB)，开始自动压缩...`);
+            
+            const tempOutputPath = file.path + '.compressed.mp4';
+            
+            try {
+                // 执行压缩
+                await compressVideo(file.path, tempOutputPath, MAX_SIZE_MB);
+                
+                // 压缩成功，替换原文件
+                // 1. 删除原文件
+                fs.unlinkSync(file.path);
+                // 2. 重命名压缩后的文件为原文件名
+                fs.renameSync(tempOutputPath, file.path);
+                
+                // 3. 更新 file 对象的大小信息
+                const newStats = fs.statSync(file.path);
+                file.size = newStats.size;
+                console.log(`视频压缩并替换成功，新大小: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+                
+            } catch (compressErr) {
+                console.error('自动压缩失败，将使用原文件:', compressErr);
+                // 如果压缩失败，尝试删除临时文件（如果存在）
+                if (fs.existsSync(tempOutputPath)) {
+                    fs.unlinkSync(tempOutputPath);
+                }
+                // 继续使用原文件，不阻断上传流程
+            }
+        }
+        // -------------------
 
         if (!title) {
             // 清理已上传的文件

@@ -321,6 +321,9 @@
 .ai-split-section .video-track .ai-card {
     flex: 0 0 260px; /* Slightly smaller width */
 }
+
+/* 跑马灯效果样式 */
+.marquee-container {
     width: 100%;
     overflow: hidden;
     white-space: nowrap;
@@ -493,3 +496,51 @@
 .hidden-on-desktop {
     display: none !important;
 }
+
+/* Empty State Styles - Centered and Pink Button */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    width: 100%;
+    color: #666;
+}
+
+.empty-state p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #888;
+}
+
+.go-upload-btn {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.go-upload-btn:hover {
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.go-upload-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+}
+
+
