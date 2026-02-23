@@ -46,8 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // 检查是否溢出屏幕
             const rect = el.getBoundingClientRect();
             
-            // 跳过 .ai-thumbnail 中的图片，因为它们由 CSS grid 和 aspect-ratio 控制
+            // 跳过 .ai-thumbnail 中的图片，因为它们由CSS grid 和 aspect-ratio 控制
             if (el.closest('.ai-thumbnail')) return;
+
+            // 跳过图片模态框中的图片，因为它们由CSS控制
+            if (el.closest('.image-modal')) return;
 
             if (rect.width > screenWidth) {
                 el.style.maxWidth = '100%';
@@ -56,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('强制调整过大元素:', el);
             }
             
-            // 特别针对视频播放器和模态框
-            if (el.closest('.video-player-container') || el.closest('.image-modal')) {
+            // 特别针对视频播放器 (图片模态框由CSS控制，不再此处强制覆盖)
+            if (el.closest('.video-player-container')) {
                 el.style.maxWidth = '100%';
                 el.style.maxHeight = '60vh'; // 稍微放松一点，但在 style.css 中有更严格的限制
                 el.style.objectFit = 'contain';
@@ -1297,9 +1300,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function showImageModal(imageSrc) {
         modalImage.src = imageSrc;
         imageModal.style.display = 'flex';
-        modalImage.style.maxWidth = '100%';
-        modalImage.style.maxHeight = '70vh';
-        modalImage.style.objectFit = 'contain';
+        // Remove inline styles that might conflict with CSS
+        modalImage.style.maxWidth = '';
+        modalImage.style.maxHeight = '';
+        modalImage.style.objectFit = '';
 
         // 更新导航按钮状态
         if (prevImageBtn && nextImageBtn) {
