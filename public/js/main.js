@@ -1166,10 +1166,14 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             if (videos.length > 0) {
-                // 使用宽屏网格布局
+                // 使用横向滚动布局 (Horizontal Slider)
                 html += `
-                    <div class="ai-grid ai-grid-landscape">
-                        ${videos.map(renderCard).join('')}
+                    <div class="horizontal-slider-container">
+                        <button class="nav-arrow left-arrow" id="aiVideoLeftBtn">❮</button>
+                        <div class="video-track" id="aiVideoTrack">
+                            ${videos.map(renderCard).join('')}
+                        </div>
+                        <button class="nav-arrow right-arrow" id="aiVideoRightBtn">❯</button>
                     </div>
                 `;
             } else {
@@ -1227,7 +1231,27 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
 
             detailContent.innerHTML = html;
-            // initAICards(); // 已移除，改为全局事件委托
+            
+            // 绑定 AI 视频横向滚动按钮事件
+            const aiTrack = document.getElementById('aiVideoTrack');
+            const aiLeftBtn = document.getElementById('aiVideoLeftBtn');
+            const aiRightBtn = document.getElementById('aiVideoRightBtn');
+            
+            if (aiTrack && aiLeftBtn && aiRightBtn) {
+                // 如果没有内容溢出，可以隐藏按钮（可选优化）
+                if (aiTrack.scrollWidth <= aiTrack.clientWidth) {
+                    aiLeftBtn.style.display = 'none';
+                    aiRightBtn.style.display = 'none';
+                }
+                
+                aiLeftBtn.addEventListener('click', () => {
+                    aiTrack.scrollBy({ left: -300, behavior: 'smooth' });
+                });
+                
+                aiRightBtn.addEventListener('click', () => {
+                    aiTrack.scrollBy({ left: 300, behavior: 'smooth' });
+                });
+            }
         } catch (error) {
             console.error('加载AI作品失败:', error);
             detailContent.innerHTML = `
