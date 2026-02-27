@@ -105,7 +105,7 @@ button {
     position: relative;
     z-index: 10;
     background: rgba(255, 255, 255, 0.9);
-    padding: 50px 70px;
+    padding: 30px 40px;
     border-radius: 30px;
     box-shadow: 0 15px 40px rgba(255, 105, 180, 0.2);
     backdrop-filter: blur(10px);
@@ -114,7 +114,7 @@ button {
 }
 
 .cover-avatar {
-    font-size: 70px;
+    font-size: clamp(40px, 8vw, 60px);
     margin-bottom: 25px;
     animation: bounce 2s infinite;
     filter: drop-shadow(0 4px 6px rgba(255, 105, 180, 0.3));
@@ -126,7 +126,7 @@ button {
 }
 
 .cover-title {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 5vw, 2.8rem);
     color: #ff4081; /* Pink */
     margin-bottom: 20px;
     background: linear-gradient(45deg, #ff80ab, #ff4081); /* Brighter pink gradient */
@@ -140,7 +140,7 @@ button {
 }
 
 .cover-subtitle {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
     color: #ff80ab; /* Softer pink */
     margin-bottom: 35px;
     font-weight: 700; /* Bold */
@@ -153,8 +153,8 @@ button {
     background: linear-gradient(90deg, #ff80ab, #ff4081);
     color: white;
     border: none;
-    padding: 14px 45px;
-    font-size: 1.2rem;
+    padding: 12px 28px;
+    font-size: 1rem;
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(255, 64, 129, 0.3);
