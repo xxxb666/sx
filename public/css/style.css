@@ -298,7 +298,8 @@ button {
 }
 
 /* Responsive adjustments */
-@media (max-width: 900px) {
+/* Keep 3 columns on typical laptops/tablets; switch to 2 only below 768px */
+@media (max-width: 768px) {
     .cards-container {
         max-width: 700px;
     }
