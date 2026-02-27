@@ -121,6 +121,7 @@
 .intro-video-container {
     width: 100%;
     height: 100%;
+    cursor: pointer; /* Indicate clickable to enlarge */
 }
 
 .intro-video-container video {

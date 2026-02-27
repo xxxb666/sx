@@ -234,6 +234,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 自我介绍视频点击放大到播放器
+    (function bindIntroVideoEnlarge() {
+        const introVideoContainer = document.getElementById('introVideoContainer');
+        const introVideoEl = document.getElementById('introVideo');
+        if (introVideoContainer && introVideoEl) {
+            introVideoContainer.style.cursor = 'pointer';
+            const openPlayer = (e) => {
+                e.stopPropagation();
+                try {
+                    const src = introVideoEl.currentSrc || introVideoEl.getAttribute('src');
+                    if (src && typeof window.showVideoPlayer === 'function') {
+                        // 暂停内联播放后在浮层播放
+                        try { introVideoEl.pause(); } catch(_) {}
+                        window.showVideoPlayer(src);
+                    }
+                } catch (_) {}
+            };
+            introVideoContainer.addEventListener('click', openPlayer);
+            introVideoEl.addEventListener('click', openPlayer);
+        }
+    })();
+
     // 封面页鼠标拖尾效果
     const coverPage = document.getElementById('page0');
     const trailCanvas = document.getElementById('trail-canvas');
