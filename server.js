@@ -5,13 +5,35 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('ffmpeg-static');
-const ffprobePath = require('ffprobe-static');
+// 可选的 FFmpeg 依赖（在部分平台可能不可用，导致进程启动失败从而产生 502）
+let ffmpeg;
+let ffmpegPath;
+let ffprobePath;
+const ENABLE_FFMPEG = process.env.ENABLE_FFMPEG !== 'false';
+try {
+    if (ENABLE_FFMPEG) {
+        ffmpeg = require('fluent-ffmpeg');
+        ffmpegPath = require('ffmpeg-static');
+        ffprobePath = require('ffprobe-static');
+    }
+} catch (e) {
+    console.warn('FFmpeg 依赖加载失败，已自动禁用视频压缩功能。原因：', e.message);
+    ffmpeg = null;
+}
 
-// 配置 ffmpeg 和 ffprobe 路径
-ffmpeg.setFfmpegPath(ffmpegPath);
-ffmpeg.setFfprobePath(ffprobePath.path);
+// 配置 ffmpeg 和 ffprobe 路径（可选）
+if (ffmpeg && ffmpegPath && ffprobePath && ffprobePath.path) {
+    try {
+        ffmpeg.setFfmpegPath(ffmpegPath);
+        ffmpeg.setFfprobePath(ffprobePath.path);
+        console.log('FFmpeg 已启用');
+    } catch (e) {
+        console.warn('FFmpeg 路径设置失败，禁用视频压缩：', e.message);
+        ffmpeg = null;
+    }
+} else {
+    console.log('FFmpeg 未启用（设置 ENABLE_FFMPEG=false 或依赖不可用）');
+}
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -320,6 +342,9 @@ app.post('/api/upload/intro-video', authenticateToken, introVideoUpload, (req, r
 
 // 视频压缩辅助函数
 const compressVideo = (inputPath, outputPath, targetSizeMB) => {
+    if (!ffmpeg) {
+        return Promise.reject(new Error('FFmpeg 未启用'));
+    }
     return new Promise((resolve, reject) => {
         // 获取视频元数据
         ffmpeg.ffprobe(inputPath, (err, metadata) => {
@@ -391,7 +416,7 @@ app.post('/api/upload/:category', authenticateToken, uploadMiddleware, async (re
         const MAX_SIZE_MB = 100;
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-        if (file.mimetype.startsWith('video/') && file.size > MAX_SIZE_BYTES) {
+        if (ffmpeg && file.mimetype.startsWith('video/') && file.size > MAX_SIZE_BYTES) {
             console.log(`检测到大视频文件 (${(file.size / 1024 / 1024).toFixed(2)}MB)，开始自动压缩...`);
             
             const tempOutputPath = file.path + '.compressed.mp4';
