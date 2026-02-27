@@ -215,6 +215,17 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* Ensure emoji icon is perfectly centered inside the circle */
+.about-avatar.small .avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
+    font-size: 28px; /* balanced size for 60px circle */
+    background: #ffffff;
+}
+
 .about-info-compact {
     flex: 1;
     text-align: left;
