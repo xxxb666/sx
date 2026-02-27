@@ -9,8 +9,10 @@
     color: #880e4f; /* Deep crisp purple/pink for text */
     /* display: flex; REMOVED - Controlled by .active class */
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -34,7 +36,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
