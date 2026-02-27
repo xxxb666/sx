@@ -95,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
             videoPlayer.style.display = 'none';
             videoElement.pause();
             videoElement.src = '';
+            // 恢复页面滚动
+            document.body.style.overflow = '';
             currentVideoIndex = -1; // 重置索引
         });
     }
@@ -212,6 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 videoPlayer.style.display = 'none';
                 videoElement.pause();
                 videoElement.src = '';
+                // 恢复页面滚动
+                document.body.style.overflow = '';
             }
         });
     }
@@ -992,10 +996,12 @@ document.addEventListener('DOMContentLoaded', function() {
         videoElement.muted = false;
         videoElement.volume = 1.0;
         
-        // 强制设置最大尺寸，防止溢出屏幕
-        videoElement.style.maxWidth = '100%';
-        videoElement.style.maxHeight = '50vh';
+        // 强制设置更大的尺寸，聚焦观看
+        videoElement.style.maxWidth = '90%';
+        videoElement.style.maxHeight = '80vh';
         videoElement.style.objectFit = 'contain';
+        // 打开浮层时禁用背景滚动
+        document.body.style.overflow = 'hidden';
 
         // 检查管理员权限显示删除按钮
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
