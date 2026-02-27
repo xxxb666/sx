@@ -318,8 +318,8 @@ button {
 }
 
 .card-icon {
-    font-size: 56px;
-    margin-bottom: 20px;
+    font-size: clamp(36px, 5vw, 44px);
+    margin-bottom: 14px;
     filter: drop-shadow(0 4px 6px rgba(255, 105, 180, 0.2));
     transition: transform 0.3s ease;
 }
