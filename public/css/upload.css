@@ -15,11 +15,11 @@
     gap: 5px;
     background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
     color: white;
-    padding: 6px 15px;
-    border-radius: 15px;
+    padding: 8px 18px; /* Slightly larger */
+    border-radius: 20px;
     border: none;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 800; /* Much bolder */
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
@@ -28,6 +28,7 @@
 .upload-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff4081 100%);
 }
 
 .upload-icon {
@@ -50,25 +51,28 @@
 }
 
 .upload-tab {
-    padding: 4px 10px;
-    background: white;
-    border: 1px solid #ffe4ec;
-    border-radius: 10px;
-    color: #ff6b9d;
-    font-size: 11px;
+    padding: 8px 15px;
+    background: #fff0f5; /* Light pink background */
+    border: 1px solid #ffbcd1;
+    border-radius: 20px;
+    color: #ec407a;
+    font-size: 13px;
+    font-weight: 800; /* Much bolder */
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .upload-tab:hover {
-    background: #fff5f8;
+    background: #ffcce0;
     border-color: #ff8fb3;
+    color: #d81b60;
 }
 
 .upload-tab.active {
-    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff4081 100%);
     color: white;
-    border-color: #ff6b9d;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
 
 .upload-form {

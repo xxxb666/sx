@@ -3,31 +3,30 @@
    Intro Page (Page 2) Styling
    ----------------------------------------------------------- */
 .intro-page {
-    /* Pink Vintage Style */
-    background-color: #fff0f5;
-    background-image: repeating-linear-gradient(
-        45deg,
-        rgba(255, 182, 193, 0.2) 0px,
-        rgba(255, 182, 193, 0.2) 2px,
-        transparent 2px,
-        transparent 4px
-    ), radial-gradient(circle at center, #fff5f8 0%, #ffe4e1 100%);
-    color: #4a2c36; /* Deep plum text for pink vintage feel */
-    display: flex;
+    /* Fresh Pink Style - Cleaner, brighter pinks */
+    background-color: #fff0f5; /* LavenderBlush base */
+    background-image: linear-gradient(135deg, #fff0f5 0%, #fff5f8 100%); /* Subtle, clean gradient */
+    color: #880e4f; /* Deep crisp purple/pink for text */
+    /* display: flex; REMOVED - Controlled by .active class */
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
     position: relative;
 }
 
-/* Add a vignette effect for worn edges */
+/* Ensure it's hidden by default (overriding any potential specificity issues) */
+.intro-page:not(.active) {
+    display: none !important;
+}
+
+/* Only display flex when active */
+.intro-page.active {
+    display: flex !important;
+}
+
+/* Removed vignette effect for cleaner look */
 .intro-page::after {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle, transparent 60%, rgba(219, 112, 147, 0.2) 100%);
-    pointer-events: none;
-    z-index: 1;
+    display: none;
 }
 
 .intro-page-content {
@@ -48,15 +47,15 @@
 .intro-header {
     position: absolute;
     top: 20px;
-    right: 20px;
+    left: 20px; /* Moved to left */
     z-index: 100;
 }
 
 .skip-btn {
-    background: rgba(255, 105, 180, 0.1);
-    border: 1px solid rgba(255, 105, 180, 0.3);
-    color: #d81b60;
-    padding: 10px 20px;
+    background: #ff80ab; /* Solid pink */
+    border: none;
+    color: white;
+    padding: 12px 30px;
     border-radius: 30px;
     cursor: pointer;
     font-size: 16px;
@@ -65,13 +64,15 @@
     gap: 8px;
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(255, 105, 180, 0.1);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+    font-weight: 800; /* Much bolder */
 }
 
 .skip-btn:hover {
-    background: rgba(255, 105, 180, 0.2);
-    transform: translateX(5px);
-    color: #c2185b;
+    background: #ff4081;
+    transform: translateY(-3px) scale(1.05);
+    color: white;
+    box-shadow: 0 8px 20px rgba(255, 64, 129, 0.4);
 }
 
 .skip-icon {
@@ -83,17 +84,36 @@
     width: 100%;
     max-width: 900px; /* Cinema width */
     aspect-ratio: 16/9;
-    background: #000; /* Video area stays black for contrast */
-    border-radius: 4px;
+    background: #fff; /* Pure white background for cleanliness */
+    border-radius: 8px; /* Softer corners */
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(74, 59, 42, 0.4);
+    box-shadow: 0 10px 40px rgba(255, 182, 193, 0.4); /* Softer pink shadow */
     margin-bottom: 30px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 8px solid #fff;
-    outline: 1px solid #ddd;
+    border: 4px solid #fff; /* Thinner white border */
+    
+    /* Animation: Hidden initially, then fades in */
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* When intro page is active, trigger animation with delay */
+.intro-page.active .intro-video-wrapper {
+    animation: fadeInUp 0.8s ease-out 0.8s forwards; /* 0.8s delay after profile card */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .intro-video-container {
@@ -114,13 +134,17 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: rgba(255,255,255,0.8);
+    color: #ec407a; /* Brighter pink */
+    background: linear-gradient(to bottom, #fff0f5 0%, #ffc1e3 100%); /* Fresh pink gradient */
+    width: 100%;
+    height: 100%;
 }
 
 .placeholder-icon {
     font-size: 60px;
     margin-bottom: 20px;
     animation: wave 2s infinite;
+    filter: drop-shadow(0 2px 4px rgba(255, 105, 180, 0.2));
 }
 
 @keyframes wave {
@@ -136,22 +160,23 @@
 }
 
 .intro-admin-controls .change-avatar-btn {
-    background: linear-gradient(135deg, #8d6e63, #5d4037); /* Vintage leather colors */
-    color: #fff4e6;
-    border: 1px solid #4e342e;
+    background: linear-gradient(135deg, #ff8fb3, #ff6b9d); /* Pink gradient */
+    color: #fff;
+    border: 1px solid #ffbcd1;
     padding: 10px 25px;
-    border-radius: 4px;
+    border-radius: 25px; /* Rounded */
     cursor: pointer;
     font-size: 15px;
-    box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
     transition: transform 0.2s;
-    font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+    font-family: 'YouYuan', 'Microsoft YaHei', sans-serif;
+    font-weight: 800; /* Much bolder */
     letter-spacing: 1px;
 }
 
 .intro-admin-controls .change-avatar-btn:hover {
     transform: translateY(-2px);
-    background: linear-gradient(135deg, #a1887f, #6d4c41);
+    background: linear-gradient(135deg, #ff6b9d, #ff4081);
 }
 
 /* Profile Card (Compact) */
@@ -159,16 +184,16 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.9); /* Cleaner white */
     padding: 20px 30px;
-    border-radius: 2px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(74, 59, 42, 0.2);
+    border-radius: 12px; /* Softer corners */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 182, 193, 0.5); /* Pink border */
     max-width: 600px;
     width: 90%;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    /* Paper texture effect */
-    background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.02));
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.1);
+    margin-bottom: 30px; /* Added spacing below profile card */
+    /* Removed dirty gradient */
 }
 
 .about-avatar.small {
@@ -194,25 +219,30 @@
 }
 
 .about-info-compact .nickname {
-    font-size: 20px;
+    font-size: 24px;
     margin: 0 0 5px 0;
-    color: #3e2723;
-    font-family: 'Georgia', serif;
+    color: #880e4f; /* Deep pink/purple */
+    font-family: 'ZCOOL KuaiLe', 'YouYuan', 'Microsoft YaHei', sans-serif;
+    font-weight: 400; /* Font itself is bold */
 }
 
 .about-info-compact .motto {
-    font-size: 14px;
-    color: #5d4037;
+    font-size: 15px;
+    color: #ad1457; /* Pink */
     margin: 0;
-    font-style: italic;
-    font-family: 'Times New Roman', serif;
+    font-family: 'ZCOOL KuaiLe', 'YouYuan', 'Microsoft YaHei', sans-serif;
 }
 
 .about-info-compact .about-desc {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #6d4c41;
-    line-height: 1.5;
+    margin-top: 15px;
+    font-size: 16px;
+    color: #c2185b; /* Medium pink */
+    line-height: 1.6;
+    background: #fff0f5; /* LavenderBlush background */
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px dashed #ff80ab;
+    font-family: 'ZCOOL KuaiLe', 'YouYuan', 'Microsoft YaHei', sans-serif;
 }
 
 /* Mini buttons */
@@ -228,22 +258,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #8d6e63;
+    background: #ff4081; /* Bright pink */
     color: white;
     border: 2px solid #fff;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(255, 64, 129, 0.3);
 }
 
 .save-profile-btn.mini {
     margin-top: 10px;
-    padding: 4px 12px;
-    font-size: 12px;
-    background: #5d4037;
+    padding: 6px 15px; /* Larger padding */
+    font-size: 13px;
+    background: #f06292; /* Light pink */
     color: #fff;
     border: none;
-    border-radius: 2px;
+    border-radius: 20px;
     cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'YouYuan', 'Microsoft YaHei', sans-serif;
+    font-weight: 800; /* Much bolder */
+    transition: background 0.2s;
+    box-shadow: 0 2px 5px rgba(255, 107, 157, 0.3);
+}
+
+.save-profile-btn.mini:hover {
+    background: #ec407a;
 }
 
 /* -----------------------------------------------------------
@@ -493,12 +531,12 @@
 
 .ai-info h3 {
     font-size: 14px;
-    color: #333;
+    color: #880e4f; /* Deep pink/purple */
     margin-bottom: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 600;
+    font-weight: 800; /* Much bolder */
 }
 
 .ai-info p {
@@ -519,7 +557,8 @@
     
     .intro-header {
         top: 10px;
-        right: 10px;
+        left: 10px; /* Keep on left for mobile */
+        right: auto;
     }
     
     .skip-btn {
@@ -580,6 +619,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
+    font-weight: 800; /* Much bolder */
 }
 
 .empty-state button:hover,

@@ -7,10 +7,11 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: rgba(255, 107, 157, 0.4); /* 半透明背景 */
+    background: rgba(255, 107, 157, 0.6); /* Slightly more opaque pink */
     color: white;
     border: none;
     font-size: 28px;
+    font-weight: 800; /* Much bolder */
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -21,7 +22,7 @@
 }
 
 .nav-btn:hover {
-    background: rgba(255, 107, 157, 0.9);
+    background: #ff4081; /* Solid pink on hover */
     transform: translateY(-50%) scale(1.1);
     box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
 }

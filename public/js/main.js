@@ -1112,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showImageModal(imageSrc);
     }
+    window.showImageAtIndex = showImageAtIndex;
 
     function showPdfViewer(pdfSrc) {
         pdfFrame.src = pdfSrc;
@@ -1605,7 +1606,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const enterSpaceBtn = document.getElementById('enterSpaceBtn');
     if (enterSpaceBtn) {
         enterSpaceBtn.addEventListener('click', function() {
-            window.switchPage('page2');
+            // 登录后的场景直接进入作品集首页（page1）
+            const isLoggedIn = typeof API !== 'undefined' && typeof API.isLoggedIn === 'function' ? API.isLoggedIn() : false;
+            const target = isLoggedIn ? 'page1' : 'page2';
+            window.switchPage(target);
         });
     }
 
@@ -1633,4 +1637,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初始化页面 - 默认显示封面页(page0)，不自动跳转
     // 用户需要点击"进入空间"按钮才能进入主页面
+
+    // 登录成功后从 login.html 返回时，自动进入作品集首页（跳过介绍页）
+    (function autoEnterAfterLogin() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const fromLogin = params.get('login_success') === '1';
+            const isLoggedIn = typeof API !== 'undefined' && typeof API.isLoggedIn === 'function' ? API.isLoggedIn() : false;
+            if (fromLogin || isLoggedIn) {
+                window.switchPage('page1');
+                // 清理 URL 中的参数
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        } catch (e) {
+            // 忽略容错
+        }
+    })();
 });

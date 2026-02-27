@@ -119,21 +119,28 @@
 }
 
 .btn-cancel {
-    padding: 8px 20px;
-    border: 1px solid #ffe4ec;
-    background: white;
-    color: #ff6b9d;
-    border-radius: 20px;
+    padding: 10px 24px;
+    border: 1px solid #ffbcd1;
+    background: #fff0f5; /* Light pink */
+    color: #ec407a;
+    border-radius: 25px;
+    font-weight: 800; /* Much bolder */
     cursor: pointer;
     transition: all 0.3s;
 }
 
+.btn-cancel:hover {
+    background: #ffcce0;
+    color: #d81b60;
+}
+
 .btn-confirm {
-    padding: 8px 25px;
+    padding: 10px 30px;
     background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
     color: white;
     border: none;
-    border-radius: 20px;
+    border-radius: 25px;
+    font-weight: 800; /* Much bolder */
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
     transition: all 0.3s;

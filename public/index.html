@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>徐小泡的专属空间</title>
-    <link rel="stylesheet" href="css/style.css?v=109">
-    <link rel="stylesheet" href="css/pages.css?v=109">
-    <link rel="stylesheet" href="css/upload.css?v=109">
-    <link rel="stylesheet" href="css/quick-upload.css?v=109">
-    <link rel="stylesheet" href="css/video-nav.css?v=109">
+    <!-- Google Fonts for Cute Rounded Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css?v=124">
+    <link rel="stylesheet" href="css/pages.css?v=124">
+    <link rel="stylesheet" href="css/upload.css?v=124">
+    <link rel="stylesheet" href="css/quick-upload.css?v=124">
+    <link rel="stylesheet" href="css/video-nav.css?v=124">
 </head>
 <body>
     <!-- 安全入口按钮 (原管理员入口，防屏蔽) -->
@@ -101,6 +106,23 @@
                     </button>
                 </div>
 
+                <!-- 个人信息卡片 (缩小版) - Moved to top -->
+                <div class="intro-profile-card">
+                    <div class="about-avatar small">
+                        <div class="avatar-placeholder">👧</div>
+                        <img id="avatarImg" src="" alt="头像" style="display: none;">
+                        <button class="change-avatar-btn mini" id="changeAvatarBtn">📷</button>
+                    </div>
+                    <div class="about-info-compact">
+                        <h3 class="nickname" contenteditable="true" id="nickname">徐小泡</h3>
+                        <p class="motto" contenteditable="true" id="motto">"每一个不曾起舞的日子，都是对生命的辜负"</p>
+                        <div class="about-desc">
+                            <p contenteditable="true" id="selfIntro">热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。</p>
+                        </div>
+                        <button class="save-profile-btn mini" id="saveProfileBtn">保存</button>
+                    </div>
+                </div>
+
                 <!-- 自我介绍视频区域 -->
                 <div class="intro-video-wrapper">
                     <div class="intro-video-container" id="introVideoContainer" style="display:none;">
@@ -121,23 +143,6 @@
                         <span>📹</span> 上传/更换自我介绍视频
                     </button>
                     <input type="file" id="introVideoInput" accept="video/*" style="display: none;">
-                </div>
-
-                <!-- 个人信息卡片 (缩小版) -->
-                <div class="intro-profile-card">
-                    <div class="about-avatar small">
-                        <div class="avatar-placeholder">👧</div>
-                        <img id="avatarImg" src="" alt="头像" style="display: none;">
-                        <button class="change-avatar-btn mini" id="changeAvatarBtn">📷</button>
-                    </div>
-                    <div class="about-info-compact">
-                        <h3 class="nickname" contenteditable="true" id="nickname">徐小泡</h3>
-                        <p class="motto" contenteditable="true" id="motto">"每一个不曾起舞的日子，都是对生命的辜负"</p>
-                        <div class="about-desc" style="display:none;">
-                            <p contenteditable="true" id="selfIntro">热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。</p>
-                        </div>
-                        <button class="save-profile-btn mini" id="saveProfileBtn">保存</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -297,11 +302,11 @@
     <!-- 旧管理员入口按钮已移除 -->
 
     <script src="js/mock-data.js"></script>
-    <script src="js/api.js?v=108"></script>
-    <script src="js/utils.js?v=108"></script>
-    <script src="js/admin.js?v=108"></script>
-    <script src="js/quick-upload.js?v=108"></script>
-    <script src="js/main.js?v=108"></script>
-    <script src="js/upload.js?v=108"></script>
+    <script src="js/api.js?v=109"></script>
+    <script src="js/utils.js?v=109"></script>
+    <script src="js/admin.js?v=109"></script>
+    <script src="js/quick-upload.js?v=109"></script>
+    <script src="js/main.js?v=109"></script>
+    <script src="js/upload.js?v=109"></script>
 </body>
 </html>
