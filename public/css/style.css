@@ -594,10 +594,11 @@ button {
 }
 
 .items-wrapper .ai-card,
-.items-wrapper .video-card {
+.items-wrapper .video-card,
+.items-wrapper .card-item {
     flex: 0 0 calc(33.333% - 14px); /* 3 items per row */
     max-width: calc(33.333% - 14px);
-    margin: 0; /* Override default margins if any */
+    margin: 0; 
     width: 100%;
 }
 

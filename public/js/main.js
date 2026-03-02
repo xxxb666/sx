@@ -741,19 +741,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 渲染单个卡片的函数
             const renderCard = (painting, index) => {
-                // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
                 return `
-                <div class="ai-card" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}" onclick="window.showImageAtIndex(${index})">
-                    <div class="ai-thumbnail">
-                        <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${painting.title}">
+                <div class="card-item" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}" onclick="window.showImageAtIndex(${index})">
+                    <div class="card-thumbnail">
+                        <img src="${imgSrc}" alt="${painting.title}">
                     </div>
-                    <div class="ai-info">
+                    <div class="card-info">
                         <h3>${painting.title}</h3>
                         <p>${painting.description || ''}</p>
                     </div>
                     ${isAdminUser ? `
-                    <button class="work-delete-btn" data-id="${painting.work_id}" data-category="painting">
+                    <button class="card-delete-btn" data-id="${painting.work_id}" data-category="painting">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -798,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 辅助函数：绑定删除事件
     function bindDeleteEvents(category, reloadFunc) {
-        document.querySelectorAll('.work-delete-btn, .video-delete-btn-card').forEach(btn => {
+        document.querySelectorAll('.card-delete-btn').forEach(btn => {
             // 移除旧的监听器（如果有）- 这里通过 cloneNode 简单处理，或者假设每次都是重新渲染
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
@@ -875,23 +874,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 渲染单个视频卡片的函数
             const renderVideoCard = (video, index) => {
-                // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
-                // 优先使用 coverUrl，如果没有则尝试拼接封面路径(兼容旧数据)
                 const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
                 
                 return `
-                <div class="video-card" data-id="${video.work_id}" data-video="${videoSrc}" onclick="window.playVideoAtIndex(${index})">
-                    <div class="video-thumbnail">
-                        ${coverSrc ? `<img src="${coverSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${video.title}">` : `<video muted preload="metadata" style="width:100%; height:100%; object-fit:contain;"><source src="${videoSrc}" type="video/mp4"></video>`}
-                        <div class="play-icon">▶</div>
+                <div class="card-item" data-id="${video.work_id}" data-video="${videoSrc}" onclick="window.playVideoAtIndex(${index})">
+                    <div class="card-thumbnail">
+                        ${coverSrc ? `<img src="${coverSrc}" alt="${video.title}">` : `<video muted preload="metadata"><source src="${videoSrc}" type="video/mp4"></video>`}
+                        <div class="card-play-icon">▶</div>
                     </div>
-                    <div class="video-info">
+                    <div class="card-info">
                         <h3>${video.title}</h3>
                         ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
                     </div>
                     ${isAdminUser ? `
-                    <button class="video-delete-btn-card" data-id="${video.work_id}" data-category="dance" style="position: absolute; top: 10px; right: 10px; background: rgba(255, 0, 0, 0.7); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                    <button class="card-delete-btn" data-id="${video.work_id}" data-category="dance">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1264,16 +1261,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 return `
-                    <div class="ai-card" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
-                        <div class="ai-thumbnail">
+                    <div class="card-item" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
+                        <div class="card-thumbnail">
                             ${mediaHtml}
+                            ${isVideo ? '<div class="card-play-icon">▶</div>' : ''}
                         </div>
-                        <div class="ai-info">
+                        <div class="card-info">
                             <h3>${ai.title}</h3>
                             ${ai.description && ai.description.trim() ? `<p>${ai.description}</p>` : ''}
                         </div>
                         ${isAdminUser ? `
-                        <button class="work-delete-btn" data-id="${ai.work_id}" data-category="ai">
+                        <button class="card-delete-btn" data-id="${ai.work_id}" data-category="ai">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 6h18"></path>
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1316,27 +1314,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.loadAIPage = loadAIPage;
 
-    // 全局事件委托：处理 AI 卡片点击
-    // 使用 body 上的事件委托，确保动态添加的元素也能响应点击
+    // 全局事件委托：处理作品卡片点击
     document.body.addEventListener('click', function(e) {
-        // 查找最近的 .ai-card 元素
-        const card = e.target.closest('.ai-card');
-        
-        // 如果没有点击 .ai-card，直接返回
+        const card = e.target.closest('.card-item');
         if (!card) return;
         
-        // 阻止默认行为和冒泡
+        // 如果点击的是删除按钮，不触发查看逻辑
+        if (e.target.closest('.card-delete-btn')) return;
+
         e.preventDefault();
         e.stopPropagation();
 
-        const type = card.getAttribute('data-type');
-        const content = card.getAttribute('data-content');
+        const type = card.getAttribute('data-type') || '';
+        const content = card.getAttribute('data-content') || card.getAttribute('data-video');
         const id = card.getAttribute('data-id');
 
-        console.log('AI Card Clicked (Delegated):', { type, content, id });
-
-        if (type && type.startsWith('image')) {
-            // 尝试查找索引
+        if (type.startsWith('image')) {
             if (id && currentImageList.length > 0) {
                 const index = currentImageList.findIndex(img => img.work_id == id);
                 if (index !== -1) {
@@ -1345,8 +1338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             showImageModal(content);
-        } else if (type && type.startsWith('video')) {
-            // 查找索引
+        } else if (type.startsWith('video') || card.hasAttribute('data-video')) {
             if (id && currentVideoList.length > 0) {
                 const index = currentVideoList.findIndex(v => v.work_id == id);
                 if (index !== -1) {
@@ -1356,26 +1348,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             showVideoPlayer(content);
-        } else if (type && (type.includes('pdf') || content.endsWith('.pdf'))) {
+        } else if (type.includes('pdf') || (content && content.endsWith('.pdf'))) {
             showPdfViewer(content);
         } else {
-            // 尝试作为图片打开，或者提示不支持
-            if (content.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            // 默认尝试作为图片或视频
+            if (content && content.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
                 showImageModal(content);
-            } else if (content.match(/\.(mp4|webm|mov)$/i)) {
-                // 尝试查找索引
-                if (id && currentVideoList.length > 0) {
-                    const index = currentVideoList.findIndex(v => v.work_id == id);
-                    if (index !== -1) {
-                        currentVideoIndex = index;
-                        playVideoAtIndex(index);
-                        return;
-                    }
-                }
+            } else if (content && content.match(/\.(mp4|webm|mov)$/i)) {
                 showVideoPlayer(content);
-            } else {
-                // 对于PPT等其他文件，新窗口打开
-                window.open(content, '_blank');
             }
         }
     });
@@ -1483,18 +1463,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 渲染卡片函数
             const renderCard = (honor, index) => {
-                // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
                 return `
-                <div class="ai-card honor-card" onclick="window.showImageAtIndex(${index})">
-                    <div class="ai-thumbnail">
+                <div class="card-item honor-card" onclick="window.showImageAtIndex(${index})">
+                    <div class="card-thumbnail">
                         <img src="${imgSrc}" alt="${honor.title}" loading="lazy">
                     </div>
-                    <div class="ai-info">
+                    <div class="card-info">
                         <h3>${honor.title}</h3>
                     </div>
                     ${isAdminUser ? `
-                    <button class="work-delete-btn" data-id="${honor.work_id}" data-category="honor">
+                    <button class="card-delete-btn" data-id="${honor.work_id}" data-category="honor">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1585,20 +1564,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 渲染卡片函数
             const renderCard = (ppt, index) => {
-                // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const imgSrc = ppt.fileUrl || ('/uploads/ppt/' + ppt.file_path);
                 
                 return `
-                <div class="ai-card ppt-card" onclick="window.showImageAtIndex(${index})">
-                    <div class="ai-thumbnail">
-                        <img src="${imgSrc}" style="width:100%; height:100%; object-fit:contain;" alt="${ppt.title || 'PPT作品'}">
+                <div class="card-item ppt-card" onclick="window.showImageAtIndex(${index})">
+                    <div class="card-thumbnail">
+                        <img src="${imgSrc}" alt="${ppt.title || 'PPT作品'}">
                     </div>
-                    <div class="ai-info">
+                    <div class="card-info">
                         <h3>${ppt.title || 'PPT作品'}</h3>
                         <p>${ppt.description || ''}</p>
                     </div>
                     ${isAdminUser ? `
-                    <button class="work-delete-btn" data-id="${ppt.work_id}" data-category="ppt">
+                    <button class="card-delete-btn" data-id="${ppt.work_id}" data-category="ppt">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
