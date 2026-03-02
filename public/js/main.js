@@ -580,16 +580,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 分页组件类
+    // 分页组件类 (实现 3 个一组的滑动效果)
     class PaginatedViewer {
         constructor(options) {
             this.data = options.data || [];
             this.containerId = options.containerId;
             this.renderItemCallback = options.renderItem;
-            this.itemsPerPage = options.itemsPerPage || 3;
-            this.currentPage = 0;
+            // 默认显示3个，但移动端可能显示1个
+            this.itemsPerPage = window.innerWidth <= 768 ? 1 : (options.itemsPerPage || 3);
+            this.currentIndex = 0; // 改为当前显示的第一个元素的索引
             this.onPageChange = options.onPageChange;
             
+            // 监听窗口大小变化，更新 itemsPerPage
+            window.addEventListener('resize', () => {
+                const newItemsPerPage = window.innerWidth <= 768 ? 1 : (options.itemsPerPage || 3);
+                if (newItemsPerPage !== this.itemsPerPage) {
+                    this.itemsPerPage = newItemsPerPage;
+                    // 确保索引不越界
+                    this.currentIndex = Math.min(this.currentIndex, Math.max(0, this.data.length - this.itemsPerPage));
+                    this.render();
+                }
+            });
+
             this.init();
         }
         
@@ -599,9 +611,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             container.innerHTML = `
                 <div class="paginated-container">
-                    <button class="pagination-btn prev-btn" id="${this.containerId}-prev" title="上一页">◀</button>
+                    <button class="pagination-btn prev-btn" id="${this.containerId}-prev" title="左移">◀</button>
                     <div class="items-wrapper" id="${this.containerId}-items"></div>
-                    <button class="pagination-btn next-btn" id="${this.containerId}-next" title="下一页">▶</button>
+                    <button class="pagination-btn next-btn" id="${this.containerId}-next" title="右移">▶</button>
                 </div>
             `;
             
@@ -611,19 +623,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             this.prevBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.prevPage();
+                this.prevSlide();
             });
             this.nextBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.nextPage();
+                this.nextSlide();
             });
             
             this.render();
         }
         
         render() {
-            const start = this.currentPage * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
+            if (this.data.length === 0) {
+                this.itemsContainer.innerHTML = '';
+                this.updateButtons();
+                return;
+            }
+
+            const start = this.currentIndex;
+            const end = Math.min(start + this.itemsPerPage, this.data.length);
             const currentItems = this.data.slice(start, end);
             
             this.itemsContainer.innerHTML = currentItems.map((item, index) => 
@@ -638,11 +656,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         updateButtons() {
-            this.prevBtn.disabled = this.currentPage === 0;
-            const maxPage = Math.ceil(this.data.length / this.itemsPerPage) - 1;
-            this.nextBtn.disabled = this.currentPage >= maxPage;
+            // 左边的是往左移，第一篇不能往左移
+            this.prevBtn.disabled = this.currentIndex === 0;
             
-            // 如果只有一页或没有数据，隐藏按钮
+            // 右边的是往右移，最后一篇不能往右移
+            // 这里的“最后一篇”指的是当最后一个元素已经显示在视口中时，不能再往右移
+            this.nextBtn.disabled = (this.currentIndex + this.itemsPerPage) >= this.data.length;
+            
+            // 如果作品数量不足以填满一页，隐藏按钮
             if (this.data.length <= this.itemsPerPage) {
                  this.prevBtn.style.visibility = 'hidden';
                  this.nextBtn.style.visibility = 'hidden';
@@ -652,17 +673,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        prevPage() {
-            if (this.currentPage > 0) {
-                this.currentPage--;
+        prevSlide() {
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
                 this.render();
             }
         }
         
-        nextPage() {
-            const maxPage = Math.ceil(this.data.length / this.itemsPerPage) - 1;
-            if (this.currentPage < maxPage) {
-                this.currentPage++;
+        nextSlide() {
+            if ((this.currentIndex + this.itemsPerPage) < this.data.length) {
+                this.currentIndex++;
                 this.render();
             }
         }

@@ -387,12 +387,12 @@ button {
 }
 
 .ai-info, .video-info {
-    padding: 20px;
+    padding: 15px;
 }
 
 .ai-info h3, .video-info h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
+    font-size: 16px;
+    margin-bottom: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -401,13 +401,13 @@ button {
 }
 
 .ai-info p, .video-info p {
-    font-size: 14px;
+    font-size: 13px;
     color: #885566; /* Warm grey/pink */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 /* Play icon overlay */
@@ -603,27 +603,27 @@ button {
 
 .pagination-btn {
     background: rgba(255, 255, 255, 0.8);
-    border: 2px solid #ff6b9d;
-    color: #ff6b9d;
-    width: 50px;
-    height: 50px;
+    border: 2px solid #ff80ab;
+    color: #ff80ab;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 18px;
     transition: all 0.3s ease;
     flex-shrink: 0;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.2);
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.15);
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background: #ff6b9d;
+    background: #ff80ab;
     color: white;
     transform: scale(1.1);
-    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
 }
 
 .pagination-btn:disabled {
