@@ -593,13 +593,19 @@ button {
     width: 100%;
 }
 
-.items-wrapper .ai-card,
-.items-wrapper .video-card,
 .items-wrapper .card-item {
-    flex: 0 0 calc(33.333% - 14px); /* 3 items per row */
+    flex: 0 0 calc(33.333% - 14px); /* Default 3 per row */
     max-width: calc(33.333% - 14px);
     margin: 0; 
     width: 100%;
+}
+
+/* Responsive: Match JS itemsPerPage */
+@media (max-width: 768px) {
+    .items-wrapper .card-item {
+        flex: 0 0 100%; /* 1 per row */
+        max-width: 100%;
+    }
 }
 
 .pagination-btn {

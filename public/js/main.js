@@ -656,20 +656,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         updateButtons() {
-            // 左边的是往左移，第一篇不能往左移
             this.prevBtn.disabled = this.currentIndex === 0;
-            
-            // 右边的是往右移，最后一篇不能往右移
-            // 这里的“最后一篇”指的是当最后一个元素已经显示在视口中时，不能再往右移
             this.nextBtn.disabled = (this.currentIndex + this.itemsPerPage) >= this.data.length;
             
-            // 如果作品数量不足以填满一页，隐藏按钮
             if (this.data.length <= this.itemsPerPage) {
-                 this.prevBtn.style.visibility = 'hidden';
-                 this.nextBtn.style.visibility = 'hidden';
+                 this.prevBtn.style.display = 'none';
+                 this.nextBtn.style.display = 'none';
             } else {
-                 this.prevBtn.style.visibility = 'visible';
-                 this.nextBtn.style.visibility = 'visible';
+                 this.prevBtn.style.display = 'flex';
+                 this.nextBtn.style.display = 'flex';
             }
         }
         
@@ -770,7 +765,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderItem: renderCard,
                 itemsPerPage: 3,
                 onPageChange: () => {
-                    // 重新绑定删除按钮事件（仅管理员）
+                    // 同步更新当前图片列表，确保查看器内的导航正确
+                    currentImageList = paintingData;
+                    currentImageCategory = 'painting';
                     if (isAdminUser) {
                         bindDeleteEvents('painting', loadPaintingPage);
                     }
@@ -906,7 +903,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderItem: renderVideoCard,
                 itemsPerPage: 3,
                 onPageChange: () => {
-                    // 重新绑定删除按钮事件（仅管理员）
+                    // 同步更新当前播放列表，确保播放器内的导航正确
+                    currentVideoList = danceData;
+                    currentVideoCategory = 'dance';
                     if (isAdminUser) {
                         bindDeleteEvents('dance', loadDancePage);
                     }
@@ -1290,6 +1289,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderItem: renderCard,
                 itemsPerPage: 3,
                 onPageChange: () => {
+                    // 同步更新列表状态
+                    currentVideoList = aiData.filter(ai => (ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i)));
+                    currentImageList = aiData.filter(ai => !((ai.file_type && ai.file_type.startsWith('video')) || (ai.file_path && ai.file_path.match(/\.(mp4|webm|mov)$/i))));
                     if (isAdminUser) {
                         bindDeleteEvents('ai', loadAIPage);
                     }
@@ -1491,6 +1493,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderItem: renderCard,
                 itemsPerPage: 3,
                 onPageChange: () => {
+                    currentImageList = honorData;
+                    currentImageCategory = 'honor';
                     if (isAdminUser) {
                         bindDeleteEvents('honor', loadHonorPage);
                     }
@@ -1594,6 +1598,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderItem: renderCard,
                 itemsPerPage: 3,
                 onPageChange: () => {
+                    currentImageList = pptData;
+                    currentImageCategory = 'ppt';
                     if (isAdminUser) {
                         bindDeleteEvents('ppt', loadPPTPage);
                     }
