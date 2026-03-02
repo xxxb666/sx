@@ -244,20 +244,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const introVideoEl = document.getElementById('introVideo');
         if (introVideoContainer && introVideoEl) {
             introVideoContainer.style.cursor = 'pointer';
-            const openPlayer = (e) => {
-                e.stopPropagation();
-                try {
-                    const src = introVideoEl.currentSrc || introVideoEl.getAttribute('src');
-                    if (src && typeof window.showVideoPlayer === 'function') {
-                        // 暂停内联播放后在浮层播放
-                        try { introVideoEl.pause(); } catch(_) {}
-                        window.showVideoPlayer(src);
-                    }
-                } catch (_) {}
-            };
-            introVideoContainer.addEventListener('click', openPlayer);
-            introVideoEl.addEventListener('click', openPlayer);
         }
+        const handler = (e) => {
+            const container = e.target.closest('#introVideoContainer');
+            const video = e.target.closest('#introVideo');
+            if (!container && !video) return;
+            const introVideo = document.getElementById('introVideo');
+            if (!introVideo) return;
+            try {
+                const src = introVideo.currentSrc || introVideo.getAttribute('src');
+                if (src && typeof window.showVideoPlayer === 'function') {
+                    try { introVideo.pause(); } catch(_) {}
+                    window.showVideoPlayer(src);
+                }
+            } catch (_) {}
+        };
+        document.addEventListener('click', handler, true);
     })();
 
     // 封面页鼠标拖尾效果
