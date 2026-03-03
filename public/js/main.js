@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageModal = document.getElementById('imageModal');
     const modalImage = imageModal.querySelector('img');
     const closeModalBtn = document.getElementById('closeModal');
-    const prevImageBtn = document.getElementById('prevImage');
-    const nextImageBtn = document.getElementById('nextImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
     const uploadImageBtn = document.getElementById('uploadImageBtn');
     
@@ -85,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', enforceMediaSize);
 
     // 视频播放器按钮
-    const prevVideoBtn = document.getElementById('prevVideo');
-    const nextVideoBtn = document.getElementById('nextVideo');
     const deleteVideoBtn = document.getElementById('deleteVideoBtn');
 
     // 绑定关闭按钮事件
@@ -98,33 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 恢复页面滚动
             document.body.style.overflow = '';
             currentVideoIndex = -1; // 重置索引
-        });
-    }
-
-    // 视频导航按钮事件
-    if (prevVideoBtn) {
-        prevVideoBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (currentVideoList.length === 0) return;
-            
-            let prevIndex = currentVideoIndex - 1;
-            if (prevIndex < 0) {
-                prevIndex = currentVideoList.length - 1; // 循环到最后一个
-            }
-            playVideoAtIndex(prevIndex);
-        });
-    }
-
-    if (nextVideoBtn) {
-        nextVideoBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (currentVideoList.length === 0) return;
-
-            let nextIndex = currentVideoIndex + 1;
-            if (nextIndex >= currentVideoList.length) {
-                nextIndex = 0; // 循环到第一个
-            }
-            playVideoAtIndex(nextIndex);
         });
     }
 
@@ -970,27 +939,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateVideoNavButtons() {
-        if (!prevVideoBtn || !nextVideoBtn) return;
-
-        if (currentVideoIndex === -1) {
-            prevVideoBtn.style.display = 'none';
-            nextVideoBtn.style.display = 'none';
-            if (deleteVideoBtn) deleteVideoBtn.style.display = 'none';
-            return;
-        }
-
-        // 显示按钮
-        prevVideoBtn.style.display = 'flex';
-        nextVideoBtn.style.display = 'flex';
-
-        // 更新状态
-        prevVideoBtn.disabled = false; // 循环播放，永远可以点上一首（如果是第一个，点上一首去最后一个）
-        nextVideoBtn.disabled = false; // 循环播放，永远可以点下一首
-        
         // 删除按钮仅管理员可见
         if (deleteVideoBtn) {
             const isAdminUser = window.isAdmin ? window.isAdmin() : false;
-            if (isAdminUser) {
+            if (isAdminUser && currentVideoIndex !== -1) {
                 deleteVideoBtn.style.display = 'block';
                 deleteVideoBtn.setAttribute('data-id', currentVideoList[currentVideoIndex].work_id);
             } else {
@@ -1060,33 +1012,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.showVideoPlayer = showVideoPlayer;
-
-    // 图片导航
-    if (prevImageBtn) {
-        prevImageBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (currentImageList.length === 0) return;
-            
-            let prevIndex = currentImageIndex - 1;
-            if (prevIndex < 0) {
-                prevIndex = currentImageList.length - 1; // 循环到最后一个
-            }
-            showImageAtIndex(prevIndex);
-        });
-    }
-
-    if (nextImageBtn) {
-        nextImageBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (currentImageList.length === 0) return;
-
-            let nextIndex = currentImageIndex + 1;
-            if (nextIndex >= currentImageList.length) {
-                nextIndex = 0; // 循环到第一个
-            }
-            showImageAtIndex(nextIndex);
-        });
-    }
 
     // 图片删除按钮事件
     if (deleteImageBtn) {
@@ -1373,36 +1298,15 @@ document.addEventListener('DOMContentLoaded', function() {
         modalImage.style.maxHeight = '';
         modalImage.style.objectFit = '';
 
-        // 更新图片计数器
-        const imageCounter = document.getElementById('imageCounter');
-        if (imageCounter) {
-            // 确保 currentImageIndex 是有效的
-            if (currentImageList.length > 0 && currentImageIndex >= 0 && currentImageIndex < currentImageList.length) {
-                imageCounter.textContent = `${currentImageIndex + 1} / ${currentImageList.length}`;
-                imageCounter.style.display = 'block';
-            } else {
-                imageCounter.style.display = 'none';
-            }
-        }
-
-        // 更新导航按钮状态
-        if (prevImageBtn && nextImageBtn) {
-            // 只要有图片列表，就显示导航按钮（即使只有一张，也保持显示，与视频播放器一致）
-            if (currentImageList.length > 0) {
-                prevImageBtn.style.display = 'flex';
-                nextImageBtn.style.display = 'flex';
-            } else {
-                prevImageBtn.style.display = 'none';
-                nextImageBtn.style.display = 'none';
-            }
-        }
-
         // 检查管理员权限显示删除和上传按钮
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
         
         if (deleteImageBtn) {
             if (isAdminUser && currentImageList.length > 0) {
                 deleteImageBtn.style.display = 'flex';
+                if (currentImageIndex !== -1 && currentImageList[currentImageIndex]) {
+                    deleteImageBtn.setAttribute('data-id', currentImageList[currentImageIndex].work_id);
+                }
             } else {
                 deleteImageBtn.style.display = 'none';
             }
