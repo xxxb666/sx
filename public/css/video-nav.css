@@ -1,5 +1,73 @@
 
 /* 视频播放器导航按钮 - 绝对定位到视口 */
+/* -----------------------------------------------------------
+   Player Overlay Buttons (Admin controls)
+   ----------------------------------------------------------- */
+.player-admin-controls {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* 留出关闭按钮的位置 */
+    display: flex;
+    gap: 15px;
+    z-index: 10001;
+}
+
+/* 放大后的管理按钮样式 */
+.video-upload-btn, .video-delete-btn,
+.image-upload-btn, .image-delete-btn {
+    width: 48px; /* 进一步增大尺寸，用户说要“大一点” */
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 添加按钮 */
+.video-upload-btn, .image-upload-btn {
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+}
+
+/* 删除按钮 */
+.video-delete-btn, .image-delete-btn {
+    background: #ff4757;
+    color: white;
+}
+
+.player-admin-controls button:hover {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.player-admin-controls button:active {
+    transform: scale(0.95);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .player-admin-controls {
+        top: 15px;
+        right: 60px;
+        gap: 10px;
+    }
+    
+    .video-upload-btn, .video-delete-btn,
+    .image-upload-btn, .image-delete-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* -----------------------------------------------------------
+   Original Nav Buttons (Disabled/Hidden by user request)
+   ----------------------------------------------------------- */
 .nav-btn {
     position: fixed; /* 改为 fixed 以便相对于视口定位，而不是 relative 的容器 */
     top: 50%;

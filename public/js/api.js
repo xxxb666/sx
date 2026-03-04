@@ -204,12 +204,13 @@ const API = {
                         const url = file ? URL.createObjectURL(file) : 'https://placehold.co/600x400?text=New+Work';
                         
                         const newWork = {
-                            id: Date.now(),
+                            work_id: Date.now(),
                             title: formData.get('title') || '新作品',
                             description: formData.get('description') || '',
-                            url: url,
+                            fileUrl: url,
                             category: category,
-                            createTime: new Date().toISOString()
+                            file_type: file ? file.type : (category === 'dance' ? 'video/mp4' : 'image/jpeg'),
+                            created_at: new Date().toISOString()
                         };
                         
                         if (!MOCK_DATA.works[category]) MOCK_DATA.works[category] = [];
@@ -226,45 +227,45 @@ const API = {
                 return;
             }
 
-            const xhr = new XMLHttpRequest();
-            const url = API_CONFIG.getUrl ? API_CONFIG.getUrl(`/upload/${category}`) : `/api/upload/${category}`;
-            const token = sessionStorage.getItem('adminToken');
-            
-            xhr.open('POST', url);
-            
-            if (token) {
-                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-            }
-            
-            if (onProgress) {
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100);
-                        onProgress(percentComplete);
+                const url = API_CONFIG.getUrl ? API_CONFIG.getUrl(`/upload/${category}`) : `/api/upload/${category}`;
+                const token = sessionStorage.getItem('adminToken');
+                
+                xhr.open('POST', url);
+                
+                if (token) {
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                }
+                
+                if (onProgress) {
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) {
+                            const percentComplete = Math.round((e.loaded / e.total) * 100);
+                            onProgress(percentComplete);
+                        }
+                    };
+                }
+                
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (e) {
+                            console.warn('解析响应失败，尝试模拟上传');
+                            tryMockUpload();
+                        }
+                    } else {
+                        console.warn('API 上传失败状态:', xhr.status, '尝试模拟上传');
+                        tryMockUpload();
                     }
                 };
-            }
-            
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response);
-                    } catch (e) {
-                        reject(new Error('无法解析服务器响应'));
-                    }
-                } else {
-                    console.warn('API 上传失败，尝试模拟上传');
+                
+                xhr.onerror = () => {
+                    console.warn('网络错误，尝试模拟上传');
                     tryMockUpload();
-                }
-            };
-            
-            xhr.onerror = () => {
-                console.warn('网络错误，尝试模拟上传');
-                tryMockUpload();
-            };
-            
-            xhr.send(formData);
+                };
+                
+                xhr.send(formData);
         });
     },
 

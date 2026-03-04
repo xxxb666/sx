@@ -301,14 +301,16 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                     f.write(file_item.file.read())
                 
                 # Create work object
+                work_id = str(int(time.time() * 1000))
                 work = {
-                    "id": str(int(time.time() * 1000)),
+                    "work_id": work_id,
                     "title": title,
                     "description": description,
                     "category": category,
-                    "url": f"/uploads/{category}/{filename}",
-                    "type": "video" if category in ['dance', 'video'] else "image", # Simplified type detection
-                    "createTime": int(time.time() * 1000),
+                    "file_path": filename,
+                    "fileUrl": f"/uploads/{category}/{filename}",
+                    "file_type": "video/mp4" if category in ['dance', 'video'] else "image/jpeg", # Default
+                    "created_at": int(time.time() * 1000),
                     "width": int(width) if width else 0,
                     "height": int(height) if height else 0
                 }
@@ -316,9 +318,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 # Better type detection
                 mime = mimetypes.guess_type(filename)[0]
                 if mime:
-                    if mime.startswith('video'): work['type'] = 'video'
-                    elif mime.startswith('image'): work['type'] = 'image'
-                    elif 'pdf' in mime: work['type'] = 'pdf'
+                    work['file_type'] = mime
                 
                 # Handle cover for video
                 if 'cover' in form:
@@ -407,15 +407,17 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         path = parsed_path.path
         
         if path.startswith('/api/works/'):
-            work_id = path.split('/')[-1]
+            # Path looks like /api/works/{category}/{work_id}
+            parts = path.split('/')
+            work_id = parts[-1]
             
             try:
                 with open(DATA_FILE, 'r+', encoding='utf-8') as f:
                     data = json.load(f)
                     works = data.get('works', [])
                     
-                    # Find and remove work
-                    new_works = [w for w in works if str(w.get('id')) != work_id]
+                    # Find and remove work - check both 'id' and 'work_id'
+                    new_works = [w for w in works if str(w.get('id')) != work_id and str(w.get('work_id')) != work_id]
                     
                     if len(new_works) < len(works):
                         data['works'] = new_works
@@ -428,9 +430,15 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                         self.end_headers()
                         self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
                     else:
-                        self.send_error(404, "Work not found")
+                        self.send_response(404)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"success": False, "message": "Work not found"}).encode('utf-8'))
             except Exception as e:
-                self.send_error(500, str(e))
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "message": str(e)}).encode('utf-8'))
             return
             
         self.send_error(404, "API Endpoint not found")

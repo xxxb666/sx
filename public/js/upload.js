@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 处理文件选择
     async function handleFileSelect(file) {
-        // 限制文件大小为 100MB，防止云服务超时
-        const MAX_SIZE = 100 * 1024 * 1024;
+        // 提高文件限制到 2GB (2048MB)，支持大视频上传
+        const MAX_SIZE = 2048 * 1024 * 1024;
         
         if (file.size > MAX_SIZE) {
-            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！请上传小于 100MB 的文件以避免网络超时。`);
+            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！当前最大限制为 2GB。`);
             return;
         }
 
@@ -337,14 +337,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 submitUploadBtn.disabled = true;
 
-                // 大文件警告 (超过100MB)
-                if (currentFile.size > 100 * 1024 * 1024) {
+                // 大文件警告 (超过 500MB)
+                if (currentFile.size > 500 * 1024 * 1024) {
                     const sizeMB = (currentFile.size / (1024 * 1024)).toFixed(2);
                     let fileTypeMsg = '文件';
                     if (currentFile.type.startsWith('video/')) fileTypeMsg = '视频';
                     else if (currentFile.type === 'application/pdf') fileTypeMsg = 'PDF';
                     
-                    const proceed = confirm(`当前${fileTypeMsg}较大 (${sizeMB}MB)，上传可能需要较长时间。\n\n建议您先压缩文件到 100MB 以内再上传，可以显著提高上传速度和成功率。\n\n是否仍要继续上传原始文件？`);
+                    const proceed = confirm(`当前${fileTypeMsg}较大 (${sizeMB}MB)，上传大文件可能需要较长时间且要求网络稳定。\n\n建议在 Wi-Fi 环境下上传，并确保浏览器不会因长时间不活动而进入休眠。\n\n是否继续上传？`);
                     if (!proceed) {
                         submitUploadBtn.disabled = false;
                         submitUploadBtn.textContent = '上传作品';
@@ -511,14 +511,15 @@ document.addEventListener('DOMContentLoaded', function() {
     async function viewWork(workId) {
         try {
             const result = await API.getWorks(currentCategory);
-            const work = result.works.find(w => w.work_id === workId);
+            const work = result.works.find(w => (w.work_id || w.id) == workId);
             if (!work) return;
 
             const fileSrc = work.fileUrl || ('/uploads/' + work.category + '/' + work.file_path);
+            const fileType = work.file_type || '';
 
-            if (work.file_type.startsWith('image/')) {
+            if (fileType.startsWith('image/')) {
                 showImageModal(fileSrc);
-            } else if (work.file_type.startsWith('video/')) {
+            } else if (fileType.startsWith('video/')) {
                 showVideoPlayer(fileSrc);
             } else {
                 alert('该文件类型不支持预览');
@@ -613,9 +614,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = e.target.files[0];
             if (!file) return;
             
-            // 简单的文件大小检查 (例如 500MB)
-            if (file.size > 500 * 1024 * 1024) {
-                alert('文件太大，请上传小于 500MB 的视频');
+            // 提高自我介绍视频限制到 2GB
+            if (file.size > 2048 * 1024 * 1024) {
+                alert('文件太大，当前最大限制为 2GB');
                 return;
             }
             

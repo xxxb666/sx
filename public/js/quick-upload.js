@@ -136,10 +136,10 @@
         const file = e.target.files[0];
         if (!file) return;
 
-        // 检查文件大小 (100MB)
-        const MAX_SIZE = 100 * 1024 * 1024;
+        // 提高快速上传文件限制到 2GB (2048MB)
+        const MAX_SIZE = 2048 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
-            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！请上传小于 100MB 的文件以避免网络超时。`);
+            alert(`文件过大 (${(file.size / 1024 / 1024).toFixed(2)}MB)！当前最大限制为 2GB。`);
             e.target.value = ''; // 清空选择
             return;
         }

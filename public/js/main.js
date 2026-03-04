@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageModal = document.getElementById('imageModal');
     const modalImage = imageModal.querySelector('img');
     const closeModalBtn = document.getElementById('closeModal');
+    const prevImageBtn = document.getElementById('prevImage');
+    const nextImageBtn = document.getElementById('nextImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
     const uploadImageBtn = document.getElementById('uploadImageBtn');
     
@@ -83,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', enforceMediaSize);
 
     // 视频播放器按钮
+    const prevVideoBtn = document.getElementById('prevVideo');
+    const nextVideoBtn = document.getElementById('nextVideo');
     const deleteVideoBtn = document.getElementById('deleteVideoBtn');
 
     // 绑定关闭按钮事件
@@ -94,6 +98,33 @@ document.addEventListener('DOMContentLoaded', function() {
             // 恢复页面滚动
             document.body.style.overflow = '';
             currentVideoIndex = -1; // 重置索引
+        });
+    }
+
+    // 视频导航按钮事件
+    if (prevVideoBtn) {
+        prevVideoBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentVideoList.length === 0) return;
+            
+            let prevIndex = currentVideoIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = currentVideoList.length - 1; // 循环到最后一个
+            }
+            playVideoAtIndex(prevIndex);
+        });
+    }
+
+    if (nextVideoBtn) {
+        nextVideoBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentVideoList.length === 0) return;
+
+            let nextIndex = currentVideoIndex + 1;
+            if (nextIndex >= currentVideoList.length) {
+                nextIndex = 0; // 循环到第一个
+            }
+            playVideoAtIndex(nextIndex);
         });
     }
 
@@ -169,6 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 图片导航
+    if (prevImageBtn) {
+        prevImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentImageList.length === 0) return;
+            
+            let prevIndex = currentImageIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = currentImageList.length - 1; // 循环到最后一个
+            }
+            showImageAtIndex(prevIndex);
+        });
+    }
+
+    if (nextImageBtn) {
+        nextImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (currentImageList.length === 0) return;
+
+            let nextIndex = currentImageIndex + 1;
+            if (nextIndex >= currentImageList.length) {
+                nextIndex = 0; // 循环到第一个
+            }
+            showImageAtIndex(nextIndex);
+        });
+    }
+
     if (closePdfBtn) {
         closePdfBtn.addEventListener('click', function() {
             pdfModal.style.display = 'none';
@@ -232,10 +290,9 @@ document.addEventListener('DOMContentLoaded', function() {
     })();
 
     // 封面页鼠标拖尾效果
-    const coverPage = document.getElementById('page0');
     const trailCanvas = document.getElementById('trail-canvas');
     
-    if (coverPage && trailCanvas) {
+    if (trailCanvas) {
         const ctx = trailCanvas.getContext('2d');
         let particles = [];
         let animationId;
@@ -286,12 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // 鼠标移动事件
         let lastX = 0;
         let lastY = 0;
-        let isMoving = false;
         
-        coverPage.addEventListener('mousemove', function(e) {
-            const rect = coverPage.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        document.addEventListener('mousemove', function(e) {
+            const x = e.clientX;
+            const y = e.clientY;
             
             // 计算鼠标移动距离
             const distance = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
@@ -310,12 +365,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // 触摸事件支持
-        coverPage.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            const rect = coverPage.getBoundingClientRect();
+        document.addEventListener('touchmove', function(e) {
             const touch = e.touches[0];
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
+            const x = touch.clientX;
+            const y = touch.clientY;
             
             for (let i = 0; i < 3; i++) {
                 const offsetX = (Math.random() - 0.5) * 20;
@@ -343,27 +396,8 @@ document.addEventListener('DOMContentLoaded', function() {
             animationId = requestAnimationFrame(animate);
         }
         
-        // 只在封面页显示时运行动画
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (coverPage.classList.contains('active')) {
-                        animate();
-                    } else {
-                        cancelAnimationFrame(animationId);
-                        ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
-                        particles = [];
-                    }
-                }
-            });
-        });
-        
-        observer.observe(coverPage, { attributes: true });
-        
-        // 初始启动动画
-        if (coverPage.classList.contains('active')) {
-            animate();
-        }
+        // 始终运行动画
+        animate();
     }
 
     // 通用函数：跳转到上传页面并切换到指定类别
@@ -706,8 +740,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // 渲染单个卡片的函数
             const renderCard = (painting, index) => {
                 const imgSrc = painting.fileUrl || ('/uploads/painting/' + painting.file_path);
+                const workId = painting.work_id || painting.id;
                 return `
-                <div class="card-item" data-id="${painting.work_id}" data-type="image" data-content="${imgSrc}" onclick="window.showImageAtIndex(${index})">
+                <div class="card-item" data-id="${workId}" data-type="image" data-content="${imgSrc}" onclick="window.showImageAtIndex(${index})">
                     <div class="card-thumbnail">
                         <img src="${imgSrc}" alt="${painting.title}">
                     </div>
@@ -716,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>${painting.description || ''}</p>
                     </div>
                     ${isAdminUser ? `
-                    <button class="card-delete-btn" data-id="${painting.work_id}" data-category="painting">
+                    <button class="card-delete-btn" data-id="${workId}" data-category="painting">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -842,9 +877,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const renderVideoCard = (video, index) => {
                 const videoSrc = video.fileUrl || ('/uploads/dance/' + video.file_path);
                 const coverSrc = video.coverUrl || (video.cover_path ? ('/uploads/dance/covers/' + video.cover_path) : '');
+                const workId = video.work_id || video.id;
                 
                 return `
-                <div class="card-item" data-id="${video.work_id}" data-video="${videoSrc}" onclick="window.playVideoAtIndex(${index})">
+                <div class="card-item" data-id="${workId}" data-video="${videoSrc}" onclick="window.playVideoAtIndex(${index})">
                     <div class="card-thumbnail">
                         ${coverSrc ? `<img src="${coverSrc}" alt="${video.title}">` : `<video muted preload="metadata"><source src="${videoSrc}" type="video/mp4"></video>`}
                         <div class="card-play-icon">▶</div>
@@ -854,7 +890,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${video.description && video.description.trim() ? `<p>${video.description}</p>` : ''}
                     </div>
                     ${isAdminUser ? `
-                    <button class="card-delete-btn" data-id="${video.work_id}" data-category="dance">
+                    <button class="card-delete-btn" data-id="${workId}" data-category="dance">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -939,11 +975,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateVideoNavButtons() {
+        // 导航按钮
+        if (prevVideoBtn && nextVideoBtn) {
+            if (currentVideoList.length > 0) {
+                prevVideoBtn.style.display = 'flex';
+                nextVideoBtn.style.display = 'flex';
+            } else {
+                prevVideoBtn.style.display = 'none';
+                nextVideoBtn.style.display = 'none';
+            }
+        }
+
         // 删除按钮仅管理员可见
         if (deleteVideoBtn) {
             const isAdminUser = window.isAdmin ? window.isAdmin() : false;
             if (isAdminUser && currentVideoIndex !== -1) {
-                deleteVideoBtn.style.display = 'block';
+                deleteVideoBtn.style.display = 'flex';
                 deleteVideoBtn.setAttribute('data-id', currentVideoList[currentVideoIndex].work_id);
             } else {
                 deleteVideoBtn.style.display = 'none';
@@ -1152,6 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const renderCard = (ai, index) => {
                 // 优先使用 fileUrl，如果没有则回退到拼接路径
                 const contentSrc = ai.fileUrl || ('/uploads/ai/' + ai.file_path);
+                const workId = ai.work_id || ai.id;
                 
                 // 类型判断
                 let type = ai.file_type || '';
@@ -1185,7 +1233,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 return `
-                    <div class="card-item" data-id="${ai.work_id}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
+                    <div class="card-item" data-id="${workId}" data-type="${type}" data-content="${contentSrc}" style="cursor: pointer;">
                         <div class="card-thumbnail">
                             ${mediaHtml}
                             ${isVideo ? '<div class="card-play-icon">▶</div>' : ''}
@@ -1195,7 +1243,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${ai.description && ai.description.trim() ? `<p>${ai.description}</p>` : ''}
                         </div>
                         ${isAdminUser ? `
-                        <button class="card-delete-btn" data-id="${ai.work_id}" data-category="ai">
+                        <button class="card-delete-btn" data-id="${workId}" data-category="ai">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 6h18"></path>
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1298,6 +1346,30 @@ document.addEventListener('DOMContentLoaded', function() {
         modalImage.style.maxHeight = '';
         modalImage.style.objectFit = '';
 
+        // 更新图片计数器
+        const imageCounter = document.getElementById('imageCounter');
+        if (imageCounter) {
+            // 确保 currentImageIndex 是有效的
+            if (currentImageList.length > 0 && currentImageIndex >= 0 && currentImageIndex < currentImageList.length) {
+                imageCounter.textContent = `${currentImageIndex + 1} / ${currentImageList.length}`;
+                imageCounter.style.display = 'block';
+            } else {
+                imageCounter.style.display = 'none';
+            }
+        }
+
+        // 更新导航按钮状态
+        if (prevImageBtn && nextImageBtn) {
+            // 只要有图片列表，就显示导航按钮
+            if (currentImageList.length > 0) {
+                prevImageBtn.style.display = 'flex';
+                nextImageBtn.style.display = 'flex';
+            } else {
+                prevImageBtn.style.display = 'none';
+                nextImageBtn.style.display = 'none';
+            }
+        }
+
         // 检查管理员权限显示删除和上传按钮
         const isAdminUser = window.isAdmin ? window.isAdmin() : false;
         
@@ -1370,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 渲染卡片函数
             const renderCard = (honor, index) => {
                 const imgSrc = honor.fileUrl || ('/uploads/honor/' + honor.file_path);
+                const workId = honor.work_id || honor.id;
                 return `
                 <div class="card-item honor-card" onclick="window.showImageAtIndex(${index})">
                     <div class="card-thumbnail">
@@ -1379,7 +1452,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3>${honor.title}</h3>
                     </div>
                     ${isAdminUser ? `
-                    <button class="card-delete-btn" data-id="${honor.work_id}" data-category="honor">
+                    <button class="card-delete-btn" data-id="${workId}" data-category="honor">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
@@ -1473,6 +1546,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 渲染卡片函数
             const renderCard = (ppt, index) => {
                 const imgSrc = ppt.fileUrl || ('/uploads/ppt/' + ppt.file_path);
+                const workId = ppt.work_id || ppt.id;
                 
                 return `
                 <div class="card-item ppt-card" onclick="window.showImageAtIndex(${index})">
@@ -1484,7 +1558,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>${ppt.description || ''}</p>
                     </div>
                     ${isAdminUser ? `
-                    <button class="card-delete-btn" data-id="${ppt.work_id}" data-category="ppt">
+                    <button class="card-delete-btn" data-id="${workId}" data-category="ppt">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
