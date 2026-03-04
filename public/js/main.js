@@ -92,9 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 绑定关闭按钮事件
     if (closeVideoBtn) {
         closeVideoBtn.addEventListener('click', function() {
-            videoPlayer.style.display = 'none';
+            // 先暂停视频播放
             videoElement.pause();
+            // 重置视频源，确保完全停止播放和释放资源
             videoElement.src = '';
+            videoElement.load();
+            // 隐藏播放器
+            videoPlayer.style.display = 'none';
             // 恢复页面滚动
             document.body.style.overflow = '';
             currentVideoIndex = -1; // 重置索引
@@ -147,9 +151,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 如果列表为空，关闭播放器
                     if (currentVideoList.length === 0) {
-                        videoPlayer.style.display = 'none';
                         videoElement.pause();
                         videoElement.src = '';
+                        videoElement.load();
+                        videoPlayer.style.display = 'none';
                     } else {
                         // 如果不为空，播放下一个或上一个
                         // 如果删除的是最后一个，播放新的最后一个（原倒数第二个）
@@ -238,9 +243,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (videoPlayer) {
         videoPlayer.addEventListener('click', function(e) {
             if (e.target === videoPlayer) {
-                videoPlayer.style.display = 'none';
                 videoElement.pause();
                 videoElement.src = '';
+                videoElement.load();
+                videoPlayer.style.display = 'none';
                 // 恢复页面滚动
                 document.body.style.overflow = '';
             }
