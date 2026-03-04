@@ -268,19 +268,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             reject(new Error('Canvas to Blob failed'));
                             return;
                         }
-                        // 重建File对象
                         const newFile = new File([blob], file.name, {
                             type: 'image/jpeg',
                             lastModified: Date.now()
                         });
                         resolve(newFile);
-                    }, 'image/jpeg', 0.8); // 0.8 质量通常足够好且体积小
+                    }, 'image/jpeg', 0.8);
                 };
                 img.onerror = error => reject(error);
             };
             reader.onerror = error => reject(error);
         });
     }
+
+
 
     // 重置上传表单
     function resetUploadForm() {
@@ -337,19 +338,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 submitUploadBtn.disabled = true;
 
-                // 大文件警告 (超过 500MB)
+                // 大文件警告 (超过 50MB 视频会自动压缩)
+                let compressMessage = '';
+                if (currentFile.type.startsWith('video/') && currentFile.size > 50 * 1024 * 1024) {
+                    const sizeMB = (currentFile.size / (1024 * 1024)).toFixed(2);
+                    compressMessage = `\n\n🎬 提示：您的视频文件较大 (${sizeMB}MB)，系统将自动压缩到 50MB 以内，以确保流畅播放。压缩会在上传后自动进行。`;
+                }
+                
+                // 超大文件警告 (超过 500MB)
                 if (currentFile.size > 500 * 1024 * 1024) {
                     const sizeMB = (currentFile.size / (1024 * 1024)).toFixed(2);
                     let fileTypeMsg = '文件';
                     if (currentFile.type.startsWith('video/')) fileTypeMsg = '视频';
                     else if (currentFile.type === 'application/pdf') fileTypeMsg = 'PDF';
                     
-                    const proceed = confirm(`当前${fileTypeMsg}较大 (${sizeMB}MB)，上传大文件可能需要较长时间且要求网络稳定。\n\n建议在 Wi-Fi 环境下上传，并确保浏览器不会因长时间不活动而进入休眠。\n\n是否继续上传？`);
+                    const proceed = confirm(`当前${fileTypeMsg}较大 (${sizeMB}MB)，上传大文件可能需要较长时间且要求网络稳定。\n\n建议在 Wi-Fi 环境下上传，并确保浏览器不会因长时间不活动而进入休眠。${compressMessage}\n\n是否继续上传？`);
                     if (!proceed) {
                         submitUploadBtn.disabled = false;
                         submitUploadBtn.textContent = '上传作品';
                         return;
                     }
+                } else if (compressMessage) {
+                    // 如果不是超大文件但需要压缩，显示提示
+                    alert(compressMessage.substring(2));
                 }
 
                 // 图片自动压缩

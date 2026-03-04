@@ -412,8 +412,8 @@ app.post('/api/upload/:category', authenticateToken, uploadMiddleware, async (re
         const cover = req.files['cover'] ? req.files['cover'][0] : null;
 
         // --- 视频压缩逻辑 ---
-        // 如果是视频文件且大于 100MB，则自动压缩
-        const MAX_SIZE_MB = 100;
+        // 如果是视频文件且大于 50MB，则自动压缩，确保流畅观看
+        const MAX_SIZE_MB = 50;
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
         if (ffmpeg && file.mimetype.startsWith('video/') && file.size > MAX_SIZE_BYTES) {
