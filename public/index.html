@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.css?v=130">
-    <link rel="stylesheet" href="css/pages.css?v=129">
+    <link rel="stylesheet" href="css/pages.css?v=130">
     <link rel="stylesheet" href="css/upload.css?v=126">
     <link rel="stylesheet" href="css/quick-upload.css?v=126">
     <link rel="stylesheet" href="css/video-nav.css?v=127">
@@ -100,14 +100,6 @@
         <!-- 页面2：我的简单介绍（作为首页进入后的过渡页） -->
         <div id="page2" class="page intro-page">
             <div class="intro-page-content">
-                <!-- 顶部导航栏 -->
-                <div class="intro-header">
-                    <button class="skip-btn" id="skipIntroBtn">
-                        <span>进入作品集</span>
-                        <span class="skip-icon">→</span>
-                    </button>
-                </div>
-
                 <!-- 个人信息卡片 (缩小版) - Moved to top -->
                 <div class="intro-profile-card">
                     <div class="about-avatar small">
@@ -123,6 +115,11 @@
                         </div>
                         <button class="save-profile-btn mini" id="saveProfileBtn">保存</button>
                     </div>
+                    <!-- 进入作品集按钮 - 移动到卡片右侧 -->
+                    <button class="skip-btn prominent" id="skipIntroBtn">
+                        <span>进入作品集</span>
+                        <span class="skip-icon">→</span>
+                    </button>
                 </div>
 
                 <!-- 自我介绍视频区域 -->
