@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徐小泡的专属空间</title>
+    <!-- Google Fonts for Cute Rounded Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css?v=130">
+    <link rel="stylesheet" href="css/pages.css?v=129">
+    <link rel="stylesheet" href="css/upload.css?v=126">
+    <link rel="stylesheet" href="css/quick-upload.css?v=126">
+    <link rel="stylesheet" href="css/video-nav.css?v=126">
+</head>
+<body>
+    <!-- 安全入口按钮 (原管理员入口，防屏蔽) -->
+    <button class="secure-entry-btn" id="secureEntryBtn" title="安全登录" style="position: fixed; bottom: 20px; right: 20px; z-index: 2147483647; display: flex !important; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%); border: 2px solid white; box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4); justify-content: center; align-items: center; font-size: 20px; cursor: pointer;">🔐</button>
+
+    <!-- 鼠标拖尾 Canvas -->
+    <canvas id="trail-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 封面页 -->
+        <div id="page0" class="page active cover-page">
+            <div class="cover-bg-pattern"></div>
+            <div class="floating-icons">
+                <span class="float-icon" style="--x:10%;--y:15%">🎨</span>
+                <span class="float-icon" style="--x:85%;--y:10%">⭐</span>
+                <span class="float-icon" style="--x:80%;--y:60%">🎀</span>
+                <span class="float-icon" style="--x:25%;--y:35%">💖</span>
+                <span class="float-icon" style="--x:70%;--y:45%">🌟</span>
+                <span class="float-icon" style="--x:5%;--y:70%">🎈</span>
+                <span class="float-icon" style="--x:90%;--y:55%">💫</span>
+                <span class="float-icon" style="--x:45%;--y:8%">🎊</span>
+                <span class="float-icon" style="--x:65%;--y:25%">✨</span>
+            </div>
+            <div class="cover-content">
+                <div class="cover-avatar">👧</div>
+                <h1 class="cover-title">徐小泡的专属空间</h1>
+                <p class="cover-subtitle">记录成长 · 展示才华 · 分享快乐</p>
+                <button class="cover-start-btn" id="enterSpaceBtn">
+                    <span>进入空间</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 页面1：首页 -->
+        <div id="page1" class="page">
+            <div class="header">
+                <h1>徐小泡的专属空间</h1>
+                <p class="subtitle">个人作品展示</p>
+                <div class="intro-container">
+                    <button class="intro-btn" id="introBtn">
+                        <span class="intro-icon">👧</span>
+                        <span>我的介绍</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="cards-container">
+
+                <div class="card" data-page="painting">
+                    <div class="card-content">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">绘画作品</div>
+                    </div>
+                </div>
+
+                <div class="card" data-page="dance">
+                    <div class="card-bg-scroll" id="scroll-dance"></div>
+                    <div class="card-content">
+                        <div class="card-icon">💃</div>
+                        <div class="card-title">舞蹈视频</div>
+                    </div>
+                </div>
+
+                <div class="card" data-page="ai">
+                    <div class="card-content">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-title">AI作品</div>
+                    </div>
+                </div>
+
+                <div class="card" data-page="honor">
+                    <div class="card-icon">🏆</div>
+                    <div class="card-title">荣誉墙</div>
+                </div>
+
+                <div class="card" data-page="ppt">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">PPT展示</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面2：我的简单介绍（作为首页进入后的过渡页） -->
+        <div id="page2" class="page intro-page">
+            <div class="intro-page-content">
+                <!-- 顶部导航栏 -->
+                <div class="intro-header">
+                    <button class="skip-btn" id="skipIntroBtn">
+                        <span>进入作品集</span>
+                        <span class="skip-icon">→</span>
+                    </button>
+                </div>
+
+                <!-- 个人信息卡片 (缩小版) - Moved to top -->
+                <div class="intro-profile-card">
+                    <div class="about-avatar small">
+                        <div class="avatar-placeholder">👧</div>
+                        <img id="avatarImg" src="" alt="头像" style="display: none;">
+                        <button class="change-avatar-btn mini" id="changeAvatarBtn">📷</button>
+                    </div>
+                    <div class="about-info-compact">
+                        <h3 class="nickname" contenteditable="true" id="nickname">徐小泡</h3>
+                        <p class="motto" contenteditable="true" id="motto">"每一个不曾起舞的日子，都是对生命的辜负"</p>
+                        <div class="about-desc">
+                            <p contenteditable="true" id="selfIntro">热爱生活，喜欢创作。在AI艺术、舞蹈、绘画等领域不断探索和学习，用作品记录成长的每一个瞬间。</p>
+                        </div>
+                        <button class="save-profile-btn mini" id="saveProfileBtn">保存</button>
+                    </div>
+                </div>
+
+                <!-- 自我介绍视频区域 -->
+                <div class="intro-video-wrapper">
+                    <div class="intro-video-container" id="introVideoContainer" style="display:none;">
+                        <video id="introVideo" controls autoplay muted playsinline></video>
+                    </div>
+                    
+                    <!-- 无视频时的占位提示 -->
+                    <div id="noVideoPlaceholder" class="no-video-placeholder" style="display: none;">
+                        <div class="placeholder-icon">👋</div>
+                        <h3>欢迎来到我的空间</h3>
+                        <p>这里是徐小泡的个人作品展示</p>
+                    </div>
+                </div>
+                
+                <!-- 管理员上传按钮 -->
+                <div class="intro-admin-controls">
+                    <button class="change-avatar-btn" id="uploadIntroVideoBtn" style="display: none;">
+                        <span>📹</span> 上传/更换自我介绍视频
+                    </button>
+                    <input type="file" id="introVideoInput" accept="video/*" style="display: none;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面3：作品详情页 -->
+        <div id="page3" class="page">
+            <div class="header with-back">
+                <button class="back-btn" data-target="page1">
+                    <span class="back-icon">←</span>
+                    <span>返回首页</span>
+                </button>
+            </div>
+
+            <div id="detail-content" class="detail-content">
+                <!-- 内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+
+        <!-- 页面4：上传管理页 -->
+        <div id="page4" class="page">
+            <div class="header with-back">
+                <button class="back-btn" data-target="page1">
+                    <span class="back-icon">←</span>
+                    <span>返回首页</span>
+                </button>
+            </div>
+
+            <div class="upload-page">
+                <div class="upload-section">
+                    <div class="upload-tabs">
+                        <button class="upload-tab active" data-tab="painting">绘画作品</button>
+                        <button class="upload-tab" data-tab="dance">舞蹈视频</button>
+                        <button class="upload-tab" data-tab="ai">AI作品</button>
+                        <button class="upload-tab" data-tab="honor">荣誉墙</button>
+                        <button class="upload-tab" data-tab="ppt">PPT展示</button>
+                    </div>
+
+                    <div class="upload-form" id="uploadForm">
+                        <div class="form-group">
+                            <label>作品标题</label>
+                            <input type="text" id="workTitle" placeholder="请输入作品标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>作品描述</label>
+                            <textarea id="workDesc" placeholder="请输入作品描述（可选）" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>选择文件</label>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <input type="file" id="workFile" accept="image/*,video/*,.pdf,.ppt,.pptx">
+                                <div class="upload-placeholder">
+                                    <span class="upload-icon-large">📁</span>
+                                    <p>点击或拖拽文件到此处</p>
+                                    <p class="upload-hint">支持图片、视频、PDF、PPT格式</p>
+                                </div>
+                            </div>
+                            <div class="file-preview" id="filePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="预览" style="max-width: 100%; max-height: 150px; object-fit: contain;">
+                                <video id="previewVideo" controls playsinline style="display: none; max-width: 100%; max-height: 150px; object-fit: contain;"></video>
+                                <p id="fileName"></p>
+                                <button class="remove-file-btn" id="removeFileBtn">移除文件</button>
+                            </div>
+                        </div>
+
+                        <!-- 进度条 -->
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progressBarFill"></div>
+                            </div>
+                            <div class="progress-text" id="progressText">0%</div>
+                        </div>
+
+                        <button class="submit-upload-btn" id="submitUploadBtn">上传作品</button>
+                    </div>
+                </div>
+
+                <div class="works-list-section">
+                    <h3>已上传作品</h3>
+                    <div class="works-list" id="worksList">
+                        <!-- 动态加载已上传作品 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频播放器 -->
+    <div class="video-player-overlay" id="videoPlayer" style="display: none;">
+        <button class="nav-btn prev-btn" id="prevVideo" title="上一个">◀</button>
+        <div class="video-player-container">
+            <div class="player-admin-controls">
+                <button class="video-upload-btn" id="uploadVideoBtn" title="上传新视频" style="display: none;">➕</button>
+                <button class="video-delete-btn" id="deleteVideoBtn" title="删除作品" style="display: none;">🗑️</button>
+            </div>
+            <button class="video-close-btn" id="closeVideo">&times;</button>
+            <video id="mainVideoPlayer" controls playsinline preload="auto" style="max-width: 100%; max-height: 50vh; object-fit: contain; width: 100%; height: auto;">
+                <source src="" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
+        </div>
+        <button class="nav-btn next-btn" id="nextVideo" title="下一个">▶</button>
+    </div>
+
+    <!-- 图片查看器 -->
+    <div class="image-modal" id="imageModal" style="display: none;">
+        <button class="nav-btn prev-btn" id="prevImage" title="上一张">◀</button>
+        <div class="player-admin-controls">
+            <button class="image-upload-btn" id="uploadImageBtn" title="上传新图片" style="display: none;">➕</button>
+            <button class="image-delete-btn" id="deleteImageBtn" title="删除作品" style="display: none;">🗑️</button>
+        </div>
+        <button class="modal-close-btn" id="closeModal">&times;</button>
+        <img src="" alt="放大查看">
+        <div class="image-counter" id="imageCounter"></div>
+        <button class="nav-btn next-btn" id="nextImage" title="下一张">▶</button>
+    </div>
+
+    <!-- PDF/PPT 查看器 -->
+    <div class="pdf-modal" id="pdfModal" style="display: none;">
+        <button class="modal-close-btn" id="closePdf">&times;</button>
+        <div class="pdf-container">
+            <iframe id="pdfFrame" src="" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- 管理员登录弹窗已移除，改为独立页面 login.html -->
+
+    <!-- 管理员管理面板 -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <div class="admin-panel-header">
+            <button class="admin-back-btn" id="adminBackBtn" title="返回">←</button>
+            <h2>管理员控制台</h2>
+            <div class="admin-header-actions">
+                <button class="admin-upload-btn" id="adminUploadBtn">+ 上传作品</button>
+                <button class="admin-logout-btn" id="adminLogoutBtn">退出登录</button>
+            </div>
+        </div>
+        <div class="admin-panel-content">
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="all">全部作品</button>
+                <button class="admin-tab" data-tab="painting">绘画作品</button>
+                <button class="admin-tab" data-tab="dance">舞蹈视频</button>
+                <button class="admin-tab" data-tab="ai">AI作品</button>
+                <button class="admin-tab" data-tab="honor">荣誉墙</button>
+                <button class="admin-tab" data-tab="ppt">PPT展示</button>
+            </div>
+            <div class="admin-batch-actions">
+                <label class="select-all-label">
+                    <input type="checkbox" id="selectAllWorks"> 全选
+                </label>
+                <button id="batchDeleteBtn" class="batch-delete-btn" disabled>批量删除</button>
+                <span id="selectedCount">已选择 0 项</span>
+            </div>
+            <div class="admin-works-list" id="adminWorksList">
+                <!-- 动态加载作品列表 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 旧管理员入口按钮已移除 -->
+
+    <!-- 脚本引用 -->
+     <script src="js/mock-data.js"></script>
+     <script src="js/api.js?v=111"></script>
+     <script src="js/main.js?v=113"></script>
+     <script src="js/admin.js?v=111"></script>
+     <script src="js/upload.js?v=111"></script>
+     <script src="js/auth.js?v=111"></script>
+     <script src="js/quick-upload.js?v=111"></script>
+</body>
+</html>

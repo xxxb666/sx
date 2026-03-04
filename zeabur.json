@@ -1,0 +1,10 @@
+{
+  "name": "xiaopao-portfolio",
+  "type": "web",
+  "build": {
+    "command": "npm install"
+  },
+  "start": {
+    "command": "npm start"
+  }
+}
