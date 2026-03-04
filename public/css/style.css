@@ -367,16 +367,21 @@ button {
 
 .ai-thumbnail, .video-thumbnail {
     width: 100%;
-    aspect-ratio: 16/9; /* Unified aspect ratio */
+    min-height: 150px;
+    max-height: 400px;
     background: #fff0f5;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ai-thumbnail img, .video-thumbnail img, .video-thumbnail video {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
     transition: transform 0.5s ease;
 }
 
