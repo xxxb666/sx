@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>七上数学自学助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: white;
+            overflow: hidden;
+            border-radius: 0;
+        }
+
+        .header {
+            background: #4A90E2;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        /* 返回顶部按钮 */
+        #backToTop {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(74,144,226,0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        #backToTop:hover {
+            background: #357ABD;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(74,144,226,0.5);
+        }
+
+        /* AI小助手圆形按钮 */
+        .ai-float-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.4);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+
+        .ai-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+        }
+
+        /* AI对话框 */
+        .ai-dialog {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 360px;
+            height: 480px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-dialog.show {
+            display: flex;
+        }
+
+        .ai-dialog-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-dialog-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .ai-close-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .ai-dialog-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .ai-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .ai-message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .ai-bot .ai-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .ai-user .ai-avatar {
+            background: #4A90E2;
+        }
+
+        .ai-text {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            max-width: 260px;
+        }
+
+        .ai-user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-user .ai-text {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .ai-input-area {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .ai-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .ai-input-area input:focus {
+            border-color: #4A90E2;
+        }
+
+        .ai-input-area button {
+            padding: 12px 24px;
+            background: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .ai-input-area button:hover {
+            background: #357ABD;
+        }
+
+        .ai-upload-label {
+            padding: 12px 14px;
+            background: #28a745;
+            color: white;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-upload-label:hover {
+            background: #218838;
+        }
+
+        .ai-image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .ai-correction-result {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .ai-correction-result.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .ai-correction-result.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-tab {
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            color: #555;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: left;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .nav-tab:hover {
+            background: #fff;
+            border-color: #4A90E2;
+            color: #4A90E2;
+            box-shadow: 0 2px 4px rgba(74,144,226,0.15);
+        }
+
+        .nav-tab.active {
+            background: #4A90E2;
+            border-color: #4A90E2;
+            color: white;
+            box-shadow: 0 2px 6px rgba(74,144,226,0.3);
+        }
+
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px 20px;
+            flex-shrink: 0;
+            height: fit-content;
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            border-right: 1px solid #dee2e6;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+            min-height: calc(100vh - 80px);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 知识点小标题样式 */
+        .knowledge-card-content h4 {
+            color: #2c5282;
+            margin: 20px 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 3px solid #4A90E2;
+        }
+
+        .greeting-card {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .greeting-card h2 {
+            color: #4A90E2;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .greeting-card p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .guide-step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4A90E2;
+        }
+
+        .guide-step h3 {
+            color: #4A90E2;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .guide-step p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .chapter-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .chapter-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #6c757d;
+        }
+
+        .chapter-item h3 {
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .chapter-item p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .knowledge-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #4A90E2;
+            overflow: hidden;
+        }
+
+        .knowledge-card-header {
+            background: linear-gradient(135deg, #4A90E2 0%, #5BA3F5 100%);
+            color: white;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .knowledge-card-header:hover {
+            background: linear-gradient(135deg, #3a80d2 0%, #4b93e5 100%);
+        }
+
+        .knowledge-card-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .knowledge-card-toggle {
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .knowledge-card.collapsed .knowledge-card-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .knowledge-card-content {
+            padding: 15px;
+            max-height: 3000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s;
+        }
+
+        .knowledge-card.collapsed .knowledge-card-content {
+            max-height: 0;
+            padding: 0 15px;
+        }
+
+        .knowledge-card ul {
+            list-style: none;
+        }
+
+        .knowledge-card li {
+            padding: 5px 0;
+            color: #555;
+            padding-left: 20px;
+            position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .knowledge-card li:before {
+            content: "✓";
+            color: #4A90E2;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .exercise-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .exercise-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .exercise-question {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4A90E2;
+        }
+
+        .exercise-question p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .answer-section {
+            display: none;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 3px solid #28a745;
+        }
+
+        .chapter-exercises {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .answer-section.show {
+            display: block;
+        }
+
+        .choices {
+            margin: 15px 0;
+        }
+
+        .choice {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .choice:hover {
+            background: #e8f4ff;
+            border-color: #4A90E2;
+        }
+
+        .choice.selected {
+            background: #4A90E2;
+            color: white;
+            border-color: #4A90E2;
+        }
+
+        .choice.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .choice.wrong {
+            background: #F44336;
+            color: white;
+            border-color: #F44336;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            display: block;
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .answer-section h4 {
+            color: #28a745;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .answer-section p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .error-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ffc107;
+        }
+
+        .error-item h4 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .error-item p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 七上数学自学助手</h1>
+        </div>
+
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="nav-tabs">
+                    <div class="nav-tab active" onclick="switchTab('home')">🏠 首页</div>
+                    <div class="nav-tab" onclick="switchTab('knowledge')">📖 知识点梳理</div>
+                    <div class="nav-tab" onclick="switchTab('exercise')">✏️ 例题练习</div>
+                    <div class="nav-tab" onclick="switchTab('errorbook')">📝 错题本</div>
+                </div>
+            </div>
+
+            <div class="main-content">
+            <div id="home" class="tab-content active">
+                <h2 class="section-title">欢迎使用</h2>
+                
+                <div class="greeting-card">
+                    <h2>👋 你好！</h2>
+                    <p>这是七年级上册数学自学助手，帮你高效备考、轻松提分！</p>
+                </div>
+
+                <h2 class="section-title">使用步骤</h2>
+                <div class="guide-steps">
+                    <div class="guide-step">
+                        <h3>📚 学知识点</h3>
+                        <p>学习各章节考点，熟记公式法则</p>
+                    </div>
+                    <div class="guide-step">
+                        <h3>✏️ 做例题</h3>
+                        <p>做典型例题，点击"查看答案"核对</p>
+                    </div>
+                    <div class="guide-step">
+                        <h3>📝 记错题</h3>
+                        <p>错题一键加入错题本</p>
+                    </div>
+                    <div class="guide-step">
+                        <h3>🔄 勤复习</h3>
+                        <p>定期复习错题，掌握后可清空</p>
+                    </div>
+                </div>
+
+                <h2 class="section-title">教材目录</h2>
+                <div class="chapter-list">
+                    <div class="chapter-item">
+                        <h3>第一章：丰富的图形世界</h3>
+                        <p>生活中的立体图形 • 展开与折叠 • 截一个几何体 • 从三个方向看物体的形状</p>
+                    </div>
+                    <div class="chapter-item">
+                        <h3>第二章：有理数及其运算</h3>
+                        <p>有理数 • 数轴 • 相反数 • 绝对值 • 有理数的加减乘除 • 乘方 • 科学记数法 • 混合运算</p>
+                    </div>
+                    <div class="chapter-item">
+                        <h3>第三章：整式及其加减</h3>
+                        <p>字母表示数 • 代数式 • 整式 • 整式的加减</p>
+                    </div>
+                    <div class="chapter-item">
+                        <h3>第四章：基本平面图形</h3>
+                        <p>线段、射线、直线 • 比较线段的长短 • 角 • 角的比较 • 多边形和圆的初步认识</p>
+                    </div>
+                    <div class="chapter-item">
+                        <h3>第五章：一元一次方程</h3>
+                        <p>认识一元一次方程 • 求解一元一次方程 • 一元一次方程的应用</p>
+                    </div>
+                    <div class="chapter-item">
+                        <h3>第六章：数据的收集与整理</h3>
+                        <p>数据的收集 • 普查和抽样调查 • 数据的表示 • 统计图的选择</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="knowledge" class="tab-content">
+                <h2 class="section-title">📚 知识点梳理</h2>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; margin-bottom: 25px; color: white;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 36px;">📖</div>
+                        <div>
+                            <h3 style="margin-bottom: 8px; font-size: 16px;">功能介绍</h3>
+                            <p style="opacity: 0.9; font-size: 13px; line-height: 1.6;">这里整理了北师大版七年级上册数学的全部知识点，按章节分类。点击章节标题可以展开/收起查看详细内容，包括概念讲解、公式总结和图形示例。建议先学习知识点，再做例题练习巩固。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第一章：丰富的图形世界</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #2c5282; margin: 20px 0 12px 0; font-size: 16px; font-weight: 600; padding: 8px 0; border-bottom: 2px solid #e2e8f0;">📌 常见的立体图形</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 20px; background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%); border-radius: 12px; overflow: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+                        <svg width="550" height="140" viewBox="0 0 550 140" style="max-width: 100%;">
+                            <!-- 正方体 -->
+                            <g transform="translate(50, 20)">
+                                <!-- 前面 -->
+                                <rect x="0" y="20" width="50" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <!-- 顶面 -->
+                                <path d="M0,20 L15,10 L65,10 L50,20 Z" fill="#bbdefb" stroke="#1976d2" stroke-width="2"/>
+                                <!-- 右侧面 -->
+                                <path d="M50,20 L65,10 L65,60 L50,70 Z" fill="#90caf9" stroke="#1976d2" stroke-width="2"/>
+                                <text x="32.5" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">正方体</text>
+                            </g>
+                            <!-- 长方体 -->
+                            <g transform="translate(170, 20)">
+                                <!-- 前面 -->
+                                <rect x="0" y="20" width="70" height="50" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+                                <!-- 顶面 -->
+                                <path d="M0,20 L15,10 L85,10 L70,20 Z" fill="#c8e6c9" stroke="#388e3c" stroke-width="2"/>
+                                <!-- 右侧面 -->
+                                <path d="M70,20 L85,10 L85,60 L70,70 Z" fill="#a5d6a7" stroke="#388e3c" stroke-width="2"/>
+                                <text x="35" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="#388e3c">长方体</text>
+                            </g>
+                            <!-- 圆柱 -->
+                            <g transform="translate(320, 20)">
+                                <!-- 顶面椭圆 -->
+                                <ellipse cx="30" cy="15" rx="28" ry="10" fill="none" stroke="#f57c00" stroke-width="2"/>
+                                <!-- 左侧边线 -->
+                                <line x1="2" y1="15" x2="2" y2="60" stroke="#f57c00" stroke-width="2"/>
+                                <!-- 右侧边线 -->
+                                <line x1="58" y1="15" x2="58" y2="60" stroke="#f57c00" stroke-width="2"/>
+                                <!-- 底面椭圆 -->
+                                <ellipse cx="30" cy="60" rx="28" ry="10" fill="none" stroke="#f57c00" stroke-width="2"/>
+                                <text x="30" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="#f57c00">圆柱</text>
+                            </g>
+                            <!-- 圆锥 -->
+                            <g transform="translate(470, 20)">
+                                <!-- 顶点 -->
+                                <circle cx="30" cy="10" r="2" fill="#c2185b"/>
+                                <!-- 左侧边线 -->
+                                <line x1="30" y1="10" x2="2" y2="60" stroke="#c2185b" stroke-width="2"/>
+                                <!-- 右侧边线 -->
+                                <line x1="30" y1="10" x2="58" y2="60" stroke="#c2185b" stroke-width="2"/>
+                                <!-- 底面椭圆 -->
+                                <ellipse cx="30" cy="60" rx="28" ry="10" fill="none" stroke="#c2185b" stroke-width="2"/>
+                                <text x="30" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="#c2185b">圆锥</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4>📌 正方体的展开图（11 种）</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="600" height="150" viewBox="0 0 600 150" style="max-width: 100%;">
+                            <!-- 141 型 -->
+                            <g transform="translate(30, 5)">
+                                <rect x="0" y="20" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <rect x="20" y="20" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <rect x="40" y="20" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <rect x="60" y="20" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <rect x="20" y="0" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <rect x="20" y="40" width="20" height="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                <text x="40" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#1976d2">141 型 (6 种)</text>
+                            </g>
+                            <!-- 132 型 -->
+                            <g transform="translate(180, 5)">
+                                <!-- 第一行 2 个（左右排列） -->
+                                <rect x="0" y="0" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <rect x="20" y="0" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <!-- 第二行 3 个（在中间下方，向右错开） -->
+                                <rect x="20" y="20" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <rect x="40" y="20" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <rect x="60" y="20" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <!-- 第三行 1 个（在中间下方） -->
+                                <rect x="40" y="40" width="20" height="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+                                <text x="40" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#388e3c">132 型 (3 种)</text>
+                            </g>
+                            <!-- 222 型 -->
+                            <g transform="translate(330, 5)">
+                                <!-- 第一行 2 个（左上） -->
+                                <rect x="0" y="0" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <rect x="20" y="0" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <!-- 第二行 2 个（向右下错开） -->
+                                <rect x="20" y="20" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <rect x="40" y="20" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <!-- 第三行 2 个（再向右下错开） -->
+                                <rect x="40" y="40" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <rect x="60" y="40" width="20" height="20" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+                                <text x="40" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#f57c00">222 型 (1 种)</text>
+                            </g>
+                            <!-- 33 型 -->
+                            <g transform="translate(480, 5)">
+                                <!-- 第一行 3 个 -->
+                                <rect x="0" y="0" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <rect x="20" y="0" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <rect x="40" y="0" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <!-- 第二行 3 个（向右错开两格） -->
+                                <rect x="40" y="20" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <rect x="60" y="20" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <rect x="80" y="20" width="20" height="20" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+                                <text x="40" y="75" text-anchor="middle" font-size="12" font-weight="bold" fill="#c2185b">33 型 (1 种)</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4>📌 截面形状</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="500" height="100" viewBox="0 0 500 100">
+                            <g transform="translate(40, 10)">
+                                <polygon points="20,5 35,35 5,35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <text x="20" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#1976d2">三角形</text>
+                            </g>
+                            <g transform="translate(140, 10)">
+                                <rect x="5" y="5" width="30" height="30" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+                                <text x="20" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#388e3c">四边形</text>
+                            </g>
+                            <g transform="translate(240, 10)">
+                                <polygon points="20,5 35,15 30,35 10,35 5,15" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+                                <text x="20" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#f57c00">五边形</text>
+                            </g>
+                            <g transform="translate(340, 10)">
+                                <polygon points="20,5 35,15 35,30 20,40 5,30 5,15" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+                                <text x="20" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#c2185b">六边形</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4>📌 圆柱的三视图</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="400" height="135" viewBox="0 0 400 135" style="max-width: 100%;">
+                            <!-- 标题 -->
+                            <text x="200" y="15" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">圆柱的三视图</text>
+                            <!-- 主视图 -->
+                            <g transform="translate(50, 25)">
+                                <rect x="0" y="0" width="50" height="70" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+                                <text x="25" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">主视图</text>
+                                <text x="25" y="105" text-anchor="middle" font-size="11" fill="#666">（长方形）</text>
+                            </g>
+                            <!-- 左视图 -->
+                            <g transform="translate(180, 25)">
+                                <rect x="0" y="0" width="50" height="70" fill="#e8f5e9" stroke="#388e3c" stroke-width="2.5"/>
+                                <text x="25" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#388e3c">左视图</text>
+                                <text x="25" y="105" text-anchor="middle" font-size="11" fill="#666">（长方形）</text>
+                            </g>
+                            <!-- 俯视图 -->
+                            <g transform="translate(310, 25)">
+                                <circle cx="25" cy="35" r="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2.5"/>
+                                <text x="25" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#f57c00">俯视图</text>
+                                <text x="25" y="105" text-anchor="middle" font-size="11" fill="#666">（圆形）</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <ul style="margin-top: 20px;">
+                        <li><span class="highlight">常见的立体图形</span>：长方体、正方体、圆柱、圆锥、球、棱柱、棱锥</li>
+                        <li><span class="highlight">点、线、面、体</span>：点动成线，线动成面，面动成体</li>
+                        <li><span class="highlight">正方体的展开图</span>：共有 11 种，分为"141 型"6 种、"132 型"3 种、"222 型"1 种、"33 型"1 种</li>
+                        <li><span class="highlight">截面</span>：用一个平面去截几何体，得到的平面图形（三角形、四边形、五边形、六边形）</li>
+                        <li><span class="highlight">三视图</span>：
+                            <ul>
+                                <li>主视图（从正面看）</li>
+                                <li>左视图（从左面看）</li>
+                                <li>俯视图（从上面看）</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch1')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第二章：有理数及其运算</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 数轴</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="580" height="80" viewBox="0 0 580 80" style="max-width: 100%;">
+                            <!-- 数轴 -->
+                            <line x1="30" y1="40" x2="550" y2="40" stroke="#1976d2" stroke-width="3"/>
+                            <!-- 正方向箭头 -->
+                            <line x1="550" y1="40" x2="540" y2="35" stroke="#1976d2" stroke-width="3"/>
+                            <line x1="550" y1="40" x2="540" y2="45" stroke="#1976d2" stroke-width="3"/>
+                            <!-- 负方向箭头 -->
+                            <line x1="30" y1="40" x2="40" y2="35" stroke="#1976d2" stroke-width="3"/>
+                            <line x1="30" y1="40" x2="40" y2="45" stroke="#1976d2" stroke-width="3"/>
+                            <!-- 刻度 -->
+                            <line x1="80" y1="35" x2="80" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="155" y1="35" x2="155" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="230" y1="35" x2="230" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="305" y1="35" x2="305" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="380" y1="35" x2="380" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="455" y1="35" x2="455" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <line x1="530" y1="35" x2="530" y2="45" stroke="#1976d2" stroke-width="2"/>
+                            <!-- 数字 -->
+                            <text x="80" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">-3</text>
+                            <text x="155" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">-2</text>
+                            <text x="230" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">-1</text>
+                            <text x="305" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">0</text>
+                            <text x="380" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">1</text>
+                            <text x="455" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">2</text>
+                            <text x="530" y="65" text-anchor="middle" font-size="14" fill="#1976d2" font-weight="bold">3</text>
+                            <!-- 原点标记 -->
+                            <text x="305" y="25" text-anchor="middle" font-size="12" fill="#f57c00" font-weight="bold">原点</text>
+                            <!-- 负方向标注 -->
+                            <text x="40" y="25" text-anchor="middle" font-size="12" fill="#e53935" font-weight="bold">负方向</text>
+                            <!-- 正方向箭头 -->
+                            <text x="555" y="25" text-anchor="middle" font-size="12" fill="#388e3c" font-weight="bold">正方向</text>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 相反数与绝对值</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="100" viewBox="0 0 550 100" style="max-width: 100%;">
+                            <!-- 相反数示例 -->
+                            <g transform="translate(30, 10)">
+                                <text x="100" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">相反数示例</text>
+                                <text x="100" y="50" text-anchor="middle" font-size="16" fill="#333">5 的相反数是 -5</text>
+                                <text x="100" y="75" text-anchor="middle" font-size="16" fill="#333">-3 的相反数是 3</text>
+                            </g>
+                            <!-- 绝对值示例 -->
+                            <g transform="translate(300, 10)">
+                                <text x="120" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#f57c00">绝对值示例</text>
+                                <text x="120" y="50" text-anchor="middle" font-size="16" fill="#333">|5| = 5</text>
+                                <text x="120" y="75" text-anchor="middle" font-size="16" fill="#333">|-3| = 3</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <ul>
+                        <li><span class="highlight">有理数的分类</span>：
+                            <ul>
+                                <li>整数：正整数、0、负整数</li>
+                                <li>分数：正分数、负分数</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">数轴三要素</span>：原点、正方向、单位长度</li>
+                        <li><span class="highlight">相反数</span>：只有符号不同的两个数，a 的相反数是 -a，0 的相反数是 0</li>
+                        <li><span class="highlight">绝对值</span>：
+                            <ul>
+                                <li>几何意义：数轴上表示数的点到原点的距离</li>
+                                <li>代数意义：|a| = a (a>0), |a| = 0 (a=0), |a| = -a (a<0)</li>
+                                <li>性质：|a| ≥ 0，|a| = |-a|</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">有理数加法法则</span>：
+                            <ul>
+                                <li>同号两数相加，取相同的符号，并把绝对值相加</li>
+                                <li>异号两数相加，取绝对值较大的加数的符号，并用较大的绝对值减去较小的绝对值</li>
+                                <li>一个数同 0 相加，仍得这个数</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">有理数减法法则</span>：减去一个数，等于加上这个数的相反数。a - b = a + (-b)</li>
+                        <li><span class="highlight">有理数乘法法则</span>：
+                            <ul>
+                                <li>两数相乘，同号得正，异号得负，并把绝对值相乘</li>
+                                <li>任何数与 0 相乘，都得 0</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">有理数除法法则</span>：
+                            <ul>
+                                <li>除以一个不等于 0 的数，等于乘这个数的倒数。a ÷ b = a × (1/b) (b≠0)</li>
+                                <li>两数相除，同号得正，异号得负，并把绝对值相除</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">乘方</span>：求 n 个相同因数的积的运算，记作 aⁿ，a 是底数，n 是指数</li>
+                        <li><span class="highlight">科学记数法</span>：把一个大于 10 的数表示成 a×10ⁿ 的形式（1≤|a|<10，n 是正整数）</li>
+                        <li><span class="highlight">有理数混合运算顺序</span>：先算乘方，再算乘除，最后算加减；如果有括号，先算括号里面的</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch2')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第三章：整式及其加减</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 单项式与多项式</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="500" height="100" viewBox="0 0 500 100" style="max-width: 100%;">
+                            <!-- 单项式 -->
+                            <g transform="translate(20, 10)">
+                                <text x="100" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">单项式示例</text>
+                                <text x="100" y="50" text-anchor="middle" font-size="16" fill="#333">3x²y</text>
+                                <text x="100" y="75" text-anchor="middle" font-size="13" fill="#666">系数：3，次数：3</text>
+                            </g>
+                            <!-- 多项式 -->
+                            <g transform="translate(260, 10)">
+                                <text x="110" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#f57c00">多项式示例</text>
+                                <text x="110" y="50" text-anchor="middle" font-size="16" fill="#333">2x² + 3x - 5</text>
+                                <text x="110" y="75" text-anchor="middle" font-size="13" fill="#666">三项式，次数：2</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 合并同类项</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="400" height="90" viewBox="0 0 400 90" style="max-width: 100%;">
+                            <text x="200" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">合并同类项示例</text>
+                            <text x="200" y="55" text-anchor="middle" font-size="18" fill="#333">3x + 5x = 8x</text>
+                            <text x="200" y="85" text-anchor="middle" font-size="14" fill="#666">系数相加，字母不变</text>
+                        </svg>
+                    </div>
+                    
+                    <ul>
+                        <li><span class="highlight">代数式</span>：用运算符号把数和表示数的字母连接而成的式子</li>
+                        <li><span class="highlight">代数式的值</span>：用数值代替代数式中的字母，按照代数式指明的运算进行计算</li>
+                        <li><span class="highlight">单项式</span>：数与字母的积，单独的一个数或一个字母也是单项式</li>
+                        <li><span class="highlight">单项式的系数</span>：单项式中的数字因数</li>
+                        <li><span class="highlight">单项式的次数</span>：单项式中所有字母的指数和</li>
+                        <li><span class="highlight">多项式</span>：几个单项式的和</li>
+                        <li><span class="highlight">多项式的项</span>：多项式中的每个单项式</li>
+                        <li><span class="highlight">多项式的次数</span>：多项式里次数最高项的次数</li>
+                        <li><span class="highlight">整式</span>：单项式和多项式统称为整式</li>
+                        <li><span class="highlight">同类项</span>：所含字母相同，并且相同字母的指数也相同的项</li>
+                        <li><span class="highlight">合并同类项法则</span>：系数相加，字母和字母的指数不变</li>
+                        <li><span class="highlight">去括号法则</span>：
+                            <ul>
+                                <li>括号前面是"+"号，把括号和它前面的"+"号去掉，括号里各项都不改变符号</li>
+                                <li>括号前面是"-"号，把括号和它前面的"-"号去掉，括号里各项都改变符号</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">整式的加减</span>：几个整式相加减，有括号先去括号，然后合并同类项</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch3')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第四章：基本平面图形</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 线段、射线、直线</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="100" viewBox="0 0 550 100" style="max-width: 100%;">
+                            <!-- 线段 -->
+                            <g transform="translate(30, 10)">
+                                <line x1="20" y1="30" x2="220" y2="30" stroke="#1976d2" stroke-width="3"/>
+                                <circle cx="20" cy="30" r="5" fill="#1976d2"/>
+                                <circle cx="220" cy="30" r="5" fill="#1976d2"/>
+                                <text x="120" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">线段 AB</text>
+                                <text x="120" y="60" text-anchor="middle" font-size="12" fill="#666">两个端点，可度量</text>
+                            </g>
+                            <!-- 射线 -->
+                            <g transform="translate(300, 10)">
+                                <line x1="20" y1="30" x2="250" y2="30" stroke="#388e3c" stroke-width="3"/>
+                                <circle cx="20" cy="30" r="5" fill="#388e3c"/>
+                                <polygon points="250,30 240,25 240,35" fill="#388e3c"/>
+                                <text x="135" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#388e3c">射线 OA</text>
+                                <text x="135" y="60" text-anchor="middle" font-size="12" fill="#666">一个端点，无限延伸</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 角的构成</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="350" height="140" viewBox="0 0 350 140" style="max-width: 100%;">
+                            <!-- 角的两条边 -->
+                            <line x1="40" y1="100" x2="200" y2="100" stroke="#1976d2" stroke-width="3"/>
+                            <line x1="40" y1="100" x2="180" y2="30" stroke="#1976d2" stroke-width="3"/>
+                            <!-- 角的弧线 -->
+                            <path d="M 65 100 A 25 25 0 0 0 58 82" fill="none" stroke="#f57c00" stroke-width="2"/>
+                            <!-- 顶点标记 -->
+                            <circle cx="40" cy="100" r="4" fill="#f57c00"/>
+                            <!-- 角的标记 -->
+                            <text x="85" y="75" text-anchor="middle" font-size="16" font-weight="bold" fill="#f57c00">∠AOB</text>
+                            <!-- 标注 -->
+                            <text x="220" y="40" text-anchor="start" font-size="13" fill="#666">顶点：O</text>
+                            <text x="220" y="65" text-anchor="start" font-size="13" fill="#666">边 OA（斜边）</text>
+                            <text x="220" y="90" text-anchor="start" font-size="13" fill="#666">边 OB（底边）</text>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 角的分类</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="300" height="110" viewBox="0 0 300 110" style="max-width: 100%;">
+                            <text x="150" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="#388e3c">按角度大小分类</text>
+                            <text x="150" y="55" text-anchor="middle" font-size="14" fill="#333">锐角：0° < α < 90°</text>
+                            <text x="150" y="80" text-anchor="middle" font-size="14" fill="#333">直角：α = 90°</text>
+                            <text x="150" y="105" text-anchor="middle" font-size="14" fill="#333">钝角：90° < α < 180°</text>
+                        </svg>
+                    </div>
+                    
+                    <ul>
+                        <li><span class="highlight">线段</span>：有两个端点，可以度量长度</li>
+                        <li><span class="highlight">射线</span>：有一个端点，向一方无限延伸，不可度量</li>
+                        <li><span class="highlight">直线</span>：没有端点，向两方无限延伸，不可度量</li>
+                        <li><span class="highlight">线段的基本事实</span>：两点之间，线段最短</li>
+                        <li><span class="highlight">两点确定一条直线</span></li>
+                        <li><span class="highlight">线段的中点</span>：把一条线段分成两条相等线段的点</li>
+                        <li><span class="highlight">角</span>：有公共端点的两条射线组成的图形，公共端点是顶点</li>
+                        <li><span class="highlight">角的表示</span>：∠AOB、∠O、∠1、∠α</li>
+                        <li><span class="highlight">角的度量</span>：1°=60′，1′=60″</li>
+                        <li><span class="highlight">角的平分线</span>：从一个角的顶点出发，把这个角分成两个相等的角的射线</li>
+                        <li><span class="highlight">余角和补角</span>：
+                            <ul>
+                                <li>余角：如果两个角的和等于 90°，那么这两个角互为余角</li>
+                                <li>补角：如果两个角的和等于 180°，那么这两个角互为补角</li>
+                                <li>性质：同角（或等角）的余角相等；同角（或等角）的补角相等</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">多边形</span>：由一些线段首尾顺次连接组成的封闭图形</li>
+                        <li><span class="highlight">圆</span>：到定点的距离等于定长的所有点组成的图形</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch4')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第五章：一元一次方程</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 方程示例</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="100" viewBox="0 0 550 100" style="max-width: 100%;">
+                            <!-- 一元一次方程 -->
+                            <g transform="translate(30, 10)">
+                                <text x="120" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">一元一次方程</text>
+                                <text x="120" y="50" text-anchor="middle" font-size="18" fill="#333">2x + 3 = 7</text>
+                                <text x="120" y="75" text-anchor="middle" font-size="13" fill="#666">只含一个未知数，次数为 1</text>
+                            </g>
+                            <!-- 方程的解 -->
+                            <g transform="translate(300, 10)">
+                                <text x="120" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#f57c00">方程的解</text>
+                                <text x="120" y="50" text-anchor="middle" font-size="18" fill="#333">x = 2</text>
+                                <text x="120" y="75" text-anchor="middle" font-size="13" fill="#666">使方程左右两边相等</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 解方程步骤</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="80" viewBox="0 0 550 80" style="max-width: 100%;">
+                            <text x="300" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">解方程步骤</text>
+                            <text x="300" y="50" text-anchor="middle" font-size="13" fill="#333">去分母 → 去括号 → 移项 → 合并同类项 → 系数化为 1</text>
+                            <text x="300" y="70" text-anchor="middle" font-size="12" fill="#666">每一步都要注意符号变化</text>
+                        </svg>
+                    </div>
+                    
+                    <ul>
+                        <li><span class="highlight">方程</span>：含有未知数的等式</li>
+                        <li><span class="highlight">一元一次方程</span>：只含有一个未知数，并且未知数的次数是 1 的整式方程</li>
+                        <li><span class="highlight">方程的解</span>：使方程左右两边相等的未知数的值</li>
+                        <li><span class="highlight">等式的基本性质</span>：
+                            <ul>
+                                <li>性质 1：等式两边同时加上（或减去）同一个代数式，所得结果仍是等式</li>
+                                <li>性质 2：等式两边同时乘同一个数（或除以同一个不为 0 的数），所得结果仍是等式</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">解一元一次方程的一般步骤</span>：
+                            <ul>
+                                <li>去分母（方程两边都乘各分母的最小公倍数）</li>
+                                <li>去括号（先去小括号，再去中括号，最后去大括号）</li>
+                                <li>移项（把含有未知数的项移到方程的一边，常数项移到另一边）</li>
+                                <li>合并同类项</li>
+                                <li>系数化为 1（方程两边都除以未知数的系数）</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">列方程解应用题的一般步骤</span>：
+                            <ul>
+                                <li>审：审题，分析已知量和未知量</li>
+                                <li>设：设未知数</li>
+                                <li>列：列出方程</li>
+                                <li>解：解方程</li>
+                                <li>答：检验并写出答案</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">常见应用题类型</span>：
+                            <ul>
+                                <li>行程问题：路程 = 速度 × 时间</li>
+                                <li>工程问题：工作总量 = 工作效率 × 工作时间</li>
+                                <li>利润问题：利润 = 售价 - 进价，利润率 = 利润÷进价×100%</li>
+                                <li>储蓄问题：利息 = 本金 × 利率 × 期数</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch5')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed">
+                    <div class="knowledge-card-header" onclick="toggleKnowledgeCard(this)">
+                        <h3>第六章：数据的收集与整理</h3>
+                        <span class="knowledge-card-toggle">▼</span>
+                    </div>
+                    <div class="knowledge-card-content">
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 统计图类型</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="120" viewBox="0 0 550 120" style="max-width: 100%;">
+                            <!-- 条形统计图 -->
+                            <g transform="translate(30, 10)">
+                                <text x="80" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">条形统计图</text>
+                                <rect x="20" y="30" width="30" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <rect x="60" y="50" width="30" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <rect x="100" y="20" width="30" height="70" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <text x="80" y="110" text-anchor="middle" font-size="11" fill="#666">表示具体数目</text>
+                            </g>
+                            <!-- 折线统计图 -->
+                            <g transform="translate(220, 10)">
+                                <text x="80" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#388e3c">折线统计图</text>
+                                <polyline points="20,80 50,60 80,70 110,30 140,50" fill="none" stroke="#388e3c" stroke-width="2"/>
+                                <circle cx="20" cy="80" r="3" fill="#388e3c"/>
+                                <circle cx="50" cy="60" r="3" fill="#388e3c"/>
+                                <circle cx="80" cy="70" r="3" fill="#388e3c"/>
+                                <circle cx="110" cy="30" r="3" fill="#388e3c"/>
+                                <circle cx="140" cy="50" r="3" fill="#388e3c"/>
+                                <text x="80" y="110" text-anchor="middle" font-size="11" fill="#666">反映变化情况</text>
+                            </g>
+                            <!-- 扇形统计图 -->
+                            <g transform="translate(410, 10)">
+                                <text x="80" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#f57c00">扇形统计图</text>
+                                <circle cx="80" cy="55" r="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+                                <line x1="80" y1="55" x2="80" y2="20" stroke="#f57c00" stroke-width="2"/>
+                                <line x1="80" y1="55" x2="110" y2="70" stroke="#f57c00" stroke-width="2"/>
+                                <text x="80" y="110" text-anchor="middle" font-size="11" fill="#666">表示百分比</text>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <h4 style="color: #4A90E2; margin: 15px 0 10px 0;">📌 数据收集方法</h4>
+                    <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                        <svg width="550" height="80" viewBox="0 0 550 80" style="max-width: 100%;">
+                            <text x="300" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">数据收集方法</text>
+                            <text x="300" y="50" text-anchor="middle" font-size="13" fill="#333">问卷调查 • 访谈 • 查阅资料 • 实验 • 观察</text>
+                            <text x="300" y="70" text-anchor="middle" font-size="12" fill="#666">普查 vs 抽样调查</text>
+                        </svg>
+                    </div>
+                    
+                    <ul>
+                        <li><span class="highlight">数据的收集方法</span>：问卷调查、访谈、查阅资料、实验、观察等</li>
+                        <li><span class="highlight">普查</span>：为某一特定目的而对所有考察对象进行的全面调查</li>
+                        <li><span class="highlight">抽样调查</span>：从总体中抽取部分个体进行调查</li>
+                        <li><span class="highlight">总体、个体、样本</span>：
+                            <ul>
+                                <li>总体：所要考察对象的全体</li>
+                                <li>个体：组成总体的每一个考察对象</li>
+                                <li>样本：从总体中抽取的一部分个体</li>
+                                <li>样本容量：样本中个体的数目</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">统计图</span>：
+                            <ul>
+                                <li>条形统计图：能清楚地表示出每个项目的具体数目</li>
+                                <li>折线统计图：能清楚地反映事物的变化情况</li>
+                                <li>扇形统计图：能清楚地表示出各部分在总体中所占的百分比</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">扇形统计图</span>：
+                            <ul>
+                                <li>圆心角 = 360° × 百分比</li>
+                                <li>所有扇形圆心角的和 = 360°</li>
+                                <li>所有百分比的和 = 1</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="showExercises('ch6')">查看本章练习</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="exercise" class="tab-content">
+                <h2 class="section-title">✏️ 例题练习</h2>
+                <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 20px; border-radius: 12px; margin-bottom: 25px; color: white;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 36px;">📝</div>
+                        <div>
+                            <h3 style="margin-bottom: 8px; font-size: 16px;">功能介绍</h3>
+                            <p style="opacity: 0.9; font-size: 13px; line-height: 1.6;">这里提供各章节的精选练习题，支持在线答题和拍照上传解答。答对会有音效鼓励，答错自动加入错题本。每道题都有详细解析，帮助你理解解题思路。建议先独立思考，再查看答案。</p>
+                        </div>
+                    </div>
+                </div>
+                <p style="color: #666; margin-bottom: 20px;">请选择章节进行练习，每道题支持拍照上传解答：</p>
+                
+                <!-- 第一章练习 -->
+                <div id="ch1-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第一章：丰富的图形世界</h3>
+                    
+                    <div class="exercise-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">题目 1：立体图形识别</h3>
+                            <label for="homeworkUpload1" class="upload-btn-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                                📷 拍照解答
+                            </label>
+                            <input type="file" id="homeworkUpload1" accept="image/*" style="display:none" onchange="handleQuestionUpload(event, 1)">
+                        </div>
+                        <div class="exercise-question">
+                            <p>下列哪个图形是正方体的展开图？（  ）</p>
+                            <div class="diagram-container" style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                                <svg width="450" height="140" viewBox="0 0 450 140">
+                                    <!-- 选项 A - 141 型正方体展开图 -->
+                                    <g transform="translate(35, 10)">
+                                        <rect x="0" y="30" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <rect x="25" y="30" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <rect x="50" y="30" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <rect x="75" y="30" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <rect x="25" y="5" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <rect x="25" y="55" width="25" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                    </g>
+                                    <!-- 选项 B - 不是展开图（田字格） -->
+                                    <g transform="translate(175, 20)">
+                                        <rect x="0" y="30" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="25" y="30" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="50" y="30" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="25" y="5" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="50" y="5" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                    </g>
+                                    <!-- 选项 C - 不是展开图（一字长条） -->
+                                    <g transform="translate(315, 30)">
+                                        <rect x="0" y="0" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="25" y="0" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="50" y="0" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="75" y="0" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                        <rect x="100" y="0" width="25" height="25" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                    </g>
+                                    <!-- 字母标签（统一在底部对齐） -->
+                                    <text x="72.5" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#1976d2">A</text>
+                                    <text x="212.5" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#d32f2f">B</text>
+                                    <text x="352.5" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#d32f2f">C</text>
+                                </svg>
+                            </div>
+                            <div class="choices" data-correct="A" data-title="第一章 题目 1" data-desc="正方体展开图判断" data-analysis="正方体有 11 种展开图，其中"141 型"有 6 种">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 141 型展开图</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 田字形图形</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 一字形图形</div>
+                            </div>
+                            <div class="feedback"></div>
+                            <!-- 拍照结果显示区域 -->
+                            <div id="questionUploadResult1" style="margin-top: 15px; display: none;">
+                                <div style="background: #f0f4ff; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                                    <h4 style="margin-bottom: 10px; color: #4A90E2; font-size: 14px;">📷 你的解答</h4>
+                                    <img id="questionImage1" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 10px;" />
+                                    <div style="display: flex; gap: 10px;">
+                                        <button onclick="correctQuestionAnswer(1)" class="btn btn-primary" style="flex: 1; padding: 8px;">🤖 AI批改</button>
+                                        <button onclick="cancelQuestionUpload(1)" class="btn btn-secondary" style="flex: 1; padding: 8px;">取消</button>
+                                    </div>
+                                    <div id="questionCorrection1" style="margin-top: 10px; display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch1a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第一章 题目 1', '正方体展开图判断', '正方体有 11 种展开图，其中"141 型"有 6 种">加入错题本</button>
+                        <div id="ch1a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：A</p>
+                            <p>解析：正方体展开图有 11 种，"141 型"是其中一种基本类型。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">题目 2：三视图判断</h3>
+                            <label for="homeworkUpload2" class="upload-btn-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                                📷 拍照解答
+                            </label>
+                            <input type="file" id="homeworkUpload2" accept="image/*" style="display:none" onchange="handleQuestionUpload(event, 2)">
+                        </div>
+                        <div class="exercise-question">
+                            <p>一个几何体从正面看是长方形，从左面看是长方形，从上面看是圆，这个几何体是（  ）</p>
+                            <div class="diagram-container" style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                                <svg width="420" height="110" viewBox="0 0 420 110">
+                                    <!-- 主视图 -->
+                                    <g transform="translate(40, 10)">
+                                        <rect x="0" y="0" width="45" height="65" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+                                        <text x="22.5" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">主视图</text>
+                                    </g>
+                                    <!-- 左视图 -->
+                                    <g transform="translate(155, 10)">
+                                        <rect x="0" y="0" width="45" height="65" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+                                        <text x="22.5" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">左视图</text>
+                                    </g>
+                                    <!-- 俯视图 -->
+                                    <g transform="translate(270, 10)">
+                                        <circle cx="22.5" cy="32.5" r="22.5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+                                        <text x="22.5" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">俯视图</text>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="choices" data-correct="B" data-title="第一章 题目 2" data-desc="三视图判断几何体" data-analysis="圆柱的俯视图是圆，主视图和左视图都是长方形">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 长方体</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 圆柱</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 圆锥</div>
+                            </div>
+                            <div class="feedback"></div>
+                            <!-- 拍照结果显示区域 -->
+                            <div id="questionUploadResult2" style="margin-top: 15px; display: none;">
+                                <div style="background: #f0f4ff; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                                    <h4 style="margin-bottom: 10px; color: #4A90E2; font-size: 14px;">📷 你的解答</h4>
+                                    <img id="questionImage2" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 10px;" />
+                                    <div style="display: flex; gap: 10px;">
+                                        <button onclick="correctQuestionAnswer(2)" class="btn btn-primary" style="flex: 1; padding: 8px;">🤖 AI批改</button>
+                                        <button onclick="cancelQuestionUpload(2)" class="btn btn-secondary" style="flex: 1; padding: 8px;">取消</button>
+                                    </div>
+                                    <div id="questionCorrection2" style="margin-top: 10px; display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch1a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第一章 题目 2', '三视图判断几何体', '圆柱的俯视图是圆，主视图和左视图都是长方形')">加入错题本</button>
+                        <div id="ch1a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：B</p>
+                            <p>解析：圆柱从上面看是圆，从正面和左面看都是长方形。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0;">题目 3：截面形状</h3>
+                            <label for="homeworkUpload3" class="upload-btn-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                                📷 拍照解答
+                            </label>
+                            <input type="file" id="homeworkUpload3" accept="image/*" style="display:none" onchange="handleQuestionUpload(event, 3)">
+                        </div>
+                        <div class="exercise-question">
+                            <p>用一个平面去截正方体，截面不可能是（  ）</p>
+                            <div class="diagram-container" style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; overflow: auto;">
+                                <svg width="520" height="90" viewBox="0 0 520 90">
+                                    <!-- 三角形 -->
+                                    <g transform="translate(30, 5)">
+                                        <polygon points="13,0 26,23 0,23" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <text x="13" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976d2">三角形</text>
+                                    </g>
+                                    <!-- 四边形 -->
+                                    <g transform="translate(115, 5)">
+                                        <rect x="0" y="0" width="26" height="26" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <text x="13" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976d2">四边形</text>
+                                    </g>
+                                    <!-- 五边形 -->
+                                    <g transform="translate(195, 5)">
+                                        <polygon points="13,0 26,9 22,26 4,26 0,9" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <text x="13" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976d2">五边形</text>
+                                    </g>
+                                    <!-- 六边形 -->
+                                    <g transform="translate(275, 5)">
+                                        <polygon points="13,0 24,8 24,20 13,28 2,20 2,8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <text x="13" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976d2">六边形</text>
+                                    </g>
+                                    <!-- 七边形（不可能） -->
+                                    <g transform="translate(365, 5)">
+                                        <polygon points="13,0 24,8 26,20 18,28 8,28 0,20 2,8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                        <text x="13" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976d2">七边形</text>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="choices" data-correct="E" data-title="第一章 题目 3" data-desc="正方体的截面形状" data-analysis="正方体的截面可以是三角形、四边形、五边形、六边形，但不可能是七边形">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 三角形</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 四边形</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 五边形</div>
+                                <div class="choice" onclick="selectChoice(this, 'D')">D. 六边形</div>
+                                <div class="choice" onclick="selectChoice(this, 'E')">E. 七边形</div>
+                            </div>
+                            <div class="feedback"></div>
+                            <!-- 拍照结果显示区域 -->
+                            <div id="questionUploadResult3" style="margin-top: 15px; display: none;">
+                                <div style="background: #f0f4ff; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                                    <h4 style="margin-bottom: 10px; color: #4A90E2; font-size: 14px;">📷 你的解答</h4>
+                                    <img id="questionImage3" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 10px;" />
+                                    <div style="display: flex; gap: 10px;">
+                                        <button onclick="correctQuestionAnswer(3)" class="btn btn-primary" style="flex: 1; padding: 8px;">🤖 AI批改</button>
+                                        <button onclick="cancelQuestionUpload(3)" class="btn btn-secondary" style="flex: 1; padding: 8px;">取消</button>
+                                    </div>
+                                    <div id="questionCorrection3" style="margin-top: 10px; display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch1a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第一章 题目 3', '正方体的截面形状', '正方体的截面可以是三角形、四边形、五边形、六边形，但不可能是七边形')">加入错题本</button>
+                        <div id="ch1a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：D</p>
+                            <p>解析：正方体有 6 个面，截面最多与 6 个面相交，得到六边形，不可能是七边形。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第二章练习 -->
+                <div id="ch2-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第二章：有理数及其运算</h3>
+                    
+                    <div class="exercise-card">
+                        <h3>题目 1：有理数加法</h3>
+                        <div class="exercise-question">
+                            <p>计算：(-3) + (-5) - (-8) × 2</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch2a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第二章 题目 1', '(-3) + (-5) - (-8) × 2', '解：原式 = -3-5+16 = 8')">加入错题本</button>
+                        <div id="ch2a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = -3 + (-5) - (-16)</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -8 + 16</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 8</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 2：绝对值计算</h3>
+                        <div class="exercise-question">
+                            <p>计算：|-5| + |3| - |-2|</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch2a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第二章 题目 2', '|-5| + |3| - |-2|', '解：原式 = 5 + 3 - 2 = 6')">加入错题本</button>
+                        <div id="ch2a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = 5 + 3 - 2</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 6</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 3：有理数混合运算</h3>
+                        <div class="exercise-question">
+                            <p>计算：-2² + (-3)² × 2 - 4 ÷ (-2)</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch2a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第二章 题目 3', '-2² + (-3)² × 2 - 4 ÷ (-2)', '解：原式 = -4 + 9×2 - (-2) = -4+18+2 = 16')">加入错题本</button>
+                        <div id="ch2a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = -4 + 9 × 2 - (-2)</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -4 + 18 + 2</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 16</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 4：相反数与绝对值</h3>
+                        <div class="exercise-question">
+                            <p>已知|a| = 3，|b| = 5，且 a < b，求 a + b 的值。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch2a4')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第二章 题目 4', '相反数与绝对值', 'a = ±3, b = 5, a+b = 8 或 2')">加入错题本</button>
+                        <div id="ch2a4" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：∵ |a| = 3，|b| = 5</p>
+                            <p>∴ a = ±3，b = ±5</p>
+                            <p>又∵ a < b</p>
+                            <p>∴ b = 5，a = 3 或 a = -3</p>
+                            <p>当 a = 3 时，a + b = 3 + 5 = 8</p>
+                            <p>当 a = -3 时，a + b = -3 + 5 = 2</p>
+                            <p>综上所述，a + b = 8 或 2</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 5：科学记数法</h3>
+                        <div class="exercise-question">
+                            <p>用科学记数法表示：3500000 = ___________</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch2a5')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第二章 题目 5', '科学记数法', '3.5 × 10⁶')">加入错题本</button>
+                        <div id="ch2a5" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：3.5 × 10⁶</p>
+                            <p>解析：3500000 = 3.5 × 1000000 = 3.5 × 10⁶</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第三章练习 -->
+                <div id="ch3-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第三章：整式及其加减</h3>
+                    
+                    <div class="exercise-card">
+                        <h3>题目 1：合并同类项</h3>
+                        <div class="exercise-question">
+                            <p>化简：3x²y - 2xy² + 5x²y + 4xy²</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch3a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第三章 题目 1', '3x²y - 2xy² + 5x²y + 4xy²', '解：原式 = 8x²y + 2xy²')">加入错题本</button>
+                        <div id="ch3a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = (3x²y + 5x²y) + (-2xy² + 4xy²)</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 8x²y + 2xy²</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 2：去括号</h3>
+                        <div class="exercise-question">
+                            <p>化简：2(a + b) - 3(a - b)</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch3a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第三章 题目 2', '2(a + b) - 3(a - b)', '解：原式 = 2a+2b-3a+3b = -a+5b')">加入错题本</button>
+                        <div id="ch3a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = 2a + 2b - 3a + 3b</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -a + 5b</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 3：整式的加减</h3>
+                        <div class="exercise-question">
+                            <p>已知 A = 3x² - 2x + 1，B = x² + 4x - 5，求 A - 2B。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch3a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第三章 题目 3', '整式的加减', '解：A-2B = x²-10x+11')">加入错题本</button>
+                        <div id="ch3a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：A - 2B = (3x² - 2x + 1) - 2(x² + 4x - 5)</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3x² - 2x + 1 - 2x² - 8x + 10</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= x² - 10x + 11</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 4：单项式的系数和次数</h3>
+                        <div class="exercise-question">
+                            <p>单项式 -2³xy²的系数是______，次数是______。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch3a4')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第三章 题目 4', '单项式的系数和次数', '系数：-8，次数：3')">加入错题本</button>
+                        <div id="ch3a4" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：系数是 -8，次数是 3</p>
+                            <p>解析：-2³xy² = -8xy²，系数是 -8，次数是 1+2=3</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 5：化简求值</h3>
+                        <div class="exercise-question">
+                            <p>先化简，再求值：2(x²y + xy²) - 3(x²y - 1) - 2xy² - 4，其中 x = 1，y = -1。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch3a5')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第三章 题目 5', '化简求值', '解：原式 = -x²y-1，值为 0')">加入错题本</button>
+                        <div id="ch3a5" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：原式 = 2x²y + 2xy² - 3x²y + 3 - 2xy² - 4</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -x²y - 1</p>
+                            <p>当 x = 1，y = -1 时，</p>
+                            <p>原式 = -1² × (-1) - 1 = 1 - 1 = 0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第四章练习 -->
+                <div id="ch4-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第四章：基本平面图形</h3>
+                    
+                    <div class="exercise-card">
+                        <h3>题目 1：角度计算</h3>
+                        <div class="exercise-question">
+                            <p>已知∠AOB = 60°，OC 平分∠AOB，求∠AOC。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch4a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第四章 题目 1', '∠AOB = 60°，OC 平分∠AOB', '解：∠AOC = 1/2 × 60° = 30°')">加入错题本</button>
+                        <div id="ch4a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：∵ OC 平分∠AOB</p>
+                            <p>∴ ∠AOC = 1/2 ∠AOB = 1/2 × 60° = 30°</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 2：角度换算</h3>
+                        <div class="exercise-question">
+                            <p>计算：45°30′ + 23°45′</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch4a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第四章 题目 2', '45°30′ + 23°45′', '解：原式 = 68°75′ = 69°15′')">加入错题本</button>
+                        <div id="ch4a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：45°30′ + 23°45′ = 68°75′</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 69°15′</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 3：余角和补角</h3>
+                        <div class="exercise-question">
+                            <p>一个角的补角比它的余角大______度。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch4a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第四章 题目 3', '余角和补角', '答案：90')">加入错题本</button>
+                        <div id="ch4a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：90</p>
+                            <p>解析：设这个角为 x°，则它的补角是 (180-x)°，余角是 (90-x)°</p>
+                            <p>(180-x) - (90-x) = 180 - x - 90 + x = 90°</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 4：线段的中点</h3>
+                        <div class="exercise-question">
+                            <p>已知线段 AB = 10cm，点 C 是 AB 的中点，点 D 是 BC 的中点，求 AD 的长。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch4a4')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第四章 题目 4', '线段的中点', '解：AD = 7.5cm')">加入错题本</button>
+                        <div id="ch4a4" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：∵ C 是 AB 的中点，AB = 10cm</p>
+                            <p>∴ AC = BC = 5cm</p>
+                            <p>又∵ D 是 BC 的中点</p>
+                            <p>∴ CD = 2.5cm</p>
+                            <p>∴ AD = AC + CD = 5 + 2.5 = 7.5cm</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 5：角的计算</h3>
+                        <div class="exercise-question">
+                            <p>如图，O 是直线 AB 上一点，∠AOC = 50°，OD 平分∠BOC，求∠COD 的度数。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch4a5')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第四章 题目 5', '角的计算', '解：∠COD = 65°')">加入错题本</button>
+                        <div id="ch4a5" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：∵ O 是直线 AB 上一点</p>
+                            <p>∴ ∠AOB = 180°</p>
+                            <p>∴ ∠BOC = 180° - ∠AOC = 180° - 50° = 130°</p>
+                            <p>又∵ OD 平分∠BOC</p>
+                            <p>∴ ∠COD = 1/2 ∠BOC = 1/2 × 130° = 65°</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第五章练习 -->
+                <div id="ch5-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第五章：一元一次方程</h3>
+                    
+                    <div class="exercise-card">
+                        <h3>题目 1：解方程</h3>
+                        <div class="exercise-question">
+                            <p>解方程：3(x - 2) + 1 = 2x - 5</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch5a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第五章 题目 1', '3(x - 2) + 1 = 2x - 5', '解：3x-6+1=2x-5 → x=0')">加入错题本</button>
+                        <div id="ch5a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：去括号：3x - 6 + 1 = 2x - 5</p>
+                            <p>移项：3x - 2x = -5 + 6 - 1</p>
+                            <p>合并：x = 0</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 2：解方程</h3>
+                        <div class="exercise-question">
+                            <p>解方程：2x + 3 = 5x - 9</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch5a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第五章 题目 2', '2x + 3 = 5x - 9', '解：3x=12 → x=4')">加入错题本</button>
+                        <div id="ch5a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：移项：2x - 5x = -9 - 3</p>
+                            <p>合并：-3x = -12</p>
+                            <p>系数化 1：x = 4</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 3：解带分母的方程</h3>
+                        <div class="exercise-question">
+                            <p>解方程：(x-1)/2 - (2x+1)/3 = 1</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch5a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第五章 题目 3', '解带分母的方程', '解：x = -11')">加入错题本</button>
+                        <div id="ch5a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：去分母，方程两边都乘 6：</p>
+                            <p>3(x-1) - 2(2x+1) = 6</p>
+                            <p>去括号：3x - 3 - 4x - 2 = 6</p>
+                            <p>移项：3x - 4x = 6 + 3 + 2</p>
+                            <p>合并：-x = 11</p>
+                            <p>系数化 1：x = -11</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 4：方程的应用（行程问题）</h3>
+                        <div class="exercise-question">
+                            <p>甲、乙两地相距 120km，A 车从甲地出发，速度为 60km/h；B 车从乙地出发，速度为 40km/h。两车同时出发，相向而行，几小时后相遇？</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch5a4')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第五章 题目 4', '行程问题', '解：设 x 小时后相遇，60x+40x=120，x=1.2')">加入错题本</button>
+                        <div id="ch5a4" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：设 x 小时后两车相遇。</p>
+                            <p>根据题意，得：60x + 40x = 120</p>
+                            <p>合并：100x = 120</p>
+                            <p>解得：x = 1.2</p>
+                            <p>答：1.2 小时后两车相遇。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 5：方程的应用（利润问题）</h3>
+                        <div class="exercise-question">
+                            <p>某商品进价为 100 元，标价为 150 元，现打折销售，利润率为 20%，问打了几折？</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch5a5')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第五章 题目 5', '利润问题', '解：设打了 x 折，150×0.1x-100=100×20%，x=8')">加入错题本</button>
+                        <div id="ch5a5" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：设打了 x 折。</p>
+                            <p>根据题意，得：150 × 0.1x - 100 = 100 × 20%</p>
+                            <p>15x - 100 = 20</p>
+                            <p>15x = 120</p>
+                            <p>x = 8</p>
+                            <p>答：打了 8 折。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第六章练习 -->
+                <div id="ch6-exercises" class="chapter-exercises">
+                    <h3 style="color: #4A90E2; margin-bottom: 15px;">第六章：数据的收集与整理</h3>
+                    
+                    <div class="exercise-card">
+                        <h3>题目 1：统计图选择</h3>
+                        <div class="exercise-question">
+                            <p>要表示某地一年 12 个月的气温变化情况，最适合使用（  ）</p>
+                            <div class="choices" data-correct="B" data-title="第六章 题目 1" data-desc="统计图选择" data-analysis="折线图适合表示数据的变化趋势">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 条形统计图</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 折线统计图</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 扇形统计图</div>
+                            </div>
+                            <div class="feedback"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch6a1')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第六章 题目 1', '统计图选择', '折线图适合表示数据的变化趋势')">加入错题本</button>
+                        <div id="ch6a1" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：B</p>
+                            <p>解析：折线统计图能清楚地反映数据的变化趋势。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 2：扇形统计图</h3>
+                        <div class="exercise-question">
+                            <p>某班男生占 60%，则在扇形统计图中，男生对应的圆心角是多少度？</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch6a2')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第六章 题目 2', '扇形统计图计算', '圆心角 = 360° × 60% = 216°')">加入错题本</button>
+                        <div id="ch6a2" class="answer-section">
+                            <h4>解答</h4>
+                            <p>解：圆心角 = 360° × 60%</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 216°</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 3：普查与抽样调查</h3>
+                        <div class="exercise-question">
+                            <p>下列调查中，适合采用普查方式的是（  ）</p>
+                            <div class="choices" data-correct="C" data-title="第六章 题目 3" data-desc="普查与抽样调查的选择" data-analysis="人口普查需要全面调查，适合普查">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 调查一批灯泡的使用寿命</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 调查某水库中鱼的种类</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 调查某班学生的身高</div>
+                                <div class="choice" onclick="selectChoice(this, 'D')">D. 调查某市居民的月收入</div>
+                            </div>
+                            <div class="feedback"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch6a3')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第六章 题目 3', '普查与抽样调查的选择', '某班学生人数少，调查容易，适合普查')">加入错题本</button>
+                        <div id="ch6a3" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：C</p>
+                            <p>解析：A 具有破坏性，B、D 数量大范围广，都适合抽样调查；C 中某班学生人数少，调查容易，适合普查。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 4：统计图的综合应用</h3>
+                        <div class="exercise-question">
+                            <p>某校七年级共有学生 400 人，其中男生 220 人，女生 180 人。要表示男、女生人数占总人数的百分比，应选用（  ）</p>
+                            <div class="choices" data-correct="C" data-title="第六章 题目 4" data-desc="统计图的选择" data-analysis="扇形统计图能表示各部分在总体中所占的百分比">
+                                <div class="choice" onclick="selectChoice(this, 'A')">A. 条形统计图</div>
+                                <div class="choice" onclick="selectChoice(this, 'B')">B. 折线统计图</div>
+                                <div class="choice" onclick="selectChoice(this, 'C')">C. 扇形统计图</div>
+                            </div>
+                            <div class="feedback"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch6a4')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第六章 题目 4', '统计图的选择', '扇形统计图能表示各部分在总体中所占的百分比')">加入错题本</button>
+                        <div id="ch6a4" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：C</p>
+                            <p>解析：扇形统计图能清楚地表示出各部分在总体中所占的百分比。</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-card">
+                        <h3>题目 5：扇形统计图的计算</h3>
+                        <div class="exercise-question">
+                            <p>某校开展社团活动，参加书法社的学生占全校学生的 15%，则在扇形统计图中，书法社对应的圆心角是______度。</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAnswer('ch6a5')">查看答案</button>
+                        <button class="btn btn-success" onclick="addToErrorBook('第六章 题目 5', '扇形统计图计算', '圆心角 = 360° × 15% = 54°')">加入错题本</button>
+                        <div id="ch6a5" class="answer-section">
+                            <h4>解答</h4>
+                            <p>答案：54</p>
+                            <p>解析：圆心角 = 360° × 15% = 54°</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorbook" class="tab-content">
+                <h2 class="section-title">📖 我的错题本</h2>
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 12px; margin-bottom: 25px; color: white;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 36px;">📕</div>
+                        <div>
+                            <h3 style="margin-bottom: 8px; font-size: 16px;">功能介绍</h3>
+                            <p style="opacity: 0.9; font-size: 13px; line-height: 1.6;">这里自动收录你在例题练习中做错的题目，以及拍照批改中识别出的错误。定期复习错题是提升成绩的关键！建议每周回顾一次，确保不再犯同样的错误。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="errorBookContent">
+                    <div class="empty-state" id="emptyState">
+                        <p>📭 还没有错题哦～</p>
+                        <p>在"例题练习"中做错的题目会自动收录到这里</p>
+                    </div>
+                    <div id="errorList"></div>
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-warning" onclick="clearErrorBook()">🗑️ 清空错题本</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleKnowledgeCard(header) {
+            const card = header.parentElement;
+            card.classList.toggle('collapsed');
+        }
+
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navTabs.forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabId === 'errorbook') {
+                loadErrorBook();
+            }
+            
+            // 如果切换到例题练习标签，显示所有章节
+            if (tabId === 'exercise') {
+                showAllChapters();
+            }
+        }
+
+        function showExercises(chapter) {
+            // 切换到例题练习标签
+            switchToExerciseTab();
+            
+            // 初始化所有题目的拍照上传功能
+            setTimeout(() => {
+                initQuestionUploadButtons();
+            }, 100);
+            
+            // 隐藏所有章节，只显示指定章节
+            const chapters = document.querySelectorAll('.chapter-exercises');
+            chapters.forEach(ch => {
+                ch.style.display = 'none';
+            });
+            
+            const targetChapter = document.getElementById(chapter + '-exercises');
+            if (targetChapter) {
+                targetChapter.style.display = 'block';
+                targetChapter.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function showAllChapters() {
+            const chapters = document.querySelectorAll('.chapter-exercises');
+            chapters.forEach(ch => {
+                ch.style.display = 'block';
+            });
+        }
+
+        function switchToExerciseTab() {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navTabs.forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById('exercise').classList.add('active');
+            navTabs[2].classList.add('active');
+            
+            // 初始化所有题目的拍照上传功能
+            setTimeout(() => {
+                initQuestionUploadButtons();
+            }, 100);
+        }
+
+        function selectChoice(element, answer) {
+            // 找到当前题目
+            const questionDiv = element.closest('.exercise-question');
+            const choices = questionDiv.querySelectorAll('.choice');
+            const feedback = questionDiv.querySelector('.feedback');
+            const choicesContainer = questionDiv.querySelector('.choices');
+            
+            // 清除之前的选择
+            choices.forEach(choice => {
+                choice.classList.remove('selected', 'correct', 'wrong');
+            });
+            
+            // 获取正确答案
+            const correctAnswer = choicesContainer.getAttribute('data-correct');
+            
+            // 标记当前选择
+            element.classList.add('selected');
+            
+            // 显示反馈
+            if (answer === correctAnswer) {
+                element.classList.add('correct');
+                feedback.className = 'feedback correct';
+                feedback.textContent = '✓ 回答正确！';
+                
+                // 播放答对音效
+                playCorrectSound();
+                
+                // 5秒后清除答对提示
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                    element.classList.remove('correct');
+                }, 5000);
+                
+                // 答对后自动滚动到下一道题
+                setTimeout(() => {
+                    const nextQuestion = questionDiv.nextElementSibling;
+                    if (nextQuestion && nextQuestion.classList.contains('exercise-question')) {
+                        nextQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 800);
+            } else {
+                element.classList.add('wrong');
+                feedback.className = 'feedback wrong';
+                feedback.textContent = '✗ 回答错误，已自动加入错题本！';
+                
+                // 播放错误音效
+                playWrongSound();
+                
+                // 自动加入错题本
+                const title = choicesContainer.getAttribute('data-title');
+                const desc = choicesContainer.getAttribute('data-desc');
+                const analysis = choicesContainer.getAttribute('data-analysis');
+                
+                if (title && desc && analysis) {
+                    addToErrorBook(title, desc, analysis);
+                }
+            }
+        }
+
+        function toggleAnswer(answerId) {
+            const answer = document.getElementById(answerId);
+            answer.classList.toggle('show');
+        }
+
+        function addToErrorBook(title, question, solution) {
+            let errorBook = JSON.parse(localStorage.getItem('errorBook') || '[]');
+            
+            const existingIndex = errorBook.findIndex(item => item.title === title);
+            if (existingIndex === -1) {
+                errorBook.push({
+                    id: Date.now(),
+                    title: title,
+                    question: question,
+                    solution: solution,
+                    date: new Date().toLocaleDateString('zh-CN')
+                });
+                localStorage.setItem('errorBook', JSON.stringify(errorBook));
+                alert('✅ 已成功加入错题本！');
+            } else {
+                alert('⚠️ 该题目已在错题本中！');
+            }
+        }
+
+        function loadErrorBook() {
+            const errorBook = JSON.parse(localStorage.getItem('errorBook') || '[]');
+            const errorList = document.getElementById('errorList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (errorBook.length === 0) {
+                emptyState.style.display = 'block';
+                errorList.innerHTML = '';
+            } else {
+                emptyState.style.display = 'none';
+                errorList.innerHTML = errorBook.map((item, index) => `
+                    <div class="error-item">
+                        <h4>${index + 1}. ${item.title}</h4>
+                        <p><strong>题目：</strong>${item.question}</p>
+                        <p><strong>解答：</strong>${item.solution.replace(/\n/g, '<br>')}</p>
+                        <p style="color: #999; font-size: 12px;">收录时间：${item.date}</p>
+                        <button class="btn btn-warning" onclick="removeError(${item.id})">删除此题</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function removeError(id) {
+            let errorBook = JSON.parse(localStorage.getItem('errorBook') || '[]');
+            errorBook = errorBook.filter(item => item.id !== id);
+            localStorage.setItem('errorBook', JSON.stringify(errorBook));
+            loadErrorBook();
+        }
+
+        function clearErrorBook() {
+            if (confirm('确定要清空所有错题吗？')) {
+                localStorage.removeItem('errorBook');
+                loadErrorBook();
+            }
+        }
+
+        window.onload = function() {
+            loadErrorBook();
+            // 页面加载完成后初始化所有题目的拍照上传功能
+            setTimeout(() => {
+                initQuestionUploadButtons();
+            }, 500);
+        };
+
+        // 显示/隐藏返回顶部按钮
+        window.onscroll = function() {
+            const backToTop = document.getElementById('backToTop');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        };
+
+        // 返回顶部
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // AI小助手功能
+        function toggleAIDialog() {
+            const aiDialog = document.getElementById('aiDialog');
+            aiDialog.classList.toggle('show');
+            if (aiDialog.classList.contains('show')) {
+                document.getElementById('aiInput').focus();
+            }
+        }
+
+        // 处理图片上传
+        function handleAIImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                
+                // 添加用户上传的图片消息
+                addAIImageMessage(imageUrl);
+                
+                // 模拟批改过程
+                setTimeout(() => {
+                    const correctionResult = simulateImageCorrection();
+                    addAICorrectionMessage(correctionResult);
+                }, 1500);
+            };
+            reader.readAsDataURL(file);
+            
+            // 清空input以便可以重复上传同一文件
+            event.target.value = '';
+        }
+
+        // 添加图片消息
+        function addAIImageMessage(imageUrl) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message ai-user';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">👤</div>
+                <div class="ai-text">
+                    <div>已上传作业图片：</div>
+                    <img src="${imageUrl}" class="ai-image-preview" alt="作业图片">
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 添加批改结果消息
+        function addAICorrectionMessage(result) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message ai-bot';
+            
+            const statusClass = result.isCorrect ? 'correct' : 'incorrect';
+            const statusIcon = result.isCorrect ? '✅' : '❌';
+            const statusText = result.isCorrect ? '回答正确！' : '回答有误';
+            
+            // 如果答错，自动加入错题本
+            if (!result.isCorrect) {
+                const errorTitle = `AI批改：${result.expression}`;
+                const errorQuestion = `题目：${result.expression}，你的答案：${result.userAnswer}`;
+                const errorSolution = `正确答案：${result.correctAnswer}。解析：${result.explanation}`;
+                addToErrorBook(errorTitle, errorQuestion, errorSolution);
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-text">
+                    <div class="ai-correction-result ${statusClass}">
+                        <div style="font-weight: bold; margin-bottom: 8px;">${statusIcon} ${statusText}</div>
+                        <div><strong>识别到的算式：</strong>${result.expression}</div>
+                        <div><strong>你的答案：</strong>${result.userAnswer}</div>
+                        <div><strong>正确答案：</strong>${result.correctAnswer}</div>
+                        ${!result.isCorrect ? `<div style="margin-top: 8px; color: #666;"><strong>解析：</strong>${result.explanation}</div><div style="margin-top: 8px; color: #e74c3c; font-size: 12px;">⚠️ 已自动加入错题本</div>` : ''}
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 模拟图片批改（实际项目中需要接入OCR识别API）
+        function simulateImageCorrection() {
+            // 模拟一些常见的七年级数学题
+            const sampleProblems = [
+                { expression: '3x + 5 = 14', userAnswer: 'x = 3', correctAnswer: 'x = 3', isCorrect: true, explanation: '' },
+                { expression: '-5 + 8', userAnswer: '-3', correctAnswer: '3', isCorrect: false, explanation: '负数加正数，用较大绝对值减去较小绝对值，结果取较大绝对值的符号。8 - 5 = 3，结果为正。' },
+                { expression: '2² + 3²', userAnswer: '13', correctAnswer: '13', isCorrect: true, explanation: '' },
+                { expression: '| -7 |', userAnswer: '-7', correctAnswer: '7', isCorrect: false, explanation: '绝对值表示数轴上点到原点的距离，永远是非负数。' },
+                { expression: '3(x - 2) = 9', userAnswer: 'x = 5', correctAnswer: 'x = 5', isCorrect: true, explanation: '' }
+            ];
+            
+            // 随机选择一个题目
+            return sampleProblems[Math.floor(Math.random() * sampleProblems.length)];
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addAIMessage(message, 'user');
+            input.value = '';
+
+            // AI回复
+            setTimeout(() => {
+                const reply = getAIReply(message);
+                addAIMessage(reply, 'bot');
+            }, 500);
+        }
+
+        function addAIMessage(text, sender) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ai-${sender}`;
+            
+            const avatar = sender === 'bot' ? '🤖' : '👤';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">${avatar}</div>
+                <div class="ai-text">${text}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 播放答对音效（使用Web Audio API生成）
+        function playCorrectSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 创建振荡器
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // 设置音效参数（愉快的上升音调）
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                
+                // 设置音量
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                // 播放
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('音效播放失败:', e);
+            }
+        }
+
+        // 为所有题目动态添加拍照上传功能
+        function initQuestionUploadButtons() {
+            const exerciseCards = document.querySelectorAll('.exercise-card');
+            
+            exerciseCards.forEach((card, index) => {
+                const questionNum = index + 1;
+                const h3 = card.querySelector('h3');
+                
+                if (h3 && !card.querySelector('.upload-btn-small')) {
+                    // 创建拍照上传按钮
+                    const uploadContainer = document.createElement('div');
+                    uploadContainer.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
+                    uploadContainer.innerHTML = `
+                        <h3 style="margin: 0;">${h3.textContent}</h3>
+                        <label for="homeworkUpload${questionNum}" class="upload-btn-small" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                            📷 拍照解答
+                        </label>
+                        <input type="file" id="homeworkUpload${questionNum}" accept="image/*" style="display:none" onchange="handleQuestionUpload(event, ${questionNum})">
+                    `;
+                    
+                    // 替换原来的h3
+                    h3.parentNode.insertBefore(uploadContainer, h3);
+                    h3.remove();
+                    
+                    // 添加结果显示区域
+                    const exerciseQuestion = card.querySelector('.exercise-question');
+                    if (exerciseQuestion && !exerciseQuestion.querySelector(`#questionUploadResult${questionNum}`)) {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.id = `questionUploadResult${questionNum}`;
+                        resultDiv.style.cssText = 'margin-top: 15px; display: none;';
+                        resultDiv.innerHTML = `
+                            <div style="background: #f0f4ff; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                                <h4 style="margin-bottom: 10px; color: #4A90E2; font-size: 14px;">📷 你的解答</h4>
+                                <img id="questionImage${questionNum}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 10px;" />
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="correctQuestionAnswer(${questionNum})" class="btn btn-primary" style="flex: 1; padding: 8px;">🤖 AI批改</button>
+                                    <button onclick="cancelQuestionUpload(${questionNum})" class="btn btn-secondary" style="flex: 1; padding: 8px;">取消</button>
+                                </div>
+                                <div id="questionCorrection${questionNum}" style="margin-top: 10px; display: none;"></div>
+                            </div>
+                        `;
+                        exerciseQuestion.appendChild(resultDiv);
+                    }
+                }
+            });
+        }
+
+        // 处理每道题的拍照上传
+        function handleQuestionUpload(event, questionNum) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                const img = document.getElementById('questionImage' + questionNum);
+                const result = document.getElementById('questionUploadResult' + questionNum);
+                const correction = document.getElementById('questionCorrection' + questionNum);
+                
+                if (img) img.src = imageUrl;
+                if (result) result.style.display = 'block';
+                if (correction) correction.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+            
+            event.target.value = '';
+        }
+
+        // 取消题目上传
+        function cancelQuestionUpload(questionNum) {
+            const result = document.getElementById('questionUploadResult' + questionNum);
+            const correction = document.getElementById('questionCorrection' + questionNum);
+            const img = document.getElementById('questionImage' + questionNum);
+            
+            if (result) result.style.display = 'none';
+            if (correction) correction.style.display = 'none';
+            if (img) img.src = '';
+        }
+
+        // 批改单道题目
+        function correctQuestionAnswer(questionNum) {
+            const correctionDiv = document.getElementById('questionCorrection' + questionNum);
+            if (!correctionDiv) return;
+            
+            // 显示加载状态
+            correctionDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div style="font-size: 24px; margin-bottom: 8px;">🤔</div><div style="font-size: 13px;">AI正在批改...</div></div>';
+            correctionDiv.style.display = 'block';
+            
+            // 模拟批改过程
+            setTimeout(() => {
+                // 随机生成批改结果
+                const isCorrect = Math.random() > 0.5;
+                const statusIcon = isCorrect ? '✅' : '❌';
+                const statusColor = isCorrect ? '#28a745' : '#dc3545';
+                const statusText = isCorrect ? '回答正确！' : '回答错误';
+                
+                let html = `
+                    <div style="border-left: 4px solid ${statusColor}; padding: 12px; background: #f8f9fa; border-radius: 0 8px 8px 0;">
+                        <div style="font-weight: bold; margin-bottom: 8px; color: ${statusColor};">${statusIcon} ${statusText}</div>
+                `;
+                
+                if (isCorrect) {
+                    html += `<div style="color: #666; font-size: 13px;">你的解答思路清晰，答案正确！继续保持！👍</div>`;
+                    playCorrectSound();
+                } else {
+                    html += `<div style="color: #666; font-size: 13px; margin-bottom: 8px;">建议仔细审题，检查计算过程。</div>`;
+                    html += `<div style="color: #e74c3c; font-size: 12px;">⚠️ 已自动加入错题本</div>`;
+                    playWrongSound();
+                    // 添加到错题本
+                    addToErrorBook(`拍照批改 - 题目${questionNum}`, `第${questionNum}题拍照上传的解答`, '建议查看知识点梳理，重新理解题目要求');
+                }
+                
+                html += `</div>`;
+                correctionDiv.innerHTML = html;
+            }, 1500);
+        }
+
+        // 播放错误音效（使用Web Audio API生成）
+        function playWrongSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 创建振荡器
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // 设置音效参数（低沉的下降音调）
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime); // 低频
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3); // 下降
+                
+                // 设置波形为锯齿波，声音更刺耳
+                oscillator.type = 'sawtooth';
+                
+                // 设置音量
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                
+                // 播放
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } catch (e) {
+                console.log('音效播放失败:', e);
+            }
+        }
+
+        // 计算数学表达式
+        function calculateExpression(expr) {
+            try {
+                // 替换数学符号
+                let cleanExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/=/g, '');
+                // 移除空格
+                cleanExpr = cleanExpr.replace(/\s/g, '');
+                
+                // 检查是否是有效的数学表达式
+                if (!/^[\d+\-*/().\s]+$/.test(cleanExpr)) {
+                    return null;
+                }
+                
+                // 安全计算
+                const result = Function('"use strict"; return (' + cleanExpr + ')')();
+                
+                // 格式化结果
+                if (Number.isFinite(result)) {
+                    // 保留合适的小数位数
+                    if (result % 1 === 0) {
+                        return result.toString();
+                    } else {
+                        return parseFloat(result.toFixed(6)).toString();
+                    }
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getAIReply(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            // 先尝试计算
+            const calcResult = calculateExpression(message);
+            if (calcResult !== null) {
+                return `计算结果：${message} = <strong>${calcResult}</strong>`;
+            }
+            
+            // 立体图形相关问题
+            if (lowerMsg.includes('正方体') && lowerMsg.includes('展开')) {
+                return '正方体有11种展开图，分为4种类型：141型（6种）、132型（3种）、222型（1种）、33型（1种）。记忆口诀："一四一呈六种像，二三一露三模样，二二二像楼梯上，三三连成日字状"。';
+            }
+            if (lowerMsg.includes('圆柱') && (lowerMsg.includes('截面') || lowerMsg.includes('切开'))) {
+                return '圆柱的截面形状取决于切割方向：横切是圆形，竖切是长方形，斜切是椭圆形。';
+            }
+            if (lowerMsg.includes('圆锥') && (lowerMsg.includes('截面') || lowerMsg.includes('切开'))) {
+                return '圆锥的截面形状：平行于底面切割是圆形，通过顶点竖切是三角形，斜切是椭圆形或抛物线形。';
+            }
+            
+            // 有理数相关问题
+            if (lowerMsg.includes('相反数')) {
+                return '相反数是指绝对值相等、符号相反的两个数。例如：5的相反数是-5，-3的相反数是3。0的相反数是0。';
+            }
+            if (lowerMsg.includes('绝对值')) {
+                return '绝对值表示一个数在数轴上到原点的距离，永远是非负数。记作|a|。例如：|5|=5，|-3|=3，|0|=0。';
+            }
+            if (lowerMsg.includes('数轴')) {
+                return '数轴是规定了原点、正方向和单位长度的直线。原点左边是负数，右边是正数。';
+            }
+            
+            // 整式相关问题
+            if (lowerMsg.includes('单项式')) {
+                return '单项式是由数字与字母的乘积组成的代数式，如3x、-2ab²。单项式中的数字因数叫系数，所有字母指数的和叫次数。';
+            }
+            if (lowerMsg.includes('多项式')) {
+                return '多项式是几个单项式的和，如3x²+2x-1。多项式中次数最高的项的次数叫多项式的次数。';
+            }
+            if (lowerMsg.includes('合并同类项')) {
+                return '合并同类项：把多项式中的同类项合并成一项。法则：同类项的系数相加，字母和指数不变。例如：3x+2x=5x。';
+            }
+            
+            // 方程相关问题
+            if (lowerMsg.includes('一元一次方程')) {
+                return '一元一次方程是只含有一个未知数，且未知数的最高次数是1的方程。标准形式：ax+b=0（a≠0）。';
+            }
+            if (lowerMsg.includes('解方程') || lowerMsg.includes('方程的解')) {
+                return '解一元一次方程的步骤：①去分母 ②去括号 ③移项 ④合并同类项 ⑤系数化为1。移项要变号！';
+            }
+            
+            // 平面图形
+            if (lowerMsg.includes('线段') && lowerMsg.includes('中点')) {
+                return '线段中点将线段分成两条相等的线段。如果M是AB的中点，则AM=MB=½AB。';
+            }
+            if (lowerMsg.includes('角') && (lowerMsg.includes('平分线') || lowerMsg.includes('平分'))) {
+                return '角平分线是从角的顶点出发，将角分成两个相等角的射线。如果OC平分∠AOB，则∠AOC=∠COB=½∠AOB。';
+            }
+            if (lowerMsg.includes('多边形') && lowerMsg.includes('内角和')) {
+                return 'n边形的内角和公式：(n-2)×180°。三角形内角和180°，四边形360°，五边形540°。';
+            }
+            
+            // 数据统计
+            if (lowerMsg.includes('普查') || lowerMsg.includes('抽样调查')) {
+                return '普查是对全体对象进行调查，结果准确但工作量大。抽样调查是从中抽取部分对象调查，适用于范围广、有破坏性的情况。';
+            }
+            if (lowerMsg.includes('统计图') && lowerMsg.includes('选择')) {
+                return '条形统计图适合比较数量多少；折线统计图适合显示变化趋势；扇形统计图适合显示各部分占总体的百分比。';
+            }
+            
+            // 通用回复
+            if (lowerMsg.includes('你好') || lowerMsg.includes('您好')) {
+                return '你好！我是你的AI数学助手，有什么数学问题可以问我哦！';
+            }
+            if (lowerMsg.includes('谢谢') || lowerMsg.includes('感谢')) {
+                return '不客气！有问题随时问我，祝你学习进步！';
+            }
+            
+            return '这个问题很有意思！建议你查看"📖 知识点梳理"部分的详细讲解，或者尝试"✏️ 例题练习"来巩固理解。如果还有疑问，可以描述得更具体一些，我会尽力帮你解答！';
+        }
+    </script>
+
+    <!-- 返回顶部按钮 -->
+    <button id="backToTop" onclick="scrollToTop()" title="返回顶部">↑</button>
+
+    <!-- AI小助手圆形按钮 -->
+    <button class="ai-float-btn" onclick="toggleAIDialog()" title="AI数学助手">🤖</button>
+
+    <!-- AI对话框 -->
+    <div id="aiDialog" class="ai-dialog">
+        <div class="ai-dialog-header">
+            <div class="ai-dialog-title">
+                <span>🤖</span>
+                <span>AI数学助手</span>
+            </div>
+            <button class="ai-close-btn" onclick="toggleAIDialog()">×</button>
+        </div>
+        <div class="ai-dialog-body">
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message ai-bot">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="ai-text">你好！我是你的AI数学助手，可以帮你解答七年级上册的数学问题。有什么不懂的尽管问我！</div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" id="aiInput" placeholder="输入你的数学问题..." onkeypress="if(event.key==='Enter')sendAIMessage()">
+                <label for="aiImageInput" class="ai-upload-label" title="上传图片">📷</label>
+                <button onclick="sendAIMessage()">发送</button>
+            </div>
+            <input type="file" id="aiImageInput" accept="image/*" style="display:none" onchange="handleAIImageUpload(event)">
+        </div>
+    </div>
+</body>
+</html>
