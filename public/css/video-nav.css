@@ -1,0 +1,270 @@
+/* 视频播放器导航按钮 - 绝对定位到视口 */
+/* -----------------------------------------------------------
+   Player Overlay Buttons (Admin controls)
+   ----------------------------------------------------------- */
+.player-admin-controls {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* 留出关闭按钮的位置 */
+    display: flex;
+    gap: 15px;
+    z-index: 10001;
+}
+
+/* 放大后的管理按钮样式 */
+.video-upload-btn, .video-delete-btn,
+.image-upload-btn, .image-delete-btn {
+    width: 48px; /* 进一步增大尺寸，用户说要"大一点" */
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 添加按钮 */
+.video-upload-btn, .image-upload-btn {
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+}
+
+/* 删除按钮 */
+.video-delete-btn, .image-delete-btn {
+    background: #ff4757;
+    color: white;
+}
+
+.player-admin-controls button:hover {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.player-admin-controls button:active {
+    transform: scale(0.95);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .player-admin-controls {
+        top: 15px;
+        right: 60px;
+        gap: 10px;
+    }
+    
+    .video-upload-btn, .video-delete-btn,
+    .image-upload-btn, .image-delete-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* -----------------------------------------------------------
+   Original Nav Buttons (Disabled/Hidden by user request)
+   ----------------------------------------------------------- */
+.nav-btn {
+    position: fixed; /* 改为 fixed 以便相对于视口定位，而不是 relative 的容器 */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 107, 157, 0.6); /* Slightly more opaque pink */
+    color: white;
+    border: none;
+    font-size: 28px;
+    font-weight: 800; /* Much bolder */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1010;
+    backdrop-filter: blur(5px);
+}
+
+.nav-btn:hover {
+    background: #ff4081; /* Solid pink on hover */
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+}
+
+/* 按钮位置 */
+.nav-btn.prev-btn {
+    left: 40px;
+}
+
+.nav-btn.next-btn {
+    right: 40px;
+}
+
+/* 禁用状态 */
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #ccc;
+}
+
+.nav-btn:disabled:hover {
+    transform: translateY(-50%);
+    box-shadow: none;
+}
+
+/* 视频删除按钮 - 修改为右上角圆形图标 */
+.player-delete-btn {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* 在关闭按钮左侧 */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #ff6b9d;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 0; /* 清除 padding */
+}
+
+.player-delete-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.player-delete-btn:hover {
+    background: #ff4757;
+    color: white;
+    transform: scale(1.1); /* 缩放效果 */
+    box-shadow: 0 6px 15px rgba(255, 71, 87, 0.3);
+}
+
+/* 适配移动端 */
+@media (max-width: 768px) {
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        background: rgba(255, 107, 157, 0.6);
+    }
+    
+    .nav-btn.prev-btn {
+        left: 10px;
+    }
+
+    .nav-btn.next-btn {
+        right: 10px;
+    }
+
+    .player-delete-btn {
+        bottom: -50px; /* 移动端可以稍微近一点 */
+    }
+}
+
+/* 视频播放器样式修复 - 确保视频完整显示且不溢出 */
+.video-player-container {
+    width: auto !important;
+    height: auto !important;
+    max-width: 60% !important; /* 限制最大宽度，手机/平板尺寸 */
+    max-height: 60vh !important; /* 限制最大高度，留出更多空间 */
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+}
+
+.video-player-container video {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important; /* 跟随容器高度限制 (85vh) */
+    min-width: 200px;
+    object-fit: contain !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    background: black;
+    margin: 0 auto;
+}
+
+/* 视频播放器遮罩层 - 修复视频不显示问题 */
+.video-player-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: row;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.video-player-overlay.active {
+    display: flex;
+}
+
+/* 关闭按钮 */
+.video-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.video-close-btn:hover {
+    background: #ff6b9d;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .video-player-overlay {
+        padding: 10px;
+    }
+    
+    .video-close-btn {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+    }
+    
+    .video-player-container {
+        max-width: 90% !important;
+        max-height: 50vh !important;
+    }
+}

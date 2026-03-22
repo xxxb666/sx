@@ -1,0 +1,475 @@
+/* 上传功能样式 */
+
+/* 操作区域 */
+.action-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ff8fb3 0%, #ff6b9d 100%);
+    color: white;
+    padding: 8px 18px; /* Slightly larger */
+    border-radius: 20px;
+    border: none;
+    font-size: 13px;
+    font-weight: 800; /* Much bolder */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+}
+
+.upload-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff4081 100%);
+}
+
+.upload-icon {
+    font-size: 14px;
+}
+
+/* 上传页面 */
+.upload-page {
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 0 5px;
+}
+
+.upload-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upload-tab {
+    padding: 8px 15px;
+    background: #fff0f5; /* Light pink background */
+    border: 1px solid #ffbcd1;
+    border-radius: 20px;
+    color: #ec407a;
+    font-size: 13px;
+    font-weight: 800; /* Much bolder */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-tab:hover {
+    background: #ffcce0;
+    border-color: #ff8fb3;
+    color: #d81b60;
+}
+
+.upload-tab.active {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff4081 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
+}
+
+.upload-form {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 3px;
+    color: #ff6b9d;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ffe4ec;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #666;
+    transition: all 0.3s ease;
+    background: #fffafa;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #ff6b9d;
+    box-shadow: 0 0 10px rgba(255, 107, 157, 0.1);
+}
+
+/* 文件上传区域 */
+.file-upload-area {
+    border: 1px dashed #ffe4ec;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    background: #fff5f8;
+}
+
+.file-upload-area:hover,
+.file-upload-area.dragover {
+    border-color: #ff6b9d;
+    background: #ffe4ec;
+}
+
+.file-upload-area input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-placeholder {
+    pointer-events: none;
+}
+
+.upload-icon-large {
+    font-size: 16px;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.upload-placeholder p {
+    color: #ff8fb3;
+    font-size: 9px;
+    margin-bottom: 2px;
+}
+
+.upload-hint {
+    font-size: 8px !important;
+    color: #ffb7d2 !important;
+}
+
+/* 文件预览 */
+.file-preview {
+    margin-top: 10px;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+/* 强制限制上传预览区的所有图片和视频 */
+.file-preview img,
+.file-preview video {
+    max-width: 100% !important;
+    max-height: 120px !important; /* 进一步减小 */
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+    /* 移除背景色和强制显示，避免出现黑色空块 */
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* 全局限制：防止任何图片/视频溢出屏幕 */
+img, video {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+}
+
+/* 强制限制已上传作品列表中的缩略图 */
+.work-thumbnail img,
+.work-thumbnail video,
+.video-thumbnail img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* 改为 cover 填满方框，看起来更整齐 */
+}
+
+/* 确保容器本身有尺寸限制 */
+.work-thumbnail {
+    width: 80px !important;
+    height: 80px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+    border-radius: 8px;
+    overflow: hidden !important;
+    background: #f0f0f0;
+    flex-shrink: 0; /* 防止被挤压 */
+}
+
+#fileName {
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 10px;
+}
+
+.remove-file-btn {
+    padding: 4px 10px;
+    background: #ffe4ec;
+    color: #ff6b9d;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s ease;
+}
+
+.remove-file-btn:hover {
+    background: #ff6b9d;
+    color: white;
+}
+
+.submit-upload-btn {
+    width: 100%;
+    padding: 4px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(255, 107, 157, 0.2);
+}
+
+.submit-upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.submit-upload-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 进度条样式 */
+.progress-container {
+    width: 100%;
+    margin-top: 20px;
+    display: none; /* 默认隐藏 */
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background-color: #ffe4ec;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff8fb3 0%, #ff6b9d 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: #ff6b9d;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* 作品列表区域 */
+.works-list-section h3 {
+    text-align: center;
+    color: #ff6b9d;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.works-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.no-works {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #ff6b9d; /* 使用粉色 */
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    border: 2px dashed rgba(255, 107, 157, 0.3); /* 使用粉色边框 */
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.work-item {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: all 0.3s ease;
+    flex-direction: column;
+    text-align: center;
+}
+
+.work-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
+}
+
+.work-thumbnail {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.work-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-thumbnail,
+.file-thumbnail {
+    font-size: 24px;
+}
+
+.work-info {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+.work-info h4 {
+    color: #ff6b9d;
+    margin-bottom: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.work-info p {
+    color: #ff8fb3;
+    font-size: 10px;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.work-date {
+    font-size: 9px;
+    color: #ff8fb3;
+}
+
+.work-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.view-work-btn,
+.delete-work-btn {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s ease;
+}
+
+.view-work-btn {
+    background: #ff6b9d;
+    color: white;
+}
+
+.view-work-btn:hover {
+    background: #ff8fb3;
+}
+
+.delete-work-btn {
+    background: #ffe4ec;
+    color: #ff6b9d;
+}
+
+.delete-work-btn:hover {
+    background: #ff6b9d;
+    color: white;
+}
+
+/* 个人资料编辑 */
+.change-avatar-btn {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background: #ff8fb3;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.change-avatar-btn:hover {
+    background: #ff6b9d;
+}
+
+.about-info [contenteditable="true"] {
+    border: 2px dashed transparent;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.about-info [contenteditable="true"]:focus {
+    border-color: #ff6b9d;
+    outline: none;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.save-profile-btn {
+    margin-top: 10px;
+    padding: 6px 18px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff8fb3 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+}
+
+.save-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3);
+}
