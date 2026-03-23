@@ -91,10 +91,11 @@
         /* AI对话框 */
         .ai-dialog {
             position: fixed;
-            top: 100px;
-            right: 30px;
-            width: 360px;
-            height: 480px;
+            top: 80px;
+            right: 20px;
+            width: 380px;
+            height: 520px;
+            max-height: calc(100vh - 100px);
             background: white;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
@@ -2321,7 +2322,7 @@
             }
         }
 
-        // 火山引擎豆包大模型API配置（需要填入您的API Key）
+        // 火山引擎豆包大模型API配置
         const DOUBAO_CONFIG = {
             apiKey: 'b8e43a34-4b99-4fb2-b5e4-386b835689be', // 火山引擎API Key
             endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
@@ -2416,7 +2417,12 @@
                 };
             } catch (error) {
                 console.error('API调用失败:', error);
-                throw error;
+                // 返回错误信息以便显示
+                return {
+                    content: `❌ API调用失败：${error.message}\n\n可能原因：\n1. API Key无效或已过期\n2. 模型ID不正确\n3. 网络连接问题\n4. 图片格式不支持\n\n请检查控制台日志获取详细信息。`,
+                    isAnalysis: true,
+                    isError: true
+                };
             }
         }
 
