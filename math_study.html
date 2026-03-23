@@ -2587,10 +2587,73 @@
             }
         }
 
+        // 解一元一次方程
+        function solveLinearEquation(equation) {
+            try {
+                // 移除空格
+                let cleanEq = equation.replace(/\s/g, '');
+                
+                // 匹配形如 ax+b=c 或 ax-b=c 或 x+b=c 的方程
+                // 支持格式：x+5=10, 2x-3=7, 3x=12, x=5 等
+                const patterns = [
+                    // 3x+5=14 或 3x-5=14
+                    /^([+-]?\d*\.?\d*)x([+-]\d+\.?\d*)=(\d+\.?\d*)$/,
+                    // 3x=12
+                    /^([+-]?\d*\.?\d*)x=(\d+\.?\d*)$/,
+                    // x+5=10 或 x-5=10
+                    /^x([+-]\d+\.?\d*)=(\d+\.?\d*)$/,
+                    // x=5
+                    /^x=(\d+\.?\d*)$/
+                ];
+                
+                for (let pattern of patterns) {
+                    const match = cleanEq.match(pattern);
+                    if (match) {
+                        if (pattern === patterns[0]) {
+                            // ax+b=c 格式
+                            let a = match[1] === '' || match[1] === '+' ? 1 : (match[1] === '-' ? -1 : parseFloat(match[1]));
+                            let b = parseFloat(match[2]);
+                            let c = parseFloat(match[3]);
+                            let x = (c - b) / a;
+                            return { a, b, c, x, steps: `解方程步骤：<br>① 移项：${a}x = ${c} - (${b})<br>② 计算：${a}x = ${c - b}<br>③ 系数化为1：x = ${c - b} ÷ ${a}<br>④ <strong>答案：x = ${x}</strong>` };
+                        } else if (pattern === patterns[1]) {
+                            // ax=c 格式
+                            let a = match[1] === '' || match[1] === '+' ? 1 : (match[1] === '-' ? -1 : parseFloat(match[1]));
+                            let c = parseFloat(match[2]);
+                            let x = c / a;
+                            return { a, c, x, steps: `解方程步骤：<br>① 系数化为1：x = ${c} ÷ ${a}<br>② <strong>答案：x = ${x}</strong>` };
+                        } else if (pattern === patterns[2]) {
+                            // x+b=c 格式
+                            let b = parseFloat(match[1]);
+                            let c = parseFloat(match[2]);
+                            let x = c - b;
+                            return { b, c, x, steps: `解方程步骤：<br>① 移项：x = ${c} - (${b})<br>② <strong>答案：x = ${x}</strong>` };
+                        } else if (pattern === patterns[3]) {
+                            // x=c 格式
+                            let c = parseFloat(match[1]);
+                            return { c, x: c, steps: `<strong>答案：x = ${c}</strong>` };
+                        }
+                    }
+                }
+                
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
         function getAIReply(message) {
             const lowerMsg = message.toLowerCase();
             
-            // 先尝试计算
+            // 先尝试解方程（如果包含等号和x）
+            if (message.includes('=') && message.includes('x')) {
+                const equationResult = solveLinearEquation(message);
+                if (equationResult) {
+                    return equationResult.steps;
+                }
+            }
+            
+            // 尝试计算
             const calcResult = calculateExpression(message);
             if (calcResult !== null) {
                 return `计算结果：${message} = <strong>${calcResult}</strong>`;
