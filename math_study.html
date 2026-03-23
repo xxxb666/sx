@@ -2249,8 +2249,12 @@
         // AI小助手功能
         function toggleAIDialog() {
             const aiDialog = document.getElementById('aiDialog');
-            aiDialog.classList.toggle('show');
-            if (aiDialog.classList.contains('show')) {
+            const isShowing = aiDialog.classList.contains('show');
+            
+            if (isShowing) {
+                aiDialog.classList.remove('show');
+            } else {
+                aiDialog.classList.add('show');
                 document.getElementById('aiInput').focus();
             }
         }
