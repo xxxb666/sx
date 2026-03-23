@@ -296,6 +296,50 @@
             border-left: 4px solid #dc3545;
         }
 
+        .ai-analysis-result {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            line-height: 1.8;
+        }
+
+        .ai-loading-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            font-style: italic;
+        }
+
+        .loading-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: loadingDot 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes loadingDot {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         .nav-tabs {
             display: flex;
             flex-direction: column;
@@ -2277,28 +2321,200 @@
             }
         }
 
+        // 火山引擎豆包大模型API配置（需要填入您的API Key）
+        const DOUBAO_CONFIG = {
+            apiKey: '', // 请在此处填入您的API Key
+            endpoint: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+            model: 'doubao-vision-lite-32k-240828' // 豆包视觉理解模型
+        };
+
         // 处理图片上传
-        function handleAIImageUpload(event) {
+        async function handleAIImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 const imageUrl = e.target.result;
                 
                 // 添加用户上传的图片消息
                 addAIImageMessage(imageUrl);
                 
-                // 模拟批改过程
-                setTimeout(() => {
-                    const correctionResult = simulateImageCorrection();
-                    addAICorrectionMessage(correctionResult);
-                }, 1500);
+                // 显示分析中提示
+                addAILoadingMessage();
+                
+                try {
+                    // 调用豆包大模型API分析图片
+                    const analysisResult = await analyzeImageWithDoubao(imageUrl);
+                    
+                    // 移除加载提示
+                    removeAILoadingMessage();
+                    
+                    // 显示分析结果
+                    addAIAnalysisMessage(analysisResult);
+                } catch (error) {
+                    // 移除加载提示
+                    removeAILoadingMessage();
+                    
+                    // 显示错误信息或使用模拟数据
+                    console.error('AI分析失败:', error);
+                    addAIMessage('抱歉，图片分析出现问题。请检查API配置或稍后重试。', 'bot');
+                }
             };
             reader.readAsDataURL(file);
             
             // 清空input以便可以重复上传同一文件
             event.target.value = '';
+        }
+
+        // 调用豆包大模型API分析图片
+        async function analyzeImageWithDoubao(imageBase64) {
+            // 如果没有配置API Key，使用模拟数据
+            if (!DOUBAO_CONFIG.apiKey) {
+                await new Promise(resolve => setTimeout(resolve, 1500)); // 模拟延迟
+                return simulateImageAnalysis();
+            }
+
+            try {
+                const response = await fetch(DOUBAO_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DOUBAO_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: DOUBAO_CONFIG.model,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        type: 'text',
+                                        text: '请分析这张图片中的数学题，并给出详细的解答步骤和最终答案。如果是方程，请写出解方程的完整过程；如果是计算题，请展示计算步骤。'
+                                    },
+                                    {
+                                        type: 'image_url',
+                                        image_url: {
+                                            url: imageBase64
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        max_tokens: 2048
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return {
+                    content: data.choices[0].message.content,
+                    isAnalysis: true
+                };
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        // 模拟图片分析（用于测试或API未配置时）
+        function simulateImageAnalysis() {
+            const sampleAnalyses = [
+                {
+                    content: `📋 **题目分析**
+这是一道一元一次方程求解题目。
+
+**解题步骤：**
+① 识别方程：3x + 5 = 14
+② 移项：3x = 14 - 5
+③ 计算：3x = 9
+④ 系数化为1：x = 9 ÷ 3
+
+✅ **答案：x = 3**`,
+                    isAnalysis: true
+                },
+                {
+                    content: `📋 **题目分析**
+这是一道有理数加法运算。
+
+**解题步骤：**
+① 识别算式：(-5) + 8
+② 分析：负数加正数，用较大绝对值减去较小绝对值
+③ 计算：8 - 5 = 3
+④ 确定符号：正数的绝对值较大，结果为正
+
+✅ **答案：3**`,
+                    isAnalysis: true
+                },
+                {
+                    content: `📋 **题目分析**
+这是一道绝对值计算题。
+
+**解题步骤：**
+① 识别：| -7 |
+② 概念：绝对值表示数轴上点到原点的距离
+③ 特点：绝对值永远是非负数
+④ 计算：-7到原点的距离是7
+
+✅ **答案：7**`,
+                    isAnalysis: true
+                }
+            ];
+            
+            return sampleAnalyses[Math.floor(Math.random() * sampleAnalyses.length)];
+        }
+
+        // 添加AI分析结果消息
+        function addAIAnalysisMessage(result) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message ai-bot';
+            
+            // 将换行符转换为HTML
+            const formattedContent = result.content.replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-text">
+                    <div class="ai-analysis-result">
+                        ${formattedContent}
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 添加加载中消息
+        function addAILoadingMessage() {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message ai-bot ai-loading';
+            messageDiv.id = 'aiLoadingMessage';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-text">
+                    <div class="ai-loading-indicator">
+                        <span class="loading-dot"></span>
+                        <span class="loading-dot"></span>
+                        <span class="loading-dot"></span>
+                        正在分析图片中的数学题...
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 移除加载中消息
+        function removeAILoadingMessage() {
+            const loadingMessage = document.getElementById('aiLoadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
         }
 
         // 添加图片消息
